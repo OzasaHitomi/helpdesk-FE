@@ -67,12 +67,10 @@ FastAPIを用いたRESTful APIサーバーとして、問い合わせの受付�
   * 各フォルダは固有の役割を持ち、責務が明確に分離されている。
   * フォルダ・ファイルの役割を超えた処理は記述しないこと。また、1つのフォルダ・ファイルが複数の責務を持たないことをルールとする。
   * 役割に迷った場合は、下記のフォルダ説明を参照し、適切な場所に実装すること。
+  * 再利用可能なUIコンポーネント（`components/`配下）は、Atomic Designの考え方をベースに `atoms/` `organisms/` `templates/` へフォルダを分けて管理する。
+  * `components/ui/`配下はChakra UIによって自動生成されたコンポーネントを置く場所のため、ファイルの追加・削除は行わないこと。
 
 &nbsp;  
-
-**<現状のフォルダ構成>**
-
-まだ実装初期段階のため、今後機能追加に伴いフォルダは増えていく想定。現状存在するもののみ記載する。
 
 ```
 helpdesk-FE/
@@ -81,8 +79,13 @@ helpdesk-FE/
 │   ├── App.tsx                   # アプリ全体のルートとなるコンポーネント
 │   ├── core/                     # アプリ実行前の前処理（環境変数の検証・設定値の定義など）を置く場所
 │   │   └── config.ts             # 環境変数（.env）を検証し、アプリ全体で使う設定値を定義する
-│   ├── components/               # 再利用可能なUIコンポーネントを置く場所
-│   │   └── ui/                   # Chakra UIをラップした共通UIコンポーネント（color-mode, provider, toaster, tooltip等）
+│   ├── components/               # 再利用可能なUIコンポーネントを置く場所（Atomic Designの考え方をベースに分類）
+│   │   ├── atoms/                # これ以上分割できない最小単位のUIパーツを置く場所（現状ファイルなし）
+│   │   ├── organisms/            # atomsを組み合わせた、特定の役割・意味を持つUIブロックを置く場所
+│   │   │   └── Header.tsx        # 画面共通のヘッダー（現状ファイル内容なし）
+│   │   ├── templates/            # ページ全体のレイアウト（枠組み）を定義する場所
+│   │   │   └── BaseLayout.tsx    # 共通レイアウト。Header・ページ固有コンテンツ・Toasterの配置を担う（現状ファイル内容なし）
+│   │   └── ui/                   # Chakra UIによる自動生成コンポーネント（color-mode, provider, toaster, tooltip等）※追加・削除禁止
 │   └── routes/                   # ルーティング定義を置く場所
 │       └── router.tsx            # react-router-domによるアプリ全体のルーティング設定
 ├── public/                       # ビルド時にそのまま配信される静的ファイル（現状ファイルなし）
@@ -97,6 +100,7 @@ helpdesk-FE/
 ├── package.json                  # プロジェクト設定・依存関係定義
 ├── yarn.lock                     # 依存関係のバージョン固定ファイル
 ├── .env                          # 環境変数ファイル
+├── .env.example                  # 環境変数のサンプルファイル
 └── README.md
 ```
 
@@ -108,13 +112,13 @@ helpdesk-FE/
 * `__test__` フォルダ配下に、`テスト対象ファイル名.test.tsx`（`.ts`ファイルが対象の場合は `.test.ts`）というファイル名でテストファイルを作成する
 * そのテストファイルの中に、対象ファイルに対するテストコードを記述する
 
-例（`src/components/ui/tooltip.tsx` のテストを作成する場合）
+例（`src/logic/formatDate.ts` のテストを作成する場合）
 
 ```
-src/components/ui/
-├── tooltip.tsx
+src/logic/
+├── formatDate.ts
 └── __test__/
-    └── tooltip.test.tsx
+    └── formatDate.test.ts
 ```
 
 &nbsp;  
@@ -169,6 +173,7 @@ yarn -v
 
 #### 2.2.1 ライブラリの一括インストール
 * yarn.lock（依存関係が固定されたファイル）から、その正確なバージョンに従って、Node.jsプロジェクトにおける必要なライブラリの一括インストールを行う
+* コマンドを実行するには、package.jsonファイルがあるプロジェクトフォルダ（`helpdesk-FE`）配下でコマンドを実行する必要がある
 
 ```bash
 yarn install
@@ -178,15 +183,11 @@ yarn install
 &nbsp;  
 ### 2.3 環境変数
 
-ルートディレクトリに以下のファイルを作成し、必要な値を設定する。
-* `.env`ファイル（開発環境設定）
+`.env.example` を参考に、以下のファイルをルートディレクトリに作成し必要な値を設定する。
+* .env ファイル（開発環境設定）
+* .env.e2e ファイル（テスト環境設定）
 
 Viteの仕様上、`VITE_`から始まる環境変数のみがブラウザ側に公開されるため、命名時は必ず`VITE_`プレフィックスを付与すること。
-
-例
-```
-VITE_BACKEND_URL=http://localhost:8000
-```
 
 ※ FEはBEのAPIと通信するため、事前に`helpdesk-BE`を起動しておくこと（`helpdesk-BE`のREADME参照）。
 
