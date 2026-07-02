@@ -83,8 +83,9 @@ helpdesk-FE/
 │   │   └── config.ts             # 環境変数（.env）を検証し、アプリ全体で使う設定値を定義する
 │   ├── components/               # 再利用可能なUIコンポーネントを置く場所
 │   │   └── ui/                   # Chakra UIをラップした共通UIコンポーネント（color-mode, provider, toaster, tooltip等）
-│   └── assets/                   # 画像などの静的リソース
-├── public/                       # ビルド時にそのまま配信される静的ファイル（favicon, icons等）
+│   └── routes/                   # ルーティング定義を置く場所
+│       └── router.tsx            # react-router-domによるアプリ全体のルーティング設定
+├── public/                       # ビルド時にそのまま配信される静的ファイル（現状ファイルなし）
 ├── .github/                      # GitHub設定（PRテンプレート等）
 ├── index.html                    # アプリのHTMLエントリーポイント
 ├── vite.config.ts                # Viteのビルド・開発サーバー設定
