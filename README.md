@@ -80,14 +80,28 @@ helpdesk-FE/
 │   ├── core/                     # アプリ実行前の前処理（環境変数の検証・設定値の定義など）を置く場所
 │   │   └── config.ts             # 環境変数（.env）を検証し、アプリ全体で使う設定値を定義する
 │   ├── components/               # 再利用可能なUIコンポーネントを置く場所（Atomic Designの考え方をベースに分類）
-│   │   ├── atoms/                # これ以上分割できない最小単位のUIパーツを置く場所（現状ファイルなし）
-│   │   ├── organisms/            # atomsを組み合わせた、特定の役割・意味を持つUIブロックを置く場所
-│   │   │   └── Header.tsx        # 画面共通のヘッダー（現状ファイル内容なし）
+│   │   ├── atoms/                # これ以上分割できない最小単位のUIパーツを置く場所
+│   │   ├── molecules/            # atomsを組み合わせた、小さな機能単位のUIパーツを置く場所
+│   │   ├── organisms/            # atoms・moleculesを組み合わせた、特定の役割・意味を持つUIブロックを置く場所
+│   │   │   └── Header.tsx        # 画面共通のヘッダー
 │   │   ├── templates/            # ページ全体のレイアウト（枠組み）を定義する場所
-│   │   │   └── BaseLayout.tsx    # 共通レイアウト。Header・ページ固有コンテンツ・Toasterの配置を担う（現状ファイル内容なし）
+│   │   │   └── BaseLayout.tsx    # 共通レイアウト。Header・ページ固有コンテンツ・Toasterの配置を担う
+│   │   ├── pages/                # ルーティングに紐づく、各画面単位のコンポーネントを置く場所
 │   │   └── ui/                   # Chakra UIによる自動生成コンポーネント（color-mode, provider, toaster, tooltip等）※追加・削除禁止
+│   ├── features/                 # 機能（画面・ドメイン）単位のコンポーネント・ロジックをまとめる場所
+│   ├── services/                 # APIとの通信処理をまとめる場所
+│   │   ├── base/                 # 通信処理の共通基盤（axiosインスタンスの生成等）を置く場所
+│   │   └── internal/             # 自社バックエンド（helpdesk-BE）のAPIとの通信処理を置く場所
+│   ├── share/                    # 複数のfeatureをまたいで共通利用するロジック・コンポーネント等を置く場所
+│   │   ├── constants/            # 複数箇所で使用する定数を置く場所
+│   │   ├── logic/                # 複数箇所で使用する共通ロジック（関数）を置く場所
+│   │   └── types/                # 複数箇所で使用する型定義を置く場所
 │   └── routes/                   # ルーティング定義を置く場所
 │       └── router.tsx            # react-router-domによるアプリ全体のルーティング設定
+├── tests/                        # テスト実行に関する共通設定・ユーティリティを置く場所
+│   ├── config/                   # テスト実行時の設定ファイルを置く場所
+│   ├── providers/                # テストで使用する共通のProviderコンポーネントを置く場所
+│   └── helper/                   # テストで使用する共通のヘルパー関数を置く場所
 ├── public/                       # ビルド時にそのまま配信される静的ファイル（現状ファイルなし）
 ├── .github/                      # GitHub設定（PRテンプレート等）
 ├── index.html                    # アプリのHTMLエントリーポイント
@@ -115,7 +129,7 @@ helpdesk-FE/
 例（`src/logic/formatDate.ts` のテストを作成する場合）
 
 ```
-src/logic/
+src/share/logic/
 ├── formatDate.ts
 └── __test__/
     └── formatDate.test.ts
