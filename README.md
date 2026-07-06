@@ -319,12 +319,12 @@ VSCodeでは、保存時にPrettierによるコード整形を自動で行う。
 
 以下の拡張機能をインストールしておく。
 
-* ESLint（Microsoft）
-* Prettier - Code formatter（esbenp）
+- ESLint（Microsoft）
+- Prettier - Code formatter（esbenp）
 
 保存時の動作
 
-* Prettierのフォーマットルールに従ってコードを自動整形する
+- Prettierのフォーマットルールに従ってコードを自動整形する
 
 ※ ESLintによるLintエラーの自動修正は保存時には行われないため、[3.3.1](#331-lintエラーを修正する)の手順で修正すること。
 
