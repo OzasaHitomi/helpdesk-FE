@@ -106,15 +106,28 @@ helpdesk-FE/
 │   ├── share/                    # 複数のfeatureをまたいで共通利用するロジック・コンポーネント等を置く場所
 │   │   ├── constants/            # 複数箇所で使用する定数を置く場所
 │   │   ├── logic/                # 複数箇所で使用する共通ロジック（関数）を置く場所
+│   │   │   ├── sample.ts         # 共通ロジックのサンプル実装
+│   │   │   └── __test__/
+│   │   │       └── sample.test.ts # sample.tsのテストコード
 │   │   └── types/                # 複数箇所で使用する型定義を置く場所
-│   └── routes/                   # ルーティング定義を置く場所
-│       └── router.tsx            # react-router-domによるアプリ全体のルーティング設定
-├── tests/                        # テスト実行に関する共通設定・ユーティリティを置く場所
-│   ├── config/                   # テスト実行時の設定ファイルを置く場所
-│   ├── providers/                # テストで使用する共通のProviderコンポーネントを置く場所
-│   └── helper/                   # テストで使用する共通のヘルパー関数を置く場所
+│   ├── routes/                   # ルーティング定義を置く場所
+│   │   └── router.tsx            # react-router-domによるアプリ全体のルーティング設定
+│   └── tests/                    # テスト実行に関する共通設定・ユーティリティを置く場所
+│       ├── setup.ts              # テスト実行前のグローバルセットアップ処理
+│       ├── config/                # テスト実行時の設定ファイルを置く場所
+│       │   └── testQueryClient.ts # テスト用のQueryClientを生成する設定
+│       ├── providers/             # テストで使用する共通のProviderコンポーネントを置く場所
+│       │   └── customRenderProvider.tsx # テスト用にコンポーネントをラップする共通Provider
+│       └── helper/                # テストで使用する共通のヘルパー関数を置く場所
+│           ├── customRender.tsx  # 共通Providerでラップしたrender関数
+│           └── customRenderHook.tsx # 共通Providerでラップしたrender Hook関数
 ├── public/                       # ビルド時にそのまま配信される静的ファイル（現状ファイルなし）
-├── .github/                      # GitHub設定（PRテンプレート等）
+├── .github/                      # GitHub設定
+│   ├── workflows/
+│   │   └── ci.yml                # GitHub ActionsによるCI設定（Lint・Format・単体テストの自動実行）
+│   └── pull_request_template.md  # PR作成時のテンプレート
+├── .vscode/                      # VSCodeのワークスペース設定
+│   └── settings.json             # 保存時のフォーマット等、エディタ共通設定
 ├── index.html                    # アプリのHTMLエントリーポイント
 ├── vite.config.ts                # Viteのビルド・開発サーバー設定
 ├── tsconfig.json                 # TypeScript設定（プロジェクト全体の参照をまとめる）
@@ -122,9 +135,11 @@ helpdesk-FE/
 ├── tsconfig.node.json            # TypeScript設定（Vite等Node実行環境向け）
 ├── eslint.config.js              # ESLintの設定
 ├── .prettierrc                   # Prettierの設定
+├── .gitignore                    # Gitの追跡除外設定
 ├── package.json                  # プロジェクト設定・依存関係定義
 ├── yarn.lock                     # 依存関係のバージョン固定ファイル
-├── .env                          # 環境変数ファイル
+├── .env                          # 環境変数ファイル（開発環境用）
+├── .env.ci                       # 環境変数ファイル（CI実行時の単体テスト用）
 ├── .env.example                  # 環境変数のサンプルファイル
 └── README.md
 ```
