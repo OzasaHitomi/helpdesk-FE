@@ -122,9 +122,11 @@ helpdesk-FE/
 ├── tsconfig.node.json            # TypeScript設定（Vite等Node実行環境向け）
 ├── eslint.config.js              # ESLintの設定
 ├── .prettierrc                   # Prettierの設定
+├── .gitignore                    # Gitの追跡除外設定
 ├── package.json                  # プロジェクト設定・依存関係定義
 ├── yarn.lock                     # 依存関係のバージョン固定ファイル
-├── .env                          # 環境変数ファイル
+├── .env                          # 環境変数ファイル（開発環境用）
+├── .env.ci                       # 環境変数ファイル（CI実行時の単体テスト用）
 ├── .env.example                  # 環境変数のサンプルファイル
 └── README.md
 ```
@@ -319,12 +321,12 @@ VSCodeでは、保存時にPrettierによるコード整形を自動で行う。
 
 以下の拡張機能をインストールしておく。
 
-* ESLint（Microsoft）
-* Prettier - Code formatter（esbenp）
+- ESLint（Microsoft）
+- Prettier - Code formatter（esbenp）
 
 保存時の動作
 
-* Prettierのフォーマットルールに従ってコードを自動整形する
+- Prettierのフォーマットルールに従ってコードを自動整形する
 
 ※ ESLintによるLintエラーの自動修正は保存時には行われないため、[3.3.1](#331-lintエラーを修正する)の手順で修正すること。
 

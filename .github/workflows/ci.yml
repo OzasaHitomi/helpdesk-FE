@@ -1,0 +1,64 @@
+name: frontend CI
+
+# ----------------------------------------
+# ワークフローを実行するタイミング
+# ----------------------------------------
+on:
+  # develop・作業ブランチへpushされた時
+  # （developへのpushはPRマージ時、
+  # feature/fix/docs/hotfixへのpushはPR作成前の早期チェック用）
+  push:
+    branches:
+      - develop
+      - 'feature/**'
+      - 'fix/**'
+      - 'docs/**'
+      - 'hotfix/**'
+
+  # developへのPull Request作成・更新時
+  pull_request:
+    branches:
+      - develop
+
+# ----------------------------------------
+# 実行する処理
+# ----------------------------------------
+jobs:
+  frontend-ci:
+    # Ubuntu環境で実行
+    runs-on: ubuntu-latest
+
+    steps:
+      # リポジトリを取得する
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # Node.jsをインストールする
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 26.4.0
+          cache: yarn
+
+      # package.jsonから依存パッケージをインストール
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # ESLintを実行
+      # コード品質のチェック
+      - name: Run ESLint
+        run: yarn lint
+
+      # Prettierを実行
+      # コードフォーマットが崩れていないか確認
+      - name: Run Prettier
+        run: yarn format
+
+      # .env.ciを.env.test.unitとしてコピー
+      - name: Create .env.test.unit
+        run: |
+          cp .env.ci .env.test.unit
+
+      # 単体テストを実行
+      - name: Run Vitest
+        run: yarn test
