@@ -14,7 +14,7 @@ export const Header = () => {
               {/* ↓もともとh2の要素 */}
               {/* ↓文字サイズもブレークポイントごとに変化させ、画面幅との比率を保つ */}
               <Heading size={{ base: 'lg', sm: 'xl', md: '2xl' }} as={'h1'} color={'gray.500'}>
-                XXX HELPDESK
+                Novel HELPDESK
               </Heading>
               <Spacer />
               {/* 右側に複数要素を並べる場合、それらをまとめる HStack spacing={...} などでグループ化しておくと、要素間の間隔調整がしやすくなる */}

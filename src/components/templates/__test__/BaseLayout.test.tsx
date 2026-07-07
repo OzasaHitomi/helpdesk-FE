@@ -15,7 +15,7 @@ describe('BaseLayout', () => {
         </Routes>,
       )
       // 期待するものを書く
-      expect(screen.getByRole('heading', { name: 'XXX HELPDESK' })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Novel HELPDESK' })).toBeInTheDocument()
     })
 
     it('Outletに指定した子ルートの内容が表示されること', () => {

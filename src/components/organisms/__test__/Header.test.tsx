@@ -9,7 +9,7 @@ describe('Header', () => {
     it('Headerが表示されること', () => {
       customRender(<Header />)
       // 期待するものを書く
-      expect(screen.getByRole('heading', { name: 'XXX HELPDESK' })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Novel HELPDESK' })).toBeInTheDocument()
     })
   })
 })
