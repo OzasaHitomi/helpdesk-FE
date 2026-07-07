@@ -5,21 +5,20 @@ import { screen } from '@testing-library/react'
 
 // 子コンポーネントをすべてモック化する
 vi.mock('@/components/organisms/Header', () => ({
-  Header: () => <div data-testid="mock-header" />
+  Header: () => <div data-testid='mock-header' />,
 }))
 
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>()
   return {
     ...actual,
-    Outlet: () => <div data-testid="mock-outlet" />
+    Outlet: () => <div data-testid='mock-outlet' />,
   }
 })
 
 vi.mock('../../ui/toaster', () => ({
-  Toaster: () => <div data-testid="mock-toaster" />
+  Toaster: () => <div data-testid='mock-toaster' />,
 }))
-
 
 // ------------------------------------------------------------------
 
@@ -39,9 +38,9 @@ describe('BaseLayout', () => {
     })
   })
 
-   it('Toasterが表示されること', () => {
-      customRender(<BaseLayout />)
-      // 期待するものを書く
-      expect(screen.getByTestId('mock-toaster')).toBeInTheDocument()
-    })
+  it('Toasterが表示されること', () => {
+    customRender(<BaseLayout />)
+    // 期待するものを書く
+    expect(screen.getByTestId('mock-toaster')).toBeInTheDocument()
+  })
 })
