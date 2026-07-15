@@ -18,8 +18,8 @@ export const useLoginHandler = () => {
     setErrorMessage(null)
 
     try {
-      await mutateAsync(data)   // ログインAPIを呼ぶ
-      void navigate('/')        // ログイン成功したらトップページ（'/'）に移動する
+      await mutateAsync(data) // ログインAPIを呼ぶ
+      void navigate('/') // ログイン成功したらトップページ（'/'）に移動する
     } catch (e) {
       // 401(メールアドレス/パスワード不一致)・403(利用停止中)はBEが{ detail: string }で理由を返すためそのまま画面表示に使う
       // 422(バリデーションエラー)はdetailが配列になるため、その場合は汎用メッセージにフォールバックする
