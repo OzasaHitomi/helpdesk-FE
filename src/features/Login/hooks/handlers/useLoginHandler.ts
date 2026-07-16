@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useLoginMutation } from '../mutations/useLoginMutation'
 import { type LoginForm } from '../../types/LoginForm'
-import { loginFormSchema } from '@/core/loginFormSchema'
+import { loginFormSchema } from '../../schemas/loginFormSchema'
 
 export const useLoginHandler = () => {
   const { mutateAsync } = useLoginMutation()
