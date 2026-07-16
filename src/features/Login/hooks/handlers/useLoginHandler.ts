@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useLoginMutation } from '../mutations/useLoginMutation'
 import { type LoginForm } from '../../types/LoginForm'
+import { loginFormSchema } from '@/core/loginFormSchema'
 
 export const useLoginHandler = () => {
   const { mutateAsync } = useLoginMutation()
@@ -16,6 +17,12 @@ export const useLoginHandler = () => {
 
   const onSubmitLogin = async (data: LoginForm) => {
     setErrorMessage(null)
+
+    const parsed = loginFormSchema.safeParse(data)
+    if (!parsed.success) {
+      setErrorMessage(parsed.error.issues.map((issue) => issue.message).join('\n'))
+      return
+    }
 
     try {
       await mutateAsync(data) // ログインAPIを呼ぶ

@@ -20,7 +20,7 @@ describe('LoginPresentational', () => {
           handlers={{ onSubmitLogin: mockOnSubmitLogin, setLoginForm: mockSetLoginForm }}
         />,
       )
-      expect(screen.getByText('Novel Helpdesk')).toBeInTheDocument()
+      expect(screen.getByText('Novel HELPDESK')).toBeInTheDocument()
     })
 
     it('渡されたloginFormの値がEmail/Passwordの入力欄に表示されること', () => {

@@ -1,5 +1,6 @@
 import { Box, Button, Card, Container, Field, Input, Stack, Text } from '@chakra-ui/react'
 import { type LoginForm } from '../types/LoginForm'
+import { SYSTEM_NAME } from '@/share/constants/business/systemName'
 
 interface LoginPresentationalProps {
   data: {
@@ -19,7 +20,7 @@ export const LoginPresentational = ({ data, handlers }: LoginPresentationalProps
         <Card.Root w={'100%'} maxW={'560px'} bg={'gray.100'} borderRadius={'32px'}>
           <Card.Header px={10} pt={8}>
             <Card.Title fontSize={'lg'} textAlign={'center'}>
-              Novel Helpdesk
+              {SYSTEM_NAME}
             </Card.Title>
           </Card.Header>
 
@@ -68,7 +69,7 @@ export const LoginPresentational = ({ data, handlers }: LoginPresentationalProps
               </Box>
 
               {data.errorMessage && (
-                <Text color={'red.500'} fontSize={'sm'}>
+                <Text color={'red.500'} fontSize={'sm'} whiteSpace={'pre-line'}>
                   {data.errorMessage}
                 </Text>
               )}

@@ -21,7 +21,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
   }
 })
 
-const mockForm: LoginForm = { email: 'test@example.com', password: 'password123' }
+const mockForm: LoginForm = { email: 'test@example.com', password: 'Password123' }
 
 describe('useLoginHandler', () => {
   afterEach(() => {
@@ -125,6 +125,64 @@ describe('useLoginHandler', () => {
       })
 
       expect(result.current.data.errorMessage).toBe('ログインに失敗しました')
+      expect(mockNavigate).not.toHaveBeenCalled()
+    })
+  })
+
+  // ── FEバリデーション ────────────────────────────────────────────────────
+  describe('FEバリデーション', () => {
+    it('メールアドレスが未入力の場合、専用メッセージが設定されmutateAsyncが呼ばれないこと', async () => {
+      const { result } = customRenderHook(() => useLoginHandler())
+
+      await act(async () => {
+        await result.current.handlers.onSubmitLogin({ email: '', password: 'Password123' })
+      })
+
+      expect(result.current.data.errorMessage).toBe('メールアドレスを入力してください')
+      expect(mockMutateAsync).not.toHaveBeenCalled()
+      expect(mockNavigate).not.toHaveBeenCalled()
+    })
+
+    it('メールアドレスの形式が不正な場合、専用メッセージが設定されmutateAsyncが呼ばれないこと', async () => {
+      const { result } = customRenderHook(() => useLoginHandler())
+
+      await act(async () => {
+        await result.current.handlers.onSubmitLogin({
+          email: 'invalid-email',
+          password: 'Password123',
+        })
+      })
+
+      expect(result.current.data.errorMessage).toBe('メールアドレスの形式が正しくありません')
+      expect(mockMutateAsync).not.toHaveBeenCalled()
+    })
+
+    it('パスワードが未入力の場合、専用メッセージが設定されmutateAsyncが呼ばれないこと', async () => {
+      const { result } = customRenderHook(() => useLoginHandler())
+
+      await act(async () => {
+        await result.current.handlers.onSubmitLogin({ email: 'test@example.com', password: '' })
+      })
+
+      expect(result.current.data.errorMessage).toBe('パスワードを入力してください')
+      expect(mockMutateAsync).not.toHaveBeenCalled()
+    })
+
+    it('パスワードが複数のルールに違反している場合、違反している全てのメッセージが改行区切りで設定されること', async () => {
+      const { result } = customRenderHook(() => useLoginHandler())
+
+      await act(async () => {
+        await result.current.handlers.onSubmitLogin({ email: 'test@example.com', password: 'abc' })
+      })
+
+      expect(result.current.data.errorMessage).toBe(
+        [
+          'パスワードは8文字以上で入力してください',
+          'パスワードは大文字を含めてください',
+          'パスワードは数字を含めてください',
+        ].join('\n'),
+      )
+      expect(mockMutateAsync).not.toHaveBeenCalled()
       expect(mockNavigate).not.toHaveBeenCalled()
     })
   })
