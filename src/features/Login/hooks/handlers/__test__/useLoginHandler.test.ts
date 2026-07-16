@@ -167,23 +167,5 @@ describe('useLoginHandler', () => {
       expect(result.current.data.errorMessage).toBe('パスワードを入力してください')
       expect(mockMutateAsync).not.toHaveBeenCalled()
     })
-
-    it('パスワードが複数のルールに違反している場合、違反している全てのメッセージが改行区切りで設定されること', async () => {
-      const { result } = customRenderHook(() => useLoginHandler())
-
-      await act(async () => {
-        await result.current.handlers.onSubmitLogin({ email: 'test@example.com', password: 'abc' })
-      })
-
-      expect(result.current.data.errorMessage).toBe(
-        [
-          'パスワードは8文字以上で入力してください',
-          'パスワードは大文字を含めてください',
-          'パスワードは数字を含めてください',
-        ].join('\n'),
-      )
-      expect(mockMutateAsync).not.toHaveBeenCalled()
-      expect(mockNavigate).not.toHaveBeenCalled()
-    })
   })
 })

@@ -31,9 +31,7 @@ describe('LoginPresentational', () => {
         />,
       )
       expect(screen.getByPlaceholderText('sample@example.com')).toHaveValue('test@example.com')
-      expect(screen.getByPlaceholderText('8文字以上（数字・大文字を含む）')).toHaveValue(
-        'password123',
-      )
+      expect(screen.getByPlaceholderText('password')).toHaveValue('password123')
     })
 
     it('Emailの入力欄を変更するとsetLoginFormがpasswordを保持したまま呼ばれること', () => {
@@ -59,7 +57,7 @@ describe('LoginPresentational', () => {
           handlers={{ onSubmitLogin: mockOnSubmitLogin, setLoginForm: mockSetLoginForm }}
         />,
       )
-      fireEvent.change(screen.getByPlaceholderText('8文字以上（数字・大文字を含む）'), {
+      fireEvent.change(screen.getByPlaceholderText('password'), {
         target: { value: 'newPassword456' },
       })
       expect(mockSetLoginForm).toHaveBeenCalledWith({

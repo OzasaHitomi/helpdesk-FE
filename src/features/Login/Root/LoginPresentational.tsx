@@ -45,7 +45,7 @@ export const LoginPresentational = ({ data, handlers }: LoginPresentationalProps
                     <Field.Label>Pass</Field.Label>
                     <Input
                       type='password'
-                      placeholder='8文字以上（数字・大文字を含む）'
+                      placeholder='password'
                       borderRadius={'12px'}
                       value={data.loginForm.password}
                       onChange={(e) => {
