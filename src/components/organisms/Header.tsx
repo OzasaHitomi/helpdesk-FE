@@ -1,4 +1,4 @@
-import { Box, Container, HStack, Spacer, Heading, Link } from '@chakra-ui/react'
+import { Box, Container, HStack, Spacer, Heading, Link, Text } from '@chakra-ui/react'
 import { SYSTEM_NAME } from '@/share/constants/business/systemName'
 
 export const Header = () => {
@@ -19,8 +19,15 @@ export const Header = () => {
                 </Link>
               </Heading>
               <Spacer />
-              {/* 右側に複数要素を並べる場合、それらをまとめる HStack spacing={...} などでグループ化しておくと、要素間の間隔調整がしやすくなる */}
-              {/* ここに右側要素を追加していく */}
+              {/* 右側要素をまとめるHStack。将来的に社員/サポート担当は「Ticket Logout」、管理者は「Account | Ticket Logout」を表示する想定 */}
+              <HStack gap={{ base: 4, md: 8 }}>
+                {/* ↓Ticketクリックでチケット一覧のTopページ（'/'）に遷移する。システム名クリック時と同様の遷移方法 */}
+                <Link href={'/'} _hover={{ textDecoration: 'none' }}>
+                  <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} color={'gray.500'}>
+                    Ticket
+                  </Text>
+                </Link>
+              </HStack>
             </HStack>
           </Container>
         </Box>

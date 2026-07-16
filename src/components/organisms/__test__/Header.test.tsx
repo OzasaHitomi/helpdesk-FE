@@ -17,5 +17,15 @@ describe('Header', () => {
       customRender(<Header />)
       expect(screen.getByRole('link', { name: SYSTEM_NAME })).toHaveAttribute('href', '/')
     })
+
+    it('Ticketが表示されること', () => {
+      customRender(<Header />)
+      expect(screen.getByText('Ticket')).toBeInTheDocument()
+    })
+
+    it('Ticketのリンク先がTopページ（/）であること', () => {
+      customRender(<Header />)
+      expect(screen.getByRole('link', { name: 'Ticket' })).toHaveAttribute('href', '/')
+    })
   })
 })
