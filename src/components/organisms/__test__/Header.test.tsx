@@ -27,7 +27,7 @@ describe('Header', () => {
       expect(screen.getByRole('heading', { name: 'Novel HELPDESK' })).toBeInTheDocument()
     })
 
-    it('システム名をクリックした場合、Topページ（\'/\'）に遷移すること', () => {
+    it("システム名をクリックした場合、Topページ（'/'）に遷移すること", () => {
       customRender(<Header />)
 
       fireEvent.click(screen.getByRole('heading', { name: 'Novel HELPDESK' }))
