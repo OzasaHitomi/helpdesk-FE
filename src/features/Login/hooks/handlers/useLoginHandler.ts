@@ -4,7 +4,6 @@ import axios from 'axios'
 import { useLoginMutation } from '../mutations/useLoginMutation'
 import { type LoginForm, loginFormSchema } from '../../types/LoginForm'
 
-
 export const useLoginHandler = () => {
   const { mutateAsync } = useLoginMutation()
   const navigate = useNavigate()

@@ -8,10 +8,8 @@ export const loginFormSchema = z.object({
     .string()
     .min(1, { message: 'メールアドレスを入力してください', abort: true })
     .regex(EMAIL_PATTERN, 'メールアドレスの形式が正しくありません'),
-  password: z
-    .string()
-    .min(1, { message: 'パスワードを入力してください', abort: true })
+  password: z.string().min(1, { message: 'パスワードを入力してください', abort: true }),
 })
 
 // loginFormSchemaから型を推論し、フォームの型とバリデーションルールが乖離しないようにする
-export type LoginForm = z.infer<typeof loginFormSchema>;
+export type LoginForm = z.infer<typeof loginFormSchema>
