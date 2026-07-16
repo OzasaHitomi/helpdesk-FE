@@ -1,5 +1,6 @@
 import { LoginPresentational } from '../LoginPresentational'
 import { customRender } from '@/tests/helpers/customRender'
+import { SYSTEM_NAME } from '@/share/constants/business/systemName'
 import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
 import { type LoginForm } from '../../types/LoginForm'
@@ -20,7 +21,7 @@ describe('LoginPresentational', () => {
           handlers={{ onSubmitLogin: mockOnSubmitLogin, setLoginForm: mockSetLoginForm }}
         />,
       )
-      expect(screen.getByText('Novel HELPDESK')).toBeInTheDocument()
+      expect(screen.getByText(SYSTEM_NAME)).toBeInTheDocument()
     })
 
     it('渡されたloginFormの値がEmail/Passwordの入力欄に表示されること', () => {
