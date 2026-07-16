@@ -1,5 +1,4 @@
 import { Box, Container, HStack, Spacer, Heading, Link } from '@chakra-ui/react'
-import { Link as RouterLink } from 'react-router-dom'
 import { SYSTEM_NAME } from '@/share/constants/business/systemName'
 
 export const Header = () => {
@@ -15,8 +14,8 @@ export const Header = () => {
               {/* ↓文字サイズもブレークポイントごとに変化させ、画面幅との比率を保つ */}
               <Heading size={{ base: 'lg', sm: 'xl', md: '2xl' }} as={'h1'} color={'gray.500'}>
                 {/* ↓システム名クリックでTopページ（チケット一覧, '/'）に遷移する。アカウントタイプによる遷移先の分岐は無し */}
-                <Link asChild _hover={{ textDecoration: 'none' }}>
-                  <RouterLink to={'/'}>{SYSTEM_NAME}</RouterLink>
+                <Link href={'/'} _hover={{ textDecoration: 'none' }}>
+                  {SYSTEM_NAME}
                 </Link>
               </Heading>
               <Spacer />
