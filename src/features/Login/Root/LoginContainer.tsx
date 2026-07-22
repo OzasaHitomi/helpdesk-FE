@@ -1,5 +1,5 @@
 import { LoginPresentational } from './LoginPresentational'
-import { useLoginHandler } from '../hooks/handlers/useLoginHandler'
+import { useLoginHandler } from './hooks/handlers/useLoginHandler'
 
 export const LoginContainer = () => {
   const { data, handlers } = useLoginHandler()
