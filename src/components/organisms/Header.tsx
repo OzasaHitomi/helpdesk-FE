@@ -27,6 +27,10 @@ export const Header = () => {
                     Ticket
                   </Text>
                 </Link>
+                {/* ↓BEのログアウト機能がレビュー中のため、表示のみ追加。機能実装は別途対応 */}
+                <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} color={'gray.500'}>
+                  Logout
+                </Text>
               </HStack>
             </HStack>
           </Container>

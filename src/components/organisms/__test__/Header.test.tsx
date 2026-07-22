@@ -27,5 +27,10 @@ describe('Header', () => {
       customRender(<Header />)
       expect(screen.getByRole('link', { name: 'Ticket' })).toHaveAttribute('href', '/')
     })
+
+    it('Logoutが表示されること', () => {
+      customRender(<Header />)
+      expect(screen.getByText('Logout')).toBeInTheDocument()
+    })
   })
 })
