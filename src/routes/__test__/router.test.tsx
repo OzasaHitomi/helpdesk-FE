@@ -21,6 +21,14 @@ vi.mock('@/features/Root/RootContainer', () => ({
   RootContainer: () => <div data-testid='mocked-root-container' />,
 }))
 
+vi.mock('@/routes/RequireAuth', () => ({
+  RequireAuth: () => (
+    <div data-testid='mocked-require-auth'>
+      <Outlet />
+    </div>
+  ),
+}))
+
 const renderAppRouter = (initialEntry: string) => {
   return render(
     <MemoryRouter initialEntries={[initialEntry]}>
@@ -31,21 +39,24 @@ const renderAppRouter = (initialEntry: string) => {
 
 describe('AppRouter', () => {
   describe('正常系', () => {
-    it('/にアクセスした場合、BaseLayoutを経由してRootContainerが表示されること', () => {
+    it('/にアクセスした場合、RequireAuth・BaseLayoutを経由してRootContainerが表示されること', () => {
       renderAppRouter('/')
+      expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-root-container')).toBeInTheDocument()
     })
 
-    it('/login配下にアクセスした場合、LoginRouteが表示されること', () => {
+    it('/login配下にアクセスした場合、RequireAuthを経由せずLoginRouteが表示されること', () => {
       renderAppRouter('/login')
       expect(screen.getByTestId('mocked-login-route')).toBeInTheDocument()
+      expect(screen.queryByTestId('mocked-require-auth')).not.toBeInTheDocument()
     })
   })
 
   describe('準正常系', () => {
-    it('定義されていないパスにアクセスした場合、BaseLayoutを経由して404 Not Foundが表示されること', () => {
+    it('定義されていないパスにアクセスした場合、RequireAuth・BaseLayoutを経由して404 Not Foundが表示されること', () => {
       renderAppRouter('/unknown-path')
+      expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
       expect(screen.getByText('404 Not Found')).toBeInTheDocument()
     })
