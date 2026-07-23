@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useMeQuery } from '@/share/hooks/queries/useMeQuery'
-import { LoadingSpinner } from '@/components/atoms/LoadingSpinner'
+import { LoadingSpinner } from '@/components/pages/LoadingSpinner'
 
 // 配下のルートを表示する前に、GET /auth/meでセッション（Cookie）が有効か確認するゲート役
 // 有効なら配下の画面（Outlet）を表示し、無効（401）なら/loginへリダイレクトする
