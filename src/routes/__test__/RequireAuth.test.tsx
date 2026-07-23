@@ -21,7 +21,7 @@ vi.mock('@/share/hooks/queries/useMeQuery', () => ({
 
 const renderRequireAuth = (initialEntry: string) => {
   return render(
-    // isLoading時にLoadingSpinner（Chakra UIのSpinner）を描画するが、
+    // isLoading時にLoadingPage（Chakra UIのSpinner）を描画するが、
     // ChakraのコンポーネントはuseContextでテーマ設定を読むため、
     // ここで囲っていないと「ChakraProviderが無い」というエラーになる
     <ChakraUIProvider>

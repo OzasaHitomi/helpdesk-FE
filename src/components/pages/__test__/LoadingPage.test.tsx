@@ -1,12 +1,12 @@
-import { LoadingSpinner } from '../LoadingSpinner'
+import { LoadingPage } from '../LoadingPage'
 import { customRender } from '@/tests/helpers/customRender'
 import { describe, it, expect } from 'vitest'
 import { screen } from '@testing-library/react'
 
-describe('LoadingSpinner', () => {
+describe('LoadingPage', () => {
   describe('正常系', () => {
     it('spinnerが表示されること', () => {
-      customRender(<LoadingSpinner />)
+      customRender(<LoadingPage />)
       expect(screen.getByRole('status')).toBeInTheDocument()
     })
   })
