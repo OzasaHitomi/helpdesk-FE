@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { getMe } from '@/services/internal/backend/v1/auth'
+import { authQueryKeys } from './queryKeys'
 
 // 保護されたページ（RequireAuth配下）が表示される度に実行され、
 // 今のCookieがログイン済みとして有効かどうかをGET /auth/meで確認する
 export const useMeQuery = () => {
   return useQuery({
-    queryKey: ['me'],
+    queryKey: authQueryKeys.me,
     queryFn: getMe,
     // 401はリトライしても結果が変わらないため再試行しない
     retry: false,
