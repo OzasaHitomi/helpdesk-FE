@@ -1,5 +1,5 @@
 import { Box, Button, Card, Container, Field, Input, Stack, Text } from '@chakra-ui/react'
-import { type LoginForm } from '../types/LoginForm'
+import { type LoginForm } from './types/LoginForm'
 import { SYSTEM_NAME } from '@/share/constants/business/systemName'
 
 interface LoginPresentationalProps {

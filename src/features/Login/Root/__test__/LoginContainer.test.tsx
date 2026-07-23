@@ -2,7 +2,7 @@ import { LoginContainer } from '../LoginContainer'
 import { customRender } from '@/tests/helpers/customRender'
 import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
-import { type LoginForm } from '../../types/LoginForm'
+import { type LoginForm } from '../types/LoginForm'
 
 // ContainerがuseLoginHandlerの結果をPresentationalに正しく橋渡しできているかのみをテストする
 // （フォームの見た目や入力イベントの中身はLoginPresentational.test.tsx、
@@ -12,7 +12,7 @@ const mockLoginForm: LoginForm = { email: 'test@example.com', password: 'passwor
 const mockOnSubmitLogin = vi.fn()
 const mockSetLoginForm = vi.fn()
 
-vi.mock('../../hooks/handlers/useLoginHandler', () => ({
+vi.mock('../hooks/handlers/useLoginHandler', () => ({
   useLoginHandler: () => ({
     data: { loginForm: mockLoginForm, errorMessage: 'テストエラー' },
     handlers: { onSubmitLogin: mockOnSubmitLogin, setLoginForm: mockSetLoginForm },
