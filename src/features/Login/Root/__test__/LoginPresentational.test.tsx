@@ -3,7 +3,7 @@ import { customRender } from '@/tests/helpers/customRender'
 import { SYSTEM_NAME } from '@/share/constants/business/systemName'
 import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
-import { type LoginForm } from '../../types/LoginForm'
+import { type LoginForm } from '../types/LoginForm'
 
 // LoginPresentationalの表示内容と、ユーザー操作時にhandlersが正しい引数で呼ばれるかのみをテストする
 // （ログイン成功/失敗時の挙動やエラーメッセージの生成ロジックはuseLoginHandler.test.tsが担保する）
