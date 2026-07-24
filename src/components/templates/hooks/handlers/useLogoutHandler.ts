@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { useLogoutMutation } from '../mutations/useLogoutMutation'
+import { useLogoutMutation } from '@/share/hooks/mutations/useLogoutMutation'
 import { authQueryKeys } from '@/share/hooks/queries/queryKeys'
 import { toaster } from '@/components/ui/toaster'
 

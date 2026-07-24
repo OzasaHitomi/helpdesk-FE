@@ -14,7 +14,7 @@ const { mockMutateAsync, mockNavigate, mockRemoveQueries, mockToasterCreate } = 
   mockToasterCreate: vi.fn(),
 }))
 
-vi.mock('../../mutations/useLogoutMutation', () => ({
+vi.mock('@/share/hooks/mutations/useLogoutMutation', () => ({
   useLogoutMutation: () => ({ mutateAsync: mockMutateAsync, isPending: false }),
 }))
 
