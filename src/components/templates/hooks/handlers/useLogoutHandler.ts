@@ -24,6 +24,7 @@ export const useLogoutHandler = () => {
       toaster.create({ type: 'success', title: 'ログアウトしました' })
     } catch {
       // ログアウト失敗時は画面を変えず、再度ボタンを押せる状態のままにする
+      toaster.create({ type: 'error', title: 'ログアウトに失敗しました' })
     }
   }
 

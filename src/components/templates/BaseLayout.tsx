@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { Header } from '@/components/organisms/Header'
-import { useLogoutHandler } from '@/share/hooks/handlers/useLogoutHandler'
+import { useLogoutHandler } from './hooks/handlers/useLogoutHandler'
 
 export const BaseLayout = () => {
   const { data, handlers } = useLogoutHandler()

@@ -63,7 +63,7 @@ describe('useLogoutHandler', () => {
   })
 
   describe('異常系', () => {
-    it('ログアウトに失敗した場合、キャッシュ破棄・画面遷移・トーストのいずれも行われないこと', async () => {
+    it('ログアウトに失敗した場合、キャッシュ破棄・画面遷移は行わず、失敗トーストを出すこと', async () => {
       mockMutateAsync.mockRejectedValueOnce(new Error('failed'))
       const { result } = customRenderHook(() => useLogoutHandler())
 
@@ -74,7 +74,10 @@ describe('useLogoutHandler', () => {
       expect(mockMutateAsync).toHaveBeenCalled()
       expect(mockRemoveQueries).not.toHaveBeenCalled()
       expect(mockNavigate).not.toHaveBeenCalled()
-      expect(mockToasterCreate).not.toHaveBeenCalled()
+      expect(mockToasterCreate).toHaveBeenCalledWith({
+        type: 'error',
+        title: 'ログアウトに失敗しました',
+      })
     })
   })
 })
