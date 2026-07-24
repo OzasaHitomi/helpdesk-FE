@@ -14,3 +14,8 @@ export const getMe = async (): Promise<GetMeResponse> => {
   const { data } = await internalBackendV1Client.get<GetMeResponse>(`${COMMON_URL}/me`)
   return data
 }
+
+// 成功時は204 No Content（Cookieのアクセストークンが削除される）。未ログインの場合は401
+export const postLogout = async (): Promise<void> => {
+  await internalBackendV1Client.post(`${COMMON_URL}/logout`)
+}

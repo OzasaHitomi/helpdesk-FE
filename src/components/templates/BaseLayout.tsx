@@ -1,13 +1,17 @@
 import { Outlet } from 'react-router-dom'
 import { Header } from '@/components/organisms/Header'
-import { Toaster } from '../ui/toaster'
+import { useLogoutHandler } from '@/share/hooks/handlers/useLogoutHandler'
 
 export const BaseLayout = () => {
+  const { data, handlers } = useLogoutHandler()
+
   return (
     <>
-      <Header />
+      <Header
+        data={{ isLoggingOut: data.isLoggingOut }}
+        handlers={{ onLogout: handlers.onLogout }}
+      />
       <Outlet />
-      <Toaster />
     </>
   )
 }
