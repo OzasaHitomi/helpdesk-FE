@@ -1,7 +1,16 @@
-import { Box, Container, HStack, Spacer, Heading, Link, Text } from '@chakra-ui/react'
+import { Box, Container, HStack, Spacer, Heading, Link, Text, Button } from '@chakra-ui/react'
 import { SYSTEM_NAME } from '@/share/constants/business/systemName'
 
-export const Header = () => {
+interface HeaderProps {
+  data: {
+    isLoggingOut: boolean
+  }
+  handlers: {
+    onLogout: () => Promise<void>
+  }
+}
+
+export const Header = ({ data, handlers }: HeaderProps) => {
   return (
     <>
       <header>
@@ -27,6 +36,23 @@ export const Header = () => {
                     Ticket
                   </Text>
                 </Link>
+                {/* ↓Logoutはページ遷移ではなく処理（ログアウトAPI呼び出し）を実行するため、Linkではなく処理実行用のButtonを使う */}
+                <Button
+                  variant={'plain'} // ↓ボタンの装飾(背景色や枠線)を消して、文字だけのシンプルな見た目にする
+                  h={'auto'} // ↓高さをボタンの既定値でなく中身の文字サイズに合わせる
+                  p={0} // ↓内側の余白をなくし、隣のTicketリンクと見た目を揃える
+                  fontWeight={'normal'} // ↓ボタンの太字表示をやめて、隣のTicketリンクと同じ太さにする
+                  fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} // ↓画面幅に応じて文字サイズを変える
+                  color={'gray.500'} // ↓文字色を隣のTicketリンクと揃える
+                  // ↓ログアウト処理中は連打できないようボタンを無効化する
+                  // （連打を許すとログアウトAPIが複数回呼ばれ、画面遷移やトースト表示が重複する恐れがあるため）
+                  disabled={data.isLoggingOut}
+                  onClick={() => {
+                    void handlers.onLogout() // ↓クリックでログアウト処理を実行する
+                  }}
+                >
+                  Logout
+                </Button>
               </HStack>
             </HStack>
           </Container>

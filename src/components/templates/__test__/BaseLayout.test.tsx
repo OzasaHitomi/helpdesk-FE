@@ -1,11 +1,25 @@
 import { BaseLayout } from '../BaseLayout'
+import { Header } from '@/components/organisms/Header'
 import { customRender } from '@/tests/helpers/customRender'
 import { describe, it, expect, vi } from 'vitest'
 import { screen } from '@testing-library/react'
 
-// 子コンポーネントをすべてモック化する
+// BaseLayoutがuseLogoutHandlerの結果をHeaderに正しく橋渡しできているかのみをテストする
+// （Headerの見た目や入力イベントの中身はHeader.test.tsx、
+//   ログアウト処理・エラー処理のロジックはuseLogoutHandler.test.tsが担保する）
+
+const mockOnLogout = vi.fn()
+
+vi.mock('../hooks/handlers/useLogoutHandler', () => ({
+  useLogoutHandler: () => ({
+    data: { isLoggingOut: false },
+    handlers: { onLogout: mockOnLogout },
+  }),
+}))
+
+// Header自体の見た目はテスト対象外のため、受け取ったPropsのみ検証できればよい
 vi.mock('@/components/organisms/Header', () => ({
-  Header: () => <div data-testid='mock-header' />,
+  Header: vi.fn(() => null),
 }))
 
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -16,31 +30,31 @@ vi.mock('react-router-dom', async (importOriginal) => {
   }
 })
 
-vi.mock('../../ui/toaster', () => ({
-  Toaster: () => <div data-testid='mock-toaster' />,
-}))
+const mockHeader = vi.mocked(Header)
 
 // ------------------------------------------------------------------
 
-// テスト内容
 describe('BaseLayout', () => {
   describe('正常系', () => {
-    it('Headerが表示されること', () => {
-      customRender(<BaseLayout />)
-      // 期待するものを書く
-      expect(screen.getByTestId('mock-header')).toBeInTheDocument()
-    })
-
     it('Outletが表示されること', () => {
       customRender(<BaseLayout />)
-      // 期待するものを書く
       expect(screen.getByTestId('mock-outlet')).toBeInTheDocument()
     })
-  })
 
-  it('Toasterが表示されること', () => {
-    customRender(<BaseLayout />)
-    // 期待するものを書く
-    expect(screen.getByTestId('mock-toaster')).toBeInTheDocument()
+    it('BaseLayoutがuseLogoutHandlerのdataをHeaderにそのまま渡すこと', () => {
+      customRender(<BaseLayout />)
+      expect(mockHeader).toHaveBeenCalledWith(
+        expect.objectContaining({ data: { isLoggingOut: false } }),
+        undefined,
+      )
+    })
+
+    it('BaseLayoutがuseLogoutHandlerのonLogoutをHeaderにそのまま渡すこと', () => {
+      customRender(<BaseLayout />)
+      expect(mockHeader).toHaveBeenCalledWith(
+        expect.objectContaining({ handlers: { onLogout: mockOnLogout } }),
+        undefined,
+      )
+    })
   })
 })
