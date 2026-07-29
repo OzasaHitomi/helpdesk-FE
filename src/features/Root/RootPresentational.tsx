@@ -1,6 +1,7 @@
 import { HStack, Heading } from '@chakra-ui/react'
 import { CreateTicketDialog } from './ui/CreateTicketDialog'
 import { type CreateTicketForm } from './types/CreateTicketForm'
+import { type TicketFieldErrors } from '@/features/Root/types/TicketFieldErrors'
 import { type UserRole } from '@/share/types/userRole'
 
 interface RootPresentationalProps {
@@ -8,7 +9,7 @@ interface RootPresentationalProps {
     role: UserRole | undefined
     ticketForm: CreateTicketForm
     isDialogOpen: boolean
-    errorMessage: string | null
+    fieldErrors: TicketFieldErrors
   }
   uiState: {
     isSubmitting: boolean
@@ -34,7 +35,7 @@ export const RootPresentational = ({ data, uiState, handlers }: RootPresentation
           data={{
             ticketForm: data.ticketForm,
             isDialogOpen: data.isDialogOpen,
-            errorMessage: data.errorMessage,
+            fieldErrors: data.fieldErrors,
           }}
           uiState={{ isSubmitting: uiState.isSubmitting }}
           handlers={{

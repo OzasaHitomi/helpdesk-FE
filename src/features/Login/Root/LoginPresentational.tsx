@@ -56,7 +56,7 @@ export const LoginPresentational = ({ data, handlers }: LoginPresentationalProps
 
                   <Button
                     w={'100%'}
-                    bg={'#85d147'}
+                    bg={'green.400'}
                     color={'white'}
                     fontWeight={'bold'}
                     onClick={() => {

@@ -1,10 +1,10 @@
 import { createTicket } from '../ticket'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { type CreateTicketRequest } from '@/services/internal/backend/v1/types/request/ticket'
-import { type CreateTicketResponseJson } from '@/services/internal/backend/v1/types/response/ticket'
+import { type CreateTicketResponse } from '@/services/internal/backend/v1/types/response/ticket'
 
-// internalBackendV1Client（axiosクライアント）をモックし、createTicketがBEのレスポンス(snake_case)を
-// FE用の型(camelCase)へ正しく変換できているかのみをテストする（実際の通信処理自体はテストしない）
+// internalBackendV1Client（axiosクライアント）をモックし、createTicketがBEのレスポンスをそのまま返せているかをテストする
+// （実際の通信処理自体はテストしない）
 // ※vi.mockはファイル先頭に巻き上げられるため、参照するモック関数はvi.hoistedで用意する
 const { mockPost } = vi.hoisted(() => ({
   mockPost: vi.fn(),
@@ -22,14 +22,14 @@ const mockRequest: CreateTicketRequest = {
   visibility: 'private',
 }
 
-const mockResponseJson: CreateTicketResponseJson = {
+const mockResponse: CreateTicketResponse = {
   id: 1,
   title: mockRequest.title,
   detail: mockRequest.detail,
   visibility: mockRequest.visibility,
   status: 'new_question',
-  created_by_user_id: 1,
-  support_user_id: null,
+  createdByUserId: 1,
+  supportUserId: null,
 }
 
 describe('createTicket', () => {
@@ -39,25 +39,17 @@ describe('createTicket', () => {
 
   // ── 正常系 ────────────────────────────────────────────────────────────────
   describe('正常系', () => {
-    it('POST /ticketsを正しい引数で呼び、レスポンスのsnake_caseフィールドをcamelCaseに変換して返すこと', async () => {
-      mockPost.mockResolvedValueOnce({ data: mockResponseJson })
+    it('POST /ticketsを正しい引数で呼び、レスポンスをそのまま返すこと', async () => {
+      mockPost.mockResolvedValueOnce({ data: mockResponse })
 
       const result = await createTicket(mockRequest)
 
       expect(mockPost).toHaveBeenCalledWith('/tickets', mockRequest)
-      expect(result).toEqual({
-        id: 1,
-        title: mockRequest.title,
-        detail: mockRequest.detail,
-        visibility: mockRequest.visibility,
-        status: 'new_question',
-        createdByUserId: 1,
-        supportUserId: null,
-      })
+      expect(result).toEqual(mockResponse)
     })
 
-    it('担当者(support_user_id)が設定されている場合、supportUserIdにその値がそのまま入ること', async () => {
-      mockPost.mockResolvedValueOnce({ data: { ...mockResponseJson, support_user_id: 2 } })
+    it('担当者(supportUserId)が設定されている場合、その値がそのまま入ること', async () => {
+      mockPost.mockResolvedValueOnce({ data: { ...mockResponse, supportUserId: 2 } })
 
       const result = await createTicket(mockRequest)
 

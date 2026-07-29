@@ -3,6 +3,7 @@ import { customRender } from '@/tests/helpers/customRender'
 import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
 import { type CreateTicketForm } from '../../types/CreateTicketForm'
+import { type TicketFieldErrors } from '@/features/Root/types/TicketFieldErrors'
 
 // CreateTicketDialogの表示内容と、ユーザー操作時にhandlersが正しい引数で呼ばれるかのみをテストする
 // （登録成功/失敗時の挙動やエラーメッセージの生成ロジック・フォームリセットの中身はuseCreateTicketHandler.test.tsが担保する）
@@ -24,7 +25,7 @@ const renderDialog = (
   overrides?: Partial<{
     ticketForm: CreateTicketForm
     isDialogOpen: boolean
-    errorMessage: string | null
+    fieldErrors: TicketFieldErrors
   }>,
   uiStateOverrides?: Partial<{ isSubmitting: boolean }>,
 ) => {
@@ -33,7 +34,7 @@ const renderDialog = (
       data={{
         ticketForm: mockTicketForm,
         isDialogOpen: false,
-        errorMessage: null,
+        fieldErrors: {},
         ...overrides,
       }}
       uiState={{ isSubmitting: false, ...uiStateOverrides }}
@@ -144,19 +145,29 @@ describe('CreateTicketDialog', () => {
       expect(mockOnCloseDialog).toHaveBeenCalled()
     })
 
-    it('errorMessageがnullの場合、エラーメッセージが表示されないこと', () => {
-      renderDialog({ isDialogOpen: true, errorMessage: null })
+    it('fieldErrorsが空の場合、いずれのフィールドにもエラーメッセージが表示されないこと', () => {
+      renderDialog({ isDialogOpen: true, fieldErrors: {} })
 
-      expect(screen.queryByText('要件を入力してください')).not.toBeInTheDocument()
+      expect(screen.queryByText('入力してください')).not.toBeInTheDocument()
     })
   })
 
   // ── 準正常系（エラー表示のような、失敗ではないが特別な表示状態） ─────────
   describe('準正常系', () => {
-    it('errorMessageが存在する場合、その内容が表示されること', () => {
-      renderDialog({ isDialogOpen: true, errorMessage: '要件を入力してください' })
+    it('fieldErrors.titleが存在する場合、要件の欄にその内容が表示されること', () => {
+      renderDialog({ isDialogOpen: true, fieldErrors: { title: '入力してください' } })
 
-      expect(screen.getByText('要件を入力してください')).toBeInTheDocument()
+      expect(screen.getByText('入力してください')).toBeInTheDocument()
+    })
+
+    it('fieldErrorsに複数フィールド分のエラーがある場合、それぞれの内容が表示されること', () => {
+      renderDialog({
+        isDialogOpen: true,
+        fieldErrors: { title: '255文字以内で入力してください', detail: '入力してください' },
+      })
+
+      expect(screen.getByText('255文字以内で入力してください')).toBeInTheDocument()
+      expect(screen.getByText('入力してください')).toBeInTheDocument()
     })
   })
 })

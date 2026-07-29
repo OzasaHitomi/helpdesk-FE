@@ -19,7 +19,7 @@ export const RootContainer = () => {
         role: meData?.role,
         ticketForm: createTicketData.ticketForm,
         isDialogOpen: createTicketData.isDialogOpen,
-        errorMessage: createTicketData.errorMessage,
+        fieldErrors: createTicketData.fieldErrors,
       }}
       uiState={{ isSubmitting: createTicketUiState.isSubmitting }}
       handlers={{

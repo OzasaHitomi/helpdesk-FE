@@ -8,19 +8,18 @@ import {
   Input,
   Portal,
   Stack,
-  Text,
   Textarea,
 } from '@chakra-ui/react'
 import { TicketVisibilityList } from '@/share/constants/business/ticketVisibilityType'
-import { transformTicketVisibilityJa } from '@/share/logic/transform/transformTicketVisibility'
-import { BRAND_COLOR } from '@/share/constants/style/brandColor'
+import { transformTicketVisibilityToJa } from '@/share/logic/transform/transformTicketVisibility'
+import { type TicketFieldErrors } from '@/features/Root/types/TicketFieldErrors'
 import { type CreateTicketForm } from '../types/CreateTicketForm'
 
 interface CreateTicketDialogProps {
   data: {
     ticketForm: CreateTicketForm
     isDialogOpen: boolean
-    errorMessage: string | null
+    fieldErrors: TicketFieldErrors
   }
   uiState: {
     isSubmitting: boolean
@@ -55,7 +54,7 @@ export const CreateTicketDialog = ({ data, uiState, handlers }: CreateTicketDial
             handlers.onOpenDialog()
           }}
         >
-          <Circle size={'24px'} bg={BRAND_COLOR} color={'white'} fontWeight={'bold'}>
+          <Circle size={'24px'} bg={'green.400'} color={'white'} fontWeight={'bold'}>
             +
           </Circle>
           ADD
@@ -79,36 +78,40 @@ export const CreateTicketDialog = ({ data, uiState, handlers }: CreateTicketDial
                   gap={6}
                   alignItems={'center'}
                   justifyContent={'flex-start'}
+                  invalid={!!data.fieldErrors.visibility}
                 >
                   <Field.Label fontWeight={'bold'} justifyContent={'center'}>
                     公開設定
                   </Field.Label>
-                  <HStack justifyContent={'flex-start'}>
-                    {/* TicketVisibilityList（['public', 'private']）をmapでボタンとして並べる
-                        こうしておくと、公開設定の種類が増えてもボタンを1つずつ書き足す必要がない */}
-                    {TicketVisibilityList.map((visibility) => {
-                      const isSelected = data.ticketForm.visibility === visibility
-                      return (
-                        <Button
-                          key={visibility}
-                          size={'sm'}
-                          w={'88px'}
-                          borderRadius={'12px'}
-                          aria-pressed={isSelected}
-                          bg={isSelected ? 'white' : 'gray.100'}
-                          borderWidth={'2px'}
-                          borderColor={isSelected ? BRAND_COLOR : 'transparent'}
-                          color={'gray.700'}
-                          onClick={() => {
-                            // ...data.ticketFormで今の入力内容を維持しつつ、visibilityだけ書き換える
-                            handlers.setTicketForm({ ...data.ticketForm, visibility })
-                          }}
-                        >
-                          {transformTicketVisibilityJa(visibility)}
-                        </Button>
-                      )
-                    })}
-                  </HStack>
+                  <Stack gap={1} flex={1}>
+                    <HStack justifyContent={'flex-start'}>
+                      {/* TicketVisibilityList（['public', 'private']）をmapでボタンとして並べる
+                          こうしておくと、公開設定の種類が増えてもボタンを1つずつ書き足す必要がない */}
+                      {TicketVisibilityList.map((visibility) => {
+                        const isSelected = data.ticketForm.visibility === visibility
+                        return (
+                          <Button
+                            key={visibility}
+                            size={'sm'}
+                            w={'88px'}
+                            borderRadius={'12px'}
+                            aria-pressed={isSelected}
+                            bg={isSelected ? 'white' : 'gray.100'}
+                            borderWidth={'2px'}
+                            borderColor={isSelected ? 'green.400' : 'transparent'}
+                            color={'gray.700'}
+                            onClick={() => {
+                              // ...data.ticketFormで今の入力内容を維持しつつ、visibilityだけ書き換える
+                              handlers.setTicketForm({ ...data.ticketForm, visibility })
+                            }}
+                          >
+                            {transformTicketVisibilityToJa(visibility)}
+                          </Button>
+                        )
+                      })}
+                    </HStack>
+                    <Field.ErrorText>{data.fieldErrors.visibility}</Field.ErrorText>
+                  </Stack>
                 </Field.Root>
 
                 {/* ── 要件（タイトル）の入力欄 ───────────────────────────── */}
@@ -117,18 +120,21 @@ export const CreateTicketDialog = ({ data, uiState, handlers }: CreateTicketDial
                   gap={6}
                   alignItems={'center'}
                   justifyContent={'flex-start'}
+                  invalid={!!data.fieldErrors.title}
                 >
                   <Field.Label fontWeight={'bold'} justifyContent={'center'}>
                     要件
                   </Field.Label>
-                  <Input
-                    flex={1}
-                    borderRadius={'12px'}
-                    value={data.ticketForm.title}
-                    onChange={(e) => {
-                      handlers.setTicketForm({ ...data.ticketForm, title: e.target.value })
-                    }}
-                  />
+                  <Stack gap={1} flex={1}>
+                    <Input
+                      borderRadius={'12px'}
+                      value={data.ticketForm.title}
+                      onChange={(e) => {
+                        handlers.setTicketForm({ ...data.ticketForm, title: e.target.value })
+                      }}
+                    />
+                    <Field.ErrorText>{data.fieldErrors.title}</Field.ErrorText>
+                  </Stack>
                 </Field.Root>
 
                 {/* ── 詳細の入力欄 ─────────────────────────────────────── */}
@@ -137,27 +143,23 @@ export const CreateTicketDialog = ({ data, uiState, handlers }: CreateTicketDial
                   gap={6}
                   alignItems={'flex-start'}
                   justifyContent={'flex-start'}
+                  invalid={!!data.fieldErrors.detail}
                 >
                   <Field.Label fontWeight={'bold'} justifyContent={'center'} pt={2}>
                     詳細
                   </Field.Label>
-                  <Textarea
-                    flex={1}
-                    rows={3}
-                    borderRadius={'12px'}
-                    value={data.ticketForm.detail}
-                    onChange={(e) => {
-                      handlers.setTicketForm({ ...data.ticketForm, detail: e.target.value })
-                    }}
-                  />
+                  <Stack gap={1} flex={1}>
+                    <Textarea
+                      rows={3}
+                      borderRadius={'12px'}
+                      value={data.ticketForm.detail}
+                      onChange={(e) => {
+                        handlers.setTicketForm({ ...data.ticketForm, detail: e.target.value })
+                      }}
+                    />
+                    <Field.ErrorText>{data.fieldErrors.detail}</Field.ErrorText>
+                  </Stack>
                 </Field.Root>
-
-                {/* エラーメッセージは、無い時（null）は何も表示しない */}
-                {data.errorMessage && (
-                  <Text color={'red.500'} fontSize={'sm'} whiteSpace={'pre-line'}>
-                    {data.errorMessage}
-                  </Text>
-                )}
               </Stack>
             </Dialog.Body>
 
@@ -177,7 +179,7 @@ export const CreateTicketDialog = ({ data, uiState, handlers }: CreateTicketDial
               <Button
                 w={'140px'}
                 borderRadius={'12px'}
-                bg={BRAND_COLOR}
+                bg={'green.400'}
                 color={'white'}
                 // 送信中の連打で二重登録されないよう無効化する
                 disabled={uiState.isSubmitting}

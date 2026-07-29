@@ -51,7 +51,7 @@ describe('useCreateTicketHandler', () => {
         visibility: 'private',
       })
       expect(result.current.data.isDialogOpen).toBe(false)
-      expect(result.current.data.errorMessage).toBeNull()
+      expect(result.current.data.fieldErrors).toEqual({})
       expect(result.current.uiState.isSubmitting).toBe(false)
     })
 
@@ -85,7 +85,7 @@ describe('useCreateTicketHandler', () => {
       expect(result.current.data.isDialogOpen).toBe(false)
     })
 
-    it('onOpenDialogを呼ぶと、ticketFormが初期値にリセットされ、errorMessageがクリアされ、isDialogOpenがtrueになること', async () => {
+    it('onOpenDialogを呼ぶと、ticketFormが初期値にリセットされ、fieldErrorsがクリアされ、isDialogOpenがtrueになること', async () => {
       const { result } = customRenderHook(() => useCreateTicketHandler())
 
       // あえて一度「入力あり・エラーあり」の状態を作ってから、onOpenDialogでリセットされることを確認する
@@ -95,7 +95,7 @@ describe('useCreateTicketHandler', () => {
       await act(async () => {
         await result.current.handlers.onSubmitTicket({ ...mockForm, title: '   ' })
       })
-      expect(result.current.data.errorMessage).toBe('要件を入力してください')
+      expect(result.current.data.fieldErrors).toEqual({ title: '入力してください' })
 
       act(() => {
         result.current.handlers.onOpenDialog()
@@ -106,7 +106,7 @@ describe('useCreateTicketHandler', () => {
         detail: '',
         visibility: 'private',
       })
-      expect(result.current.data.errorMessage).toBeNull()
+      expect(result.current.data.fieldErrors).toEqual({})
       expect(result.current.data.isDialogOpen).toBe(true)
     })
 
@@ -155,12 +155,56 @@ describe('useCreateTicketHandler', () => {
       })
     })
 
-    // 422のdetail配列→日本語文言への変換パターン網羅はresolveTicketValidationErrorMessage.test.tsの責務のため、
-    // ここではresolveTicketValidationErrorMessageの戻り値がトーストにそのまま使われることを代表1ケースのみで確認する
-    it('BEが422でdetail(配列)を返す場合、変換された文言のエラートーストが出ること', async () => {
+    // typeごとの文言変換の網羅はtransformValidationErrorTypeToJa.test.tsの責務のため、
+    // ここでは「locから該当フィールドへの振り分け」と「翻訳した文言がfieldErrorsに設定されること」を代表ケースで確認する
+    it('BEが422でdetail(配列)を返す場合、ダイアログを閉じずに該当フィールドのエラーが設定されること', async () => {
       mockMutateAsync.mockRejectedValueOnce({
         isAxiosError: true,
         response: { data: { detail: [{ loc: ['body', 'title'], type: 'missing' }] } },
+      })
+      const { result } = customRenderHook(() => useCreateTicketHandler())
+
+      act(() => {
+        result.current.handlers.onOpenDialog()
+      })
+
+      await act(async () => {
+        await result.current.handlers.onSubmitTicket(mockForm)
+      })
+
+      expect(result.current.data.isDialogOpen).toBe(true)
+      expect(result.current.data.fieldErrors).toEqual({ title: '入力してください' })
+      expect(mockToasterCreate).not.toHaveBeenCalled()
+    })
+
+    it('BEが422で複数件のdetailを返す場合、それぞれのフィールドにエラーが設定されること', async () => {
+      mockMutateAsync.mockRejectedValueOnce({
+        isAxiosError: true,
+        response: {
+          data: {
+            detail: [
+              { loc: ['body', 'title'], type: 'string_too_long' },
+              { loc: ['body', 'detail'], type: 'missing' },
+            ],
+          },
+        },
+      })
+      const { result } = customRenderHook(() => useCreateTicketHandler())
+
+      await act(async () => {
+        await result.current.handlers.onSubmitTicket(mockForm)
+      })
+
+      expect(result.current.data.fieldErrors).toEqual({
+        title: '文字数が上限を超えています',
+        detail: '入力してください',
+      })
+    })
+
+    it('BEが422で未知のフィールドのdetailを返す場合、汎用エラートーストが出ること', async () => {
+      mockMutateAsync.mockRejectedValueOnce({
+        isAxiosError: true,
+        response: { data: { detail: [{ loc: ['body', 'unknown'], type: 'missing' }] } },
       })
       const { result } = customRenderHook(() => useCreateTicketHandler())
 
@@ -170,18 +214,23 @@ describe('useCreateTicketHandler', () => {
 
       expect(mockToasterCreate).toHaveBeenCalledWith({
         type: 'error',
-        title: '要件を入力してください',
+        title: '入力内容を確認してください',
       })
     })
 
-    it('axios以外のエラーの場合、汎用エラートーストが出ること', async () => {
+    it('axios以外のエラーの場合、汎用エラートーストが出て、ダイアログが閉じること', async () => {
       mockMutateAsync.mockRejectedValueOnce(new Error('network error'))
       const { result } = customRenderHook(() => useCreateTicketHandler())
+
+      act(() => {
+        result.current.handlers.onOpenDialog()
+      })
 
       await act(async () => {
         await result.current.handlers.onSubmitTicket(mockForm)
       })
 
+      expect(result.current.data.isDialogOpen).toBe(false)
       expect(mockToasterCreate).toHaveBeenCalledWith({
         type: 'error',
         title: 'チケットの登録に失敗しました',
@@ -192,7 +241,7 @@ describe('useCreateTicketHandler', () => {
   // ── FEバリデーション ────────────────────────────────────────────────────
   // BE通信を行う前に、FE側（zodスキーマ）で弾かれるケースを確認する
   describe('FEバリデーション', () => {
-    it('要件が未入力の場合、専用メッセージが設定されmutateAsyncが呼ばれず、ダイアログも閉じないこと', async () => {
+    it('要件が未入力の場合、titleにエラーが設定されmutateAsyncが呼ばれず、ダイアログも閉じないこと', async () => {
       const { result } = customRenderHook(() => useCreateTicketHandler())
 
       act(() => {
@@ -203,30 +252,19 @@ describe('useCreateTicketHandler', () => {
         await result.current.handlers.onSubmitTicket({ ...mockForm, title: '   ' })
       })
 
-      expect(result.current.data.errorMessage).toBe('要件を入力してください')
+      expect(result.current.data.fieldErrors).toEqual({ title: '入力してください' })
       expect(mockMutateAsync).not.toHaveBeenCalled()
       expect(result.current.data.isDialogOpen).toBe(true)
     })
 
-    it('詳細が未入力の場合、専用メッセージが設定されmutateAsyncが呼ばれないこと', async () => {
+    it('詳細が未入力の場合、detailにエラーが設定されmutateAsyncが呼ばれないこと', async () => {
       const { result } = customRenderHook(() => useCreateTicketHandler())
 
       await act(async () => {
         await result.current.handlers.onSubmitTicket({ ...mockForm, detail: '' })
       })
 
-      expect(result.current.data.errorMessage).toBe('詳細を入力してください')
-      expect(mockMutateAsync).not.toHaveBeenCalled()
-    })
-
-    it('要件が255文字を超える場合、専用メッセージが設定されmutateAsyncが呼ばれないこと', async () => {
-      const { result } = customRenderHook(() => useCreateTicketHandler())
-
-      await act(async () => {
-        await result.current.handlers.onSubmitTicket({ ...mockForm, title: 'a'.repeat(256) })
-      })
-
-      expect(result.current.data.errorMessage).toBe('要件は255文字以内で入力してください')
+      expect(result.current.data.fieldErrors).toEqual({ detail: '入力してください' })
       expect(mockMutateAsync).not.toHaveBeenCalled()
     })
   })

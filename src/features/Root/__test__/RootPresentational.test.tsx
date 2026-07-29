@@ -4,6 +4,7 @@ import { customRender } from '@/tests/helpers/customRender'
 import { describe, it, expect, vi } from 'vitest'
 import { screen } from '@testing-library/react'
 import { type CreateTicketForm } from '../types/CreateTicketForm'
+import { type TicketFieldErrors } from '@/features/Root/types/TicketFieldErrors'
 
 // RootPresentationalの表示内容（見出し・新規作成ボタンの出し分け）のみをテストする
 // （CreateTicketDialog自体の見た目・操作はCreateTicketDialog.test.tsxが担保する）
@@ -15,6 +16,7 @@ vi.mock('../ui/CreateTicketDialog', () => ({
 const mockCreateTicketDialog = vi.mocked(CreateTicketDialog)
 
 const mockTicketForm: CreateTicketForm = { title: '', detail: '', visibility: 'private' }
+const mockFieldErrors: TicketFieldErrors = {}
 const mockOnSubmitTicket = vi.fn()
 const mockSetTicketForm = vi.fn()
 const mockOnOpenDialog = vi.fn()
@@ -27,7 +29,7 @@ const renderPresentational = (role: 'employee' | 'support' | 'admin' | undefined
         role,
         ticketForm: mockTicketForm,
         isDialogOpen: false,
-        errorMessage: null,
+        fieldErrors: mockFieldErrors,
       }}
       uiState={{ isSubmitting: false }}
       handlers={{
@@ -57,7 +59,7 @@ describe('RootPresentational', () => {
       renderPresentational('employee')
       expect(mockCreateTicketDialog).toHaveBeenCalledWith(
         {
-          data: { ticketForm: mockTicketForm, isDialogOpen: false, errorMessage: null },
+          data: { ticketForm: mockTicketForm, isDialogOpen: false, fieldErrors: mockFieldErrors },
           uiState: { isSubmitting: false },
           handlers: {
             onSubmitTicket: mockOnSubmitTicket,
