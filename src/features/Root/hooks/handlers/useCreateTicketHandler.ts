@@ -117,7 +117,7 @@ export const useCreateTicketHandler = () => {
           errors.general = GENERAL_VALIDATION_ERROR_MESSAGE
         } else {
           detail.forEach(({ loc, type }) => {
-            const field = loc[loc.length - 1]
+            const field = loc.pop()
             const message = transformValidationErrorTypeToJa(type)
             if (isTicketField(field)) {
               errors[field] = message

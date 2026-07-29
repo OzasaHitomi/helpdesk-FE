@@ -8,7 +8,7 @@ import { type ErrorResponse } from '@/services/internal/backend/v1/types/respons
 // ここでtrueになった場合、TypeScript上でもeがAxiosErrorとして扱えるようになる
 export const extractErrorInfo = (
   e: unknown,
-): { detail: ErrorResponse['detail']; type: ErrorResponse['type'] } | undefined => {
+): ErrorResponse| undefined => {
   // e.response?.data: レスポンス自体が無い（通信できなかった等）場合はresponseがundefinedになるため、
   // ?.（オプショナルチェイニング）でエラーにならないようにしている
   if (!axios.isAxiosError<ErrorResponse>(e) || !e.response) {
