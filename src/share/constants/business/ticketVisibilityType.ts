@@ -5,4 +5,7 @@ import { type TicketVisibility } from '@/share/types/ticketVisibility'
 // 公開設定ボタンをforで並べるためのリスト（型定義した値の実体を持ったリスト）
 // as const: z.enum()にそのまま渡せるよう、タプル型（readonly ['public', 'private']）として保持する
 // satisfies readonly TicketVisibility[]: タプル型を保ったまま、値がTicketVisibilityの範囲内であることをチェックする
-export const TicketVisibilityList = ['public', 'private'] as const satisfies readonly TicketVisibility[]
+export const TicketVisibilityList = [
+  'public',
+  'private',
+] as const satisfies readonly TicketVisibility[]
