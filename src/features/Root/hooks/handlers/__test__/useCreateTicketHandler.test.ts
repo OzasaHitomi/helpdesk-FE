@@ -160,7 +160,12 @@ describe('useCreateTicketHandler', () => {
     it('BEが422でdetail(配列)を返す場合、ダイアログを閉じずに該当フィールドのエラーが設定されること', async () => {
       mockMutateAsync.mockRejectedValueOnce({
         isAxiosError: true,
-        response: { data: { detail: [{ loc: ['body', 'title'], type: 'missing' }] } },
+        response: {
+          data: {
+            detail: [{ loc: ['body', 'title'], type: 'missing' }],
+            type: 'VALIDATION_ERROR',
+          },
+        },
       })
       const { result } = customRenderHook(() => useCreateTicketHandler())
 
@@ -186,6 +191,7 @@ describe('useCreateTicketHandler', () => {
               { loc: ['body', 'title'], type: 'string_too_long' },
               { loc: ['body', 'detail'], type: 'missing' },
             ],
+            type: 'VALIDATION_ERROR',
           },
         },
       })
@@ -204,7 +210,12 @@ describe('useCreateTicketHandler', () => {
     it('BEが422で未知のフィールドのdetailを返す場合、汎用エラートーストが出ること', async () => {
       mockMutateAsync.mockRejectedValueOnce({
         isAxiosError: true,
-        response: { data: { detail: [{ loc: ['body', 'unknown'], type: 'missing' }] } },
+        response: {
+          data: {
+            detail: [{ loc: ['body', 'unknown'], type: 'missing' }],
+            type: 'VALIDATION_ERROR',
+          },
+        },
       })
       const { result } = customRenderHook(() => useCreateTicketHandler())
 
@@ -215,6 +226,31 @@ describe('useCreateTicketHandler', () => {
       expect(mockToasterCreate).toHaveBeenCalledWith({
         type: 'error',
         title: '入力内容を確認してください',
+      })
+    })
+
+    // typeが無い(≒VALIDATION_ERRORでない)場合はdetailの形にかかわらず422として扱わない、
+    // というのが今回の判定方法(type基準)の肝のため、あえてdetailだけ配列にしたケースを確認する
+    it('detailが配列でもtypeがVALIDATION_ERRORでない場合、422として扱わず汎用エラートーストが出ること', async () => {
+      mockMutateAsync.mockRejectedValueOnce({
+        isAxiosError: true,
+        response: { data: { detail: [{ loc: ['body', 'title'], type: 'missing' }] } },
+      })
+      const { result } = customRenderHook(() => useCreateTicketHandler())
+
+      act(() => {
+        result.current.handlers.onOpenDialog()
+      })
+
+      await act(async () => {
+        await result.current.handlers.onSubmitTicket(mockForm)
+      })
+
+      expect(result.current.data.isDialogOpen).toBe(false)
+      expect(result.current.data.fieldErrors).toEqual({})
+      expect(mockToasterCreate).toHaveBeenCalledWith({
+        type: 'error',
+        title: 'チケットの登録に失敗しました',
       })
     })
 
@@ -265,6 +301,40 @@ describe('useCreateTicketHandler', () => {
       })
 
       expect(result.current.data.fieldErrors).toEqual({ detail: '入力してください' })
+      expect(mockMutateAsync).not.toHaveBeenCalled()
+    })
+
+    it('公開設定が不正な値の場合、visibilityにエラーが設定されmutateAsyncが呼ばれないこと', async () => {
+      const { result } = customRenderHook(() => useCreateTicketHandler())
+
+      await act(async () => {
+        // @ts-expect-error 不正な値を渡すテストのため、あえて型に合わない値を入れている
+        await result.current.handlers.onSubmitTicket({ ...mockForm, visibility: '' })
+      })
+
+      expect(result.current.data.fieldErrors).toEqual({ visibility: '選択してください' })
+      expect(mockMutateAsync).not.toHaveBeenCalled()
+    })
+
+    // isTicketFieldがtitle/detail/visibilityの3フィールドすべてを正しく振り分けられることを、
+    // 全フィールド同時に不正な入力を渡して一括で確認する
+    it('全フィールドが不正な場合、title・detail・visibilityそれぞれにエラーが設定されること', async () => {
+      const { result } = customRenderHook(() => useCreateTicketHandler())
+
+      await act(async () => {
+        await result.current.handlers.onSubmitTicket({
+          title: '   ',
+          detail: '',
+          // @ts-expect-error 不正な値を渡すテストのため、あえて型に合わない値を入れている
+          visibility: '',
+        })
+      })
+
+      expect(result.current.data.fieldErrors).toEqual({
+        title: '入力してください',
+        detail: '入力してください',
+        visibility: '選択してください',
+      })
       expect(mockMutateAsync).not.toHaveBeenCalled()
     })
   })
