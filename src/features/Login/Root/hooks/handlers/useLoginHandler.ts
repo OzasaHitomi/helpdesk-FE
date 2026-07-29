@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import { useLoginMutation } from '../mutations/useLoginMutation'
 import { type LoginForm, loginFormSchema } from '../../types/LoginForm'
+import { extractErrorInfo } from '@/share/logic/extractErrorInfo'
 
 export const useLoginHandler = () => {
   const { mutateAsync } = useLoginMutation()
@@ -29,10 +29,10 @@ export const useLoginHandler = () => {
     } catch (e) {
       // 401(メールアドレス/パスワード不一致)・403(利用停止中)はBEが{ detail: string }で理由を返すためそのまま画面表示に使う
       // 422(バリデーションエラー)はdetailが配列になるため、その場合は汎用メッセージにフォールバックする
-      const detail: unknown = axios.isAxiosError<{ detail: unknown }>(e)
-        ? e.response?.data.detail
-        : undefined
-      setErrorMessage(typeof detail === 'string' ? detail : 'ログインに失敗しました')
+      // extractErrorInfo: axiosエラーからBEのdetail・typeを取り出す共通関数（useCreateTicketHandlerと共用）
+      // ここではtypeは使わず、detailの中身だけで表示文言を決める
+      const info = extractErrorInfo(e)
+      setErrorMessage(typeof info?.detail === 'string' ? info.detail : 'ログインに失敗しました')
     }
   }
 
