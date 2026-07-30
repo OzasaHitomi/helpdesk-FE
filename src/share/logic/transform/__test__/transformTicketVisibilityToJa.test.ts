@@ -1,4 +1,4 @@
-import { transformTicketVisibilityToJa } from '../transformTicketVisibility'
+import { transformTicketVisibilityToJa } from '../transformTicketVisibilityToJa'
 import { describe, it, expect } from 'vitest'
 
 describe('transformTicketVisibilityToJa', () => {

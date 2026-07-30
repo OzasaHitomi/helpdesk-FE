@@ -11,7 +11,7 @@ import {
   Textarea,
 } from '@chakra-ui/react'
 import { TicketVisibilityList } from '@/share/constants/business/ticketVisibilityType'
-import { transformTicketVisibilityToJa } from '@/share/logic/transform/transformTicketVisibility'
+import { transformTicketVisibilityToJa } from '@/share/logic/transform/transformTicketVisibilityToJa'
 import { type TicketFieldErrors } from '@/features/Root/types/TicketFieldErrors'
 import { type CreateTicketForm } from '../types/CreateTicketForm'
 

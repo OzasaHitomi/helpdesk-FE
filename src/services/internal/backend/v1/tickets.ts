@@ -1,0 +1,29 @@
+import { internalBackendV1Client } from '@/services/internal/backend/v1/client'
+import { type CreateTicketRequest } from '@/services/internal/backend/v1/types/request/tickets'
+import {
+  type CreateTicketResponse,
+  type GetTicketsResponseItem,
+  type GetTicketsResponseItemJson,
+} from '@/services/internal/backend/v1/types/response/tickets'
+
+const COMMON_URL = '/tickets'
+
+// 成功時は201（登録されたチケットの内容を返す）
+export const createTicket = async (body: CreateTicketRequest): Promise<CreateTicketResponse> => {
+  const { data } = await internalBackendV1Client.post<CreateTicketResponse>(COMMON_URL, body)
+  return data
+}
+
+// 成功時は200（チケット一覧を返す。アカウント種別による絞り込みはBE側で実施済み）
+export const getTickets = async (): Promise<GetTicketsResponseItem[]> => {
+  // getの後は通信で受け取るものの型指定（date型のものが文字列型として受け取られている）
+  const response = await internalBackendV1Client.get<GetTicketsResponseItemJson[]>(COMMON_URL)
+
+  // -> date型として扱いたいものを文字列型からdate型に変換する
+  return response.data.map(
+    (d): GetTicketsResponseItem => ({
+      ...d,
+      createdAt: new Date(d.createdAt),
+    }),
+  )
+}

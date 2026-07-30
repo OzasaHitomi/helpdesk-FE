@@ -2,9 +2,9 @@ import { useCreateTicketMutation } from '../useCreateTicketMutation'
 import { customRenderHook } from '@/tests/helpers/customRenderHook'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { act, waitFor } from '@testing-library/react'
-import * as ticketService from '@/services/internal/backend/v1/ticket'
-import { type CreateTicketRequest } from '@/services/internal/backend/v1/types/request/ticket'
-import { type CreateTicketResponse } from '@/services/internal/backend/v1/types/response/ticket'
+import * as ticketService from '@/services/internal/backend/v1/tickets'
+import { type CreateTicketRequest } from '@/services/internal/backend/v1/types/request/tickets'
+import { type CreateTicketResponse } from '@/services/internal/backend/v1/types/response/tickets'
 import { ticketQueryKeys } from '../../queries/queryKeys'
 
 // BEと通信する関数(createTicket)をモックし、useCreateTicketMutationが正しい引数でcreateTicketを呼び出し、
