@@ -1,8 +1,11 @@
-import { HStack, Heading } from '@chakra-ui/react'
+import { HStack, Heading, Stack, Show, EmptyState, VStack } from '@chakra-ui/react'
 import { CreateTicketDialog } from './ui/CreateTicketDialog'
+import { LuInbox } from 'react-icons/lu'
+import { TicketsTable } from './ui/TicketsTable'
 import { type CreateTicketForm } from './types/CreateTicketForm'
 import { type TicketFieldErrors } from '@/features/Root/types/TicketFieldErrors'
 import { type UserRole } from '@/share/types/userRole'
+import { type TicketItemView } from './types/TicketItemView'
 
 interface RootPresentationalProps {
   data: {
@@ -10,6 +13,7 @@ interface RootPresentationalProps {
     ticketForm: CreateTicketForm
     isDialogOpen: boolean
     fieldErrors: TicketFieldErrors
+    tickets: TicketItemView[]
   }
   uiState: {
     isSubmitting: boolean
@@ -27,25 +31,45 @@ interface RootPresentationalProps {
 // 自分で通信したりstateを持ったりはしない
 export const RootPresentational = ({ data, uiState, handlers }: RootPresentationalProps) => {
   return (
-    <HStack justifyContent={'space-between'}>
-      <Heading size={'lg'}>チケット一覧</Heading>
-      {/* チケットの新規作成は社員アカウントのみ許可されているため、社員以外にはボタンを表示しない */}
-      {data.role === 'employee' && (
-        <CreateTicketDialog
-          data={{
-            ticketForm: data.ticketForm,
-            isDialogOpen: data.isDialogOpen,
-            fieldErrors: data.fieldErrors,
-          }}
-          uiState={{ isSubmitting: uiState.isSubmitting }}
-          handlers={{
-            onSubmitTicket: handlers.onSubmitTicket,
-            setTicketForm: handlers.setTicketForm,
-            onOpenDialog: handlers.onOpenDialog,
-            onCloseDialog: handlers.onCloseDialog,
-          }}
-        />
-      )}
-    </HStack>
+    <Stack gap={4}>
+      <HStack justifyContent={'space-between'}>
+        <Heading size={'lg'}>Tickets</Heading>
+        {/* チケットの新規作成は社員アカウントのみ許可されているため、社員以外にはボタンを表示しない */}
+        {data.role === 'employee' && (
+          <CreateTicketDialog
+            data={{
+              ticketForm: data.ticketForm,
+              isDialogOpen: data.isDialogOpen,
+              fieldErrors: data.fieldErrors,
+            }}
+            uiState={{ isSubmitting: uiState.isSubmitting }}
+            handlers={{
+              onSubmitTicket: handlers.onSubmitTicket,
+              setTicketForm: handlers.setTicketForm,
+              onOpenDialog: handlers.onOpenDialog,
+              onCloseDialog: handlers.onCloseDialog,
+            }}
+          />
+        )}
+      </HStack>
+      <Show when={data.tickets.length === 0}>
+        <EmptyState.Root>
+          <EmptyState.Content>
+            <EmptyState.Indicator>
+              <LuInbox />
+            </EmptyState.Indicator>
+            <VStack textAlign={'center'}>
+              <EmptyState.Title>チケットがありません</EmptyState.Title>
+              <EmptyState.Description>
+                質問が作成されると、ここに一覧が表示されます
+              </EmptyState.Description>
+            </VStack>
+          </EmptyState.Content>
+        </EmptyState.Root>
+      </Show>
+      <Show when={data.tickets.length != 0}>
+        <TicketsTable tickets={data.tickets} />
+      </Show>
+    </Stack>
   )
 }

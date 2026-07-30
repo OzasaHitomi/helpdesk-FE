@@ -8,7 +8,7 @@ import {
   GENERAL_VALIDATION_ERROR_MESSAGE,
 } from '@/share/logic/transform/transformValidationErrorTypeToJa'
 import { type TicketFieldErrors } from '../../types/TicketFieldErrors'
-import { type CreateTicketRequest } from '@/services/internal/backend/v1/types/request/ticket'
+import { type CreateTicketRequest } from '@/services/internal/backend/v1/types/request/tickets'
 
 // ── 型ガード ─────────────────────────────────────────────────────────────
 // CreateTicketFormのキー一覧。zodのissue.path[0]が指すフィールド名がこの中の値かどうかを判定するために使う
