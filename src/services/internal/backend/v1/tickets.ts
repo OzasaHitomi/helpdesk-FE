@@ -20,10 +20,8 @@ export const getTickets = async (): Promise<GetTicketsResponseItem[]> => {
   const response = await internalBackendV1Client.get<GetTicketsResponseItemJson[]>(COMMON_URL)
 
   // -> date型として扱いたいものを文字列型からdate型に変換する
-  return response.data.map(
-    (d): GetTicketsResponseItem => ({
-      ...d,
-      createdAt: new Date(d.createdAt),
-    }),
-  )
+  return response.data.map((d): GetTicketsResponseItem => ({
+    ...d,
+    createdAt: new Date(d.createdAt),
+  }))
 }
