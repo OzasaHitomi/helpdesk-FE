@@ -8,7 +8,7 @@ import { type CreateTicketForm } from '../types/CreateTicketForm'
 import { type TicketFieldErrors } from '@/features/Root/types/TicketFieldErrors'
 import { type TicketItemView } from '../types/TicketItemView'
 
-// RootPresentationalの表示内容（見出し・新規作成ボタンの出し分け・チケット一覧テーブルへの橋渡し）のみをテストする
+// RootPresentationalの表示内容（見出し・新規作成ボタンの出し分け・チケット一覧テーブルへの橋渡し・0件時の空状態表示）のみをテストする
 // （CreateTicketDialog自体の見た目・操作はCreateTicketDialog.test.tsx、TicketsTable自体の見た目はTicketsTable.test.tsxが担保する）
 
 vi.mock('../ui/CreateTicketDialog', () => ({
@@ -40,7 +40,10 @@ const mockSetTicketForm = vi.fn()
 const mockOnOpenDialog = vi.fn()
 const mockOnCloseDialog = vi.fn()
 
-const renderPresentational = (role: 'employee' | 'support' | 'admin' | undefined) => {
+const renderPresentational = (
+  role: 'employee' | 'support' | 'admin' | undefined,
+  tickets: TicketItemView[] = mockTickets,
+) => {
   customRender(
     <RootPresentational
       data={{
@@ -48,7 +51,7 @@ const renderPresentational = (role: 'employee' | 'support' | 'admin' | undefined
         ticketForm: mockTicketForm,
         isDialogOpen: false,
         fieldErrors: mockFieldErrors,
-        tickets: mockTickets,
+        tickets,
       }}
       uiState={{ isSubmitting: false }}
       handlers={{
@@ -113,6 +116,22 @@ describe('RootPresentational', () => {
     it('roleがundefined(未取得)の場合、新規チケット作成ダイアログが表示されないこと', () => {
       renderPresentational(undefined)
       expect(screen.queryByTestId('mocked-create-ticket-dialog')).not.toBeInTheDocument()
+    })
+
+    it('チケットが0件の場合、空状態のタイトルと説明文が表示されること', () => {
+      renderPresentational('employee', [])
+      expect(screen.getByText('チケットがありません')).toBeInTheDocument()
+      expect(screen.getByText('質問が作成されると、ここに一覧が表示されます')).toBeInTheDocument()
+    })
+
+    it('チケットが0件の場合、TicketsTableが表示されないこと', () => {
+      renderPresentational('employee', [])
+      expect(screen.queryByTestId('mocked-ticket-table')).not.toBeInTheDocument()
+    })
+
+    it('チケットが1件以上の場合、空状態のタイトルは表示されないこと', () => {
+      renderPresentational('employee', mockTickets)
+      expect(screen.queryByText('チケットがありません')).not.toBeInTheDocument()
     })
   })
 })

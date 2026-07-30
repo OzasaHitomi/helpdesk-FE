@@ -4,8 +4,9 @@ import { describe, it, expect } from 'vitest'
 import { screen } from '@testing-library/react'
 import { type TicketItemView } from '../../types/TicketItemView'
 
-// TicketsTableの表示内容（列見出し・値の変換・未割当時の表示・0件時の空状態表示）のみをテストする
-// （日本語変換自体のロジックはtransformTicketVisibilityToJa.test.ts/transformTicketStatusToJa.test.tsが担保する）
+// TicketsTableの表示内容（列見出し・値の変換・未割当時の表示）のみをテストする
+// （日本語変換自体のロジックはtransformTicketVisibilityToJa.test.ts/transformTicketStatusToJa.test.tsが担保する。
+// 0件時の空状態表示はRootPresentational.test.tsxが担保する）
 
 const mockTickets: TicketItemView[] = [
   {
@@ -69,19 +70,6 @@ describe('TicketsTable', () => {
       customRender(<TicketsTable tickets={mockTickets} />)
 
       expect(screen.getByText('-')).toBeInTheDocument()
-    })
-
-    it('チケットが0件の場合、空状態のタイトルと説明文が表示されること', () => {
-      customRender(<TicketsTable tickets={[]} />)
-
-      expect(screen.getByText('チケットがありません')).toBeInTheDocument()
-      expect(screen.getByText('質問が作成されると、ここに一覧が表示されます')).toBeInTheDocument()
-    })
-
-    it('チケットが0件の場合、テーブルの列見出しは表示されないこと', () => {
-      customRender(<TicketsTable tickets={[]} />)
-
-      expect(screen.queryByText('質問日')).not.toBeInTheDocument()
     })
   })
 })

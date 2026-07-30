@@ -1,5 +1,4 @@
-import { EmptyState, Table, VStack } from '@chakra-ui/react'
-import { LuInbox } from 'react-icons/lu'
+import {  Table } from '@chakra-ui/react'
 import { type TicketItemView } from '../types/TicketItemView'
 import { transformTicketVisibilityToJa } from '@/share/logic/transform/transformTicketVisibilityToJa'
 import { transformTicketStatusToJa } from '@/share/logic/transform/transformTicketStatusToJa'
@@ -10,24 +9,6 @@ interface TicketsTableProps {
 }
 
 export const TicketsTable = ({ tickets }: TicketsTableProps) => {
-  if (tickets.length === 0) {
-    return (
-      <EmptyState.Root>
-        <EmptyState.Content>
-          <EmptyState.Indicator>
-            <LuInbox />
-          </EmptyState.Indicator>
-          <VStack textAlign={'center'}>
-            <EmptyState.Title>チケットがありません</EmptyState.Title>
-            <EmptyState.Description>
-              質問が作成されると、ここに一覧が表示されます
-            </EmptyState.Description>
-          </VStack>
-        </EmptyState.Content>
-      </EmptyState.Root>
-    )
-  }
-
   return (
     <Table.Root variant={'line'}>
       <Table.Header>

@@ -1,5 +1,6 @@
-import { HStack, Heading, Stack } from '@chakra-ui/react'
+import { HStack, Heading, Stack, Show, EmptyState, VStack } from '@chakra-ui/react'
 import { CreateTicketDialog } from './ui/CreateTicketDialog'
+import { LuInbox } from 'react-icons/lu'
 import { TicketsTable } from './ui/TicketsTable'
 import { type CreateTicketForm } from './types/CreateTicketForm'
 import { type TicketFieldErrors } from '@/features/Root/types/TicketFieldErrors'
@@ -51,7 +52,24 @@ export const RootPresentational = ({ data, uiState, handlers }: RootPresentation
           />
         )}
       </HStack>
-      <TicketsTable tickets={data.tickets} />
+      <Show when={data.tickets.length === 0}>
+        <EmptyState.Root>
+          <EmptyState.Content>
+            <EmptyState.Indicator>
+              <LuInbox />
+            </EmptyState.Indicator>
+            <VStack textAlign={'center'}>
+              <EmptyState.Title>チケットがありません</EmptyState.Title>
+              <EmptyState.Description>
+                質問が作成されると、ここに一覧が表示されます
+              </EmptyState.Description>
+            </VStack>
+          </EmptyState.Content>
+        </EmptyState.Root>
+      </Show>
+      <Show when={data.tickets.length != 0}>
+        <TicketsTable tickets={data.tickets} />
+      </Show>
     </Stack>
   )
 }
