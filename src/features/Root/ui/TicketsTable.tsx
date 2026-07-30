@@ -1,4 +1,4 @@
-import {  Table } from '@chakra-ui/react'
+import { Table } from '@chakra-ui/react'
 import { type TicketItemView } from '../types/TicketItemView'
 import { transformTicketVisibilityToJa } from '@/share/logic/transform/transformTicketVisibilityToJa'
 import { transformTicketStatusToJa } from '@/share/logic/transform/transformTicketStatusToJa'
