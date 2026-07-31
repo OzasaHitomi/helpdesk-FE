@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createTicket } from '@/services/internal/backend/v1/tickets'
 import { type CreateTicketRequest } from '@/services/internal/backend/v1/types/request/tickets'
-import { ticketQueryKeys } from '@/share/hooks/queries/queryKeys'
+import { ticketQueryKeys } from '../queries/queryKeys'
 
 // TanStack Queryの「更新系（POST）通信」をラップするフック
 // 通信そのもの(createTicket)や画面のロジック(useCreateTicketHandler)とは分けて、
