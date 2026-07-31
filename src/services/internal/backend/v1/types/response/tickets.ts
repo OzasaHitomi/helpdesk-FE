@@ -28,3 +28,19 @@ export type GetTicketsResponseItem = {
 export type GetTicketsResponseItemJson = Omit<GetTicketsResponseItem, 'createdAt'> & {
   createdAt: string
 }
+
+// GET /tickets/{id} のレスポンス型
+// 質問者・担当者名は現時点の画面要件に無いためBE側のレスポンスにも含まれない
+export type GetTicketResponse = {
+  id: number
+  title: string
+  detail: string
+  visibility: TicketVisibility
+  status: TicketStatus
+  createdAt: Date
+}
+
+// 通信では受け取れないため、createdAtはDate型ではなく文字列型として受け取る
+export type GetTicketResponseJson = Omit<GetTicketResponse, 'createdAt'> & {
+  createdAt: string
+}

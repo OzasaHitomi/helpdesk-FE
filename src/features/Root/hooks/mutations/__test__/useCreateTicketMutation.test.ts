@@ -5,7 +5,7 @@ import { act, waitFor } from '@testing-library/react'
 import * as ticketService from '@/services/internal/backend/v1/tickets'
 import { type CreateTicketRequest } from '@/services/internal/backend/v1/types/request/tickets'
 import { type CreateTicketResponse } from '@/services/internal/backend/v1/types/response/tickets'
-import { ticketQueryKeys } from '../../queries/queryKeys'
+import { ticketQueryKeys } from '@/share/hooks/queries/queryKeys'
 
 // BEと通信する関数(createTicket)をモックし、useCreateTicketMutationが正しい引数でcreateTicketを呼び出し、
 // 結果(成功/失敗)を正しく受け取れるか・成功時にチケット一覧のキャッシュを無効化するかをテストする

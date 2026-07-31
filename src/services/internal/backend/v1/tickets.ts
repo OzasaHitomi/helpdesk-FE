@@ -4,6 +4,8 @@ import {
   type CreateTicketResponse,
   type GetTicketsResponseItem,
   type GetTicketsResponseItemJson,
+  type GetTicketResponse,
+  type GetTicketResponseJson,
 } from '@/services/internal/backend/v1/types/response/tickets'
 
 const COMMON_URL = '/tickets'
@@ -24,4 +26,13 @@ export const getTickets = async (): Promise<GetTicketsResponseItem[]> => {
     ...d,
     createdAt: new Date(d.createdAt),
   }))
+}
+
+// 成功時は200（チケット詳細を返す。質問者・担当者名は現時点の画面要件に無いため含まれない）
+export const getTicket = async (id: number): Promise<GetTicketResponse> => {
+  const response = await internalBackendV1Client.get<GetTicketResponseJson>(
+    `${COMMON_URL}/${String(id)}`,
+  )
+
+  return { ...response.data, createdAt: new Date(response.data.createdAt) }
 }
