@@ -16,7 +16,14 @@ interface TicketDetailInfoProps {
 }
 
 // 質問日・要件・詳細の入力欄(Input/Textarea)に共通する「編集不可であることを示す」見た目
-const disabledFieldStyle = { borderRadius: '12px', bg: 'gray.100' }
+// disabledではなくreadOnlyにすることで、hover時の禁止カーソル(not-allowed)を出さずにグレー背景で非活性を表現する
+// 文字色もdisabled時と同様にグレーへ見せるため、_readOnly（Buttonの_disabledと同様のpseudo style）で上書きする
+const disabledFieldStyle = {
+  borderRadius: '12px',
+  bg: 'gray.100',
+  cursor: 'default',
+  _readOnly: { color: 'gray.500' },
+}
 
 // LabeledFieldPropsはこのコンポーネント専用のレイアウト引数であり、外部(Presentational)から渡される値ではない
 interface LabeledFieldProps {
@@ -60,7 +67,7 @@ export const TicketDetailInfo = ({ data }: TicketDetailInfoProps) => {
     <Stack gap={5}>
       {/* ── 質問日 ───────────────────────────────────────────────── */}
       <LabeledField label={'質問日'}>
-        <Input flex={1} {...disabledFieldStyle} value={createdAtText} disabled />
+        <Input w={'184px'} {...disabledFieldStyle} value={createdAtText} readOnly />
       </LabeledField>
 
       {/* ── 公開設定 ─────────────────────────────────────────────── */}
@@ -81,6 +88,8 @@ export const TicketDetailInfo = ({ data }: TicketDetailInfoProps) => {
                 borderColor={isSelected ? 'green.400' : 'transparent'}
                 color={'gray.700'}
                 disabled={isVisibilityDisabled}
+                // disabled自体は維持しつつ、hover時の禁止カーソル(not-allowed)だけを打ち消す
+                _disabled={{ cursor: 'default', opacity: 1 }}
               >
                 {transformTicketVisibilityToJa(visibility)}
               </Button>
@@ -91,12 +100,12 @@ export const TicketDetailInfo = ({ data }: TicketDetailInfoProps) => {
 
       {/* ── 要件（タイトル） ─────────────────────────────────────── */}
       <LabeledField label={'要件'}>
-        <Input flex={1} {...disabledFieldStyle} value={ticket.title} disabled />
+        <Input flex={1} {...disabledFieldStyle} value={ticket.title} readOnly />
       </LabeledField>
 
       {/* ── 詳細 ─────────────────────────────────────────────────── */}
       <LabeledField label={'詳細'} alignItems={'flex-start'} labelPt={2}>
-        <Textarea flex={1} rows={3} {...disabledFieldStyle} value={ticket.detail} disabled />
+        <Textarea flex={1} rows={3} {...disabledFieldStyle} value={ticket.detail} readOnly />
       </LabeledField>
 
       {/* ── ステータス ───────────────────────────────────────────── */}
@@ -128,7 +137,7 @@ export const TicketDetailInfo = ({ data }: TicketDetailInfoProps) => {
                   borderRadius={'8px'}
                   borderWidth={'2px'}
                   borderColor={isSelected ? 'green.400' : 'transparent'}
-                  bg={'white'}
+                  bg={isSelected ? 'white' : 'gray.100'}
                   color={'gray.700'}
                   fontWeight={isSelected ? 'bold' : 'normal'}
                   aria-current={isSelected}
