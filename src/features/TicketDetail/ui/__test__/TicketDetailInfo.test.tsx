@@ -48,12 +48,12 @@ describe('TicketDetailInfo', () => {
       expect(screen.getByDisplayValue('2026/07/30')).toBeInTheDocument()
     })
 
-    it('質問日・要件・詳細の入力欄が編集不可(disabled)であること', () => {
+    it('質問日・要件・詳細の入力欄が編集不可(readOnly)であること', () => {
       renderInfo()
 
-      expect(screen.getByDisplayValue('2026/07/30')).toBeDisabled()
-      expect(screen.getByDisplayValue(mockTicket.title)).toBeDisabled()
-      expect(screen.getByDisplayValue(mockTicket.detail)).toBeDisabled()
+      expect(screen.getByDisplayValue('2026/07/30')).toHaveAttribute('readonly')
+      expect(screen.getByDisplayValue(mockTicket.title)).toHaveAttribute('readonly')
+      expect(screen.getByDisplayValue(mockTicket.detail)).toHaveAttribute('readonly')
     })
 
     it('visibilityがprivateの場合、非公開ボタンだけが選択状態(aria-pressed=true)であること', () => {
