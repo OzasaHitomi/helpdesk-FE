@@ -1,4 +1,4 @@
-import { Table } from '@chakra-ui/react'
+import { Table, Link } from '@chakra-ui/react'
 import { type TicketItemView } from '../types/TicketItemView'
 import { transformTicketVisibilityToJa } from '@/share/logic/transform/transformTicketVisibilityToJa'
 import { transformTicketStatusToJa } from '@/share/logic/transform/transformTicketStatusToJa'
@@ -26,7 +26,10 @@ export const TicketsTable = ({ tickets }: TicketsTableProps) => {
           return (
             <Table.Row key={ticket.id}>
               <Table.Cell textAlign={'center'}>{formatDateToYmd(ticket.createdAt)}</Table.Cell>
-              <Table.Cell>{ticket.title}</Table.Cell>
+              <Table.Cell>
+                {/* ↓タイトルクリックで該当チケットの詳細画面(/tickets/:id)に遷移する */}
+                <Link href={`/tickets/${String(ticket.id)}`}>{ticket.title}</Link>
+              </Table.Cell>
               <Table.Cell textAlign={'center'}>
                 {transformTicketVisibilityToJa(ticket.visibility)}
               </Table.Cell>
