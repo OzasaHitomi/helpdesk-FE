@@ -67,14 +67,12 @@ describe('TicketsTable', () => {
     it('タイトルが該当チケットの詳細画面へのリンクになっていること', () => {
       customRender(<TicketsTable tickets={mockTickets} />)
 
-      expect(screen.getByText('ログインできない').closest('a')).toHaveAttribute(
-        'href',
-        '/tickets/1',
-      )
-      expect(screen.getByText('パスワードを忘れた').closest('a')).toHaveAttribute(
-        'href',
-        '/tickets/2',
-      )
+      mockTickets.forEach((ticket) => {
+        expect(screen.getByText(ticket.title).closest('a')).toHaveAttribute(
+          'href',
+          `/tickets/${String(ticket.id)}`,
+        )
+      })
     })
   })
 
