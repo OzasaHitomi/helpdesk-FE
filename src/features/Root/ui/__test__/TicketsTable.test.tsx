@@ -63,6 +63,19 @@ describe('TicketsTable', () => {
 
       expect(screen.getByText('田中一郎')).toBeInTheDocument()
     })
+
+    it('タイトルが該当チケットの詳細画面へのリンクになっていること', () => {
+      customRender(<TicketsTable tickets={mockTickets} />)
+
+      expect(screen.getByText('ログインできない').closest('a')).toHaveAttribute(
+        'href',
+        '/tickets/1',
+      )
+      expect(screen.getByText('パスワードを忘れた').closest('a')).toHaveAttribute(
+        'href',
+        '/tickets/2',
+      )
+    })
   })
 
   describe('準正常系', () => {
