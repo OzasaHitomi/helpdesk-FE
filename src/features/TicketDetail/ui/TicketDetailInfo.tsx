@@ -67,7 +67,7 @@ export const TicketDetailInfo = ({ data }: TicketDetailInfoProps) => {
     <Stack gap={5}>
       {/* ── 質問日 ───────────────────────────────────────────────── */}
       <LabeledField label={'質問日'}>
-        <Input w={'184px'} {...disabledFieldStyle} value={createdAtText} readOnly />
+        <Input w={'3xs'} {...disabledFieldStyle} value={createdAtText} readOnly />
       </LabeledField>
 
       {/* ── 公開設定 ─────────────────────────────────────────────── */}
@@ -79,7 +79,7 @@ export const TicketDetailInfo = ({ data }: TicketDetailInfoProps) => {
               <Button
                 key={visibility}
                 size={'sm'}
-                w={'88px'}
+                w={'3xs'}
                 borderRadius={'12px'}
                 aria-pressed={isSelected}
                 // 選択中でも、社員アカウント(disabled)の場合は背景をグレーにする（枠線の色はそのまま）
@@ -129,7 +129,7 @@ export const TicketDetailInfo = ({ data }: TicketDetailInfoProps) => {
               <HStack key={status} gap={2}>
                 <Text
                   as={'span'}
-                  w={'172px'}
+                  w={'12rem'}
                   whiteSpace={'nowrap'}
                   textAlign={'center'}
                   px={2}
