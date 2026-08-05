@@ -4,19 +4,27 @@ import { customRender } from '@/tests/helpers/customRender'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { screen } from '@testing-library/react'
 import { type TicketDetailView } from '../types/TicketDetailView'
+import { type TicketCommentView } from '../types/TicketCommentView'
 import { type GetMeResponse } from '@/services/internal/backend/v1/types/response/auth'
 
-// TicketDetailContainerがuseParams/useGetTicketHandler/useMeQueryの結果をTicketDetailPresentationalに
-// 正しく橋渡しできているかのみをテストする
+// TicketDetailContainerがuseParams/useGetTicketHandler/useGetTicketCommentsHandler/useMeQueryの結果を
+// TicketDetailPresentationalに正しく橋渡しできているかのみをテストする
 // （表示内容自体はTicketDetailPresentational.test.tsx、通信・詰め替えはuseGetTicketHandler.test.tsが担保する）
 
-const { mockUseGetTicketHandler, mockUseMeQuery } = vi.hoisted(() => ({
-  mockUseGetTicketHandler: vi.fn(),
-  mockUseMeQuery: vi.fn(),
-}))
+const { mockUseGetTicketHandler, mockUseGetTicketCommentsHandler, mockUseMeQuery } = vi.hoisted(
+  () => ({
+    mockUseGetTicketHandler: vi.fn(),
+    mockUseGetTicketCommentsHandler: vi.fn(),
+    mockUseMeQuery: vi.fn(),
+  }),
+)
 
 vi.mock('../hooks/handlers/useGetTicketHandler', () => ({
   useGetTicketHandler: mockUseGetTicketHandler,
+}))
+
+vi.mock('../hooks/handlers/useGetTicketCommentsHandler', () => ({
+  useGetTicketCommentsHandler: mockUseGetTicketCommentsHandler,
 }))
 
 vi.mock('@/share/hooks/queries/useMeQuery', () => ({
@@ -51,11 +59,24 @@ const mockTicket: TicketDetailView = {
 
 const mockMeData: GetMeResponse = { id: 1, role: 'support' }
 
+const mockComments: TicketCommentView[] = [
+  {
+    id: 1,
+    content: 'ご質問ありがとうございます。確認いたします。',
+    commenterName: '山田太郎',
+    createdAt: new Date('2026-08-04T16:12:45Z'),
+  },
+]
+
 describe('TicketDetailContainer', () => {
   beforeEach(() => {
     mockUseMeQuery.mockReturnValue({ data: mockMeData })
     mockUseGetTicketHandler.mockReturnValue({
       data: { ticket: mockTicket },
+      uiState: { isLoading: false, isError: false },
+    })
+    mockUseGetTicketCommentsHandler.mockReturnValue({
+      data: { comments: mockComments },
       uiState: { isLoading: false, isError: false },
     })
   })
@@ -84,6 +105,12 @@ describe('TicketDetailContainer', () => {
       expect(mockTicketDetailPresentational.mock.calls[0]?.[0].data.ticket).toEqual(mockTicket)
     })
 
+    it('useGetTicketCommentsHandlerのcommentsをPresentationalにそのまま渡すこと', () => {
+      customRender(<TicketDetailContainer />)
+
+      expect(mockTicketDetailPresentational.mock.calls[0]?.[0].data.comments).toEqual(mockComments)
+    })
+
     it('useMeQueryのroleをPresentationalにそのまま渡すこと', () => {
       customRender(<TicketDetailContainer />)
 
@@ -98,7 +125,7 @@ describe('TicketDetailContainer', () => {
       expect(mockTicketDetailPresentational.mock.calls[0]?.[0].data.role).toBeUndefined()
     })
 
-    it('useGetTicketHandlerのuiStateをPresentationalにそのまま渡すこと', () => {
+    it('useGetTicketHandlerがisLoading=trueの場合、uiState.isLoadingがtrueになること', () => {
       mockUseGetTicketHandler.mockReturnValue({
         data: { ticket: mockTicket },
         uiState: { isLoading: true, isError: false },
@@ -108,6 +135,34 @@ describe('TicketDetailContainer', () => {
 
       expect(mockTicketDetailPresentational).toHaveBeenCalledWith(
         expect.objectContaining({ uiState: { isLoading: true, isError: false } }),
+        undefined,
+      )
+    })
+
+    it('useGetTicketCommentsHandlerがisLoading=trueの場合も、uiState.isLoadingがtrueになること', () => {
+      mockUseGetTicketCommentsHandler.mockReturnValue({
+        data: { comments: mockComments },
+        uiState: { isLoading: true, isError: false },
+      })
+
+      customRender(<TicketDetailContainer />)
+
+      expect(mockTicketDetailPresentational).toHaveBeenCalledWith(
+        expect.objectContaining({ uiState: { isLoading: true, isError: false } }),
+        undefined,
+      )
+    })
+
+    it('useGetTicketCommentsHandlerがisError=trueの場合も、uiState.isErrorがtrueになること', () => {
+      mockUseGetTicketCommentsHandler.mockReturnValue({
+        data: { comments: [] },
+        uiState: { isLoading: false, isError: true },
+      })
+
+      customRender(<TicketDetailContainer />)
+
+      expect(mockTicketDetailPresentational).toHaveBeenCalledWith(
+        expect.objectContaining({ uiState: { isLoading: false, isError: true } }),
         undefined,
       )
     })

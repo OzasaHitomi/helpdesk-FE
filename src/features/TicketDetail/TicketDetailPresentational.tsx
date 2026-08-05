@@ -1,14 +1,17 @@
 import { EmptyState, Heading, Stack, VStack } from '@chakra-ui/react'
 import { LuCircleAlert } from 'react-icons/lu'
 import { TicketDetailInfo } from './ui/TicketDetailInfo'
+import { TicketDetailHistory } from './ui/TicketDetailHistory'
 import { LoadingPage } from '@/components/pages/LoadingPage'
 import { type TicketDetailView } from './types/TicketDetailView'
+import { type TicketCommentView } from './types/TicketCommentView'
 import { type UserRole } from '@/share/types/userRole'
 
 interface TicketDetailPresentationalProps {
   data: {
     role: UserRole | undefined
     ticket: TicketDetailView | undefined
+    comments: TicketCommentView[]
   }
   uiState: {
     isLoading: boolean
@@ -49,6 +52,7 @@ export const TicketDetailPresentational = ({ data, uiState }: TicketDetailPresen
     <Stack gap={6}>
       <Heading size={'lg'}>{`ID：${String(data.ticket.id)}`}</Heading>
       <TicketDetailInfo data={{ ticket: data.ticket, role: data.role }} />
+      <TicketDetailHistory data={{ comments: data.comments }} />
     </Stack>
   )
 }

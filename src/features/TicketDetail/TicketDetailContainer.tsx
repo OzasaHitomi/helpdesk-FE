@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { TicketDetailPresentational } from './TicketDetailPresentational'
 import { useGetTicketHandler } from './hooks/handlers/useGetTicketHandler'
+import { useGetTicketCommentsHandler } from './hooks/handlers/useGetTicketCommentsHandler'
 import { useMeQuery } from '@/share/hooks/queries/useMeQuery'
 
 // Container: 各hookを呼び出して値を集め、Presentational（見た目）に橋渡しするだけの層
@@ -9,12 +10,16 @@ export const TicketDetailContainer = () => {
   // ルートパラメータ(/tickets/:id)からチケットIDを取得する
   const { id } = useParams<{ id: string }>()
   const { data, uiState } = useGetTicketHandler(Number(id))
+  const { data: commentsData, uiState: commentsUiState } = useGetTicketCommentsHandler(Number(id))
   const { data: meData } = useMeQuery()
 
   return (
     <TicketDetailPresentational
-      data={{ role: meData?.role, ticket: data.ticket }}
-      uiState={{ isLoading: uiState.isLoading, isError: uiState.isError }}
+      data={{ role: meData?.role, ticket: data.ticket, comments: commentsData.comments }}
+      uiState={{
+        isLoading: uiState.isLoading || commentsUiState.isLoading,
+        isError: uiState.isError || commentsUiState.isError,
+      }}
     />
   )
 }
