@@ -11,13 +11,17 @@ import { type GetMeResponse } from '@/services/internal/backend/v1/types/respons
 // TicketDetailPresentationalに正しく橋渡しできているかのみをテストする
 // （表示内容自体はTicketDetailPresentational.test.tsx、通信・詰め替えはuseGetTicketHandler.test.tsが担保する）
 
-const { mockUseGetTicketHandler, mockUseGetTicketCommentsHandler, mockUseMeQuery } = vi.hoisted(
-  () => ({
-    mockUseGetTicketHandler: vi.fn(),
-    mockUseGetTicketCommentsHandler: vi.fn(),
-    mockUseMeQuery: vi.fn(),
-  }),
-)
+const {
+  mockUseGetTicketHandler,
+  mockUseGetTicketCommentsHandler,
+  mockUseCreateTicketCommentHandler,
+  mockUseMeQuery,
+} = vi.hoisted(() => ({
+  mockUseGetTicketHandler: vi.fn(),
+  mockUseGetTicketCommentsHandler: vi.fn(),
+  mockUseCreateTicketCommentHandler: vi.fn(),
+  mockUseMeQuery: vi.fn(),
+}))
 
 vi.mock('../hooks/handlers/useGetTicketHandler', () => ({
   useGetTicketHandler: mockUseGetTicketHandler,
@@ -25,6 +29,10 @@ vi.mock('../hooks/handlers/useGetTicketHandler', () => ({
 
 vi.mock('../hooks/handlers/useGetTicketCommentsHandler', () => ({
   useGetTicketCommentsHandler: mockUseGetTicketCommentsHandler,
+}))
+
+vi.mock('../hooks/handlers/useCreateTicketCommentHandler', () => ({
+  useCreateTicketCommentHandler: mockUseCreateTicketCommentHandler,
 }))
 
 vi.mock('@/share/hooks/queries/useMeQuery', () => ({
@@ -68,6 +76,12 @@ const mockComments: TicketCommentView[] = [
   },
 ]
 
+const mockCommentForm = {
+  data: { content: '', fieldErrors: {} },
+  uiState: { isSubmitting: false },
+  handlers: { setContent: vi.fn(), onSubmit: vi.fn() },
+}
+
 describe('TicketDetailContainer', () => {
   beforeEach(() => {
     mockUseMeQuery.mockReturnValue({ data: mockMeData })
@@ -79,6 +93,7 @@ describe('TicketDetailContainer', () => {
       data: { comments: mockComments },
       uiState: { isLoading: false, isError: false },
     })
+    mockUseCreateTicketCommentHandler.mockReturnValue(mockCommentForm)
   })
 
   afterEach(() => {
@@ -109,6 +124,18 @@ describe('TicketDetailContainer', () => {
       customRender(<TicketDetailContainer />)
 
       expect(mockTicketDetailPresentational.mock.calls[0]?.[0].data.comments).toEqual(mockComments)
+    })
+
+    it('ルートパラメータのidを数値に変換してuseCreateTicketCommentHandlerに渡すこと', () => {
+      customRender(<TicketDetailContainer />)
+
+      expect(mockUseCreateTicketCommentHandler).toHaveBeenCalledWith(1)
+    })
+
+    it('useCreateTicketCommentHandlerの戻り値をそのままcommentFormとしてPresentationalに渡すこと', () => {
+      customRender(<TicketDetailContainer />)
+
+      expect(mockTicketDetailPresentational.mock.calls[0]?.[0].commentForm).toEqual(mockCommentForm)
     })
 
     it('useMeQueryのroleをPresentationalにそのまま渡すこと', () => {

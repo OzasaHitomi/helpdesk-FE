@@ -1,5 +1,6 @@
 import { TicketDetailPresentational } from '../TicketDetailPresentational'
 import { TicketDetailInfo } from '../ui/TicketDetailInfo'
+import { TicketDetailCommentForm } from '../ui/TicketDetailCommentForm'
 import { TicketDetailHistory } from '../ui/TicketDetailHistory'
 import { customRender } from '@/tests/helpers/customRender'
 import { describe, it, expect, vi } from 'vitest'
@@ -8,11 +9,15 @@ import { type TicketDetailView } from '../types/TicketDetailView'
 import { type TicketCommentView } from '../types/TicketCommentView'
 
 // TicketDetailPresentationalの表示内容（取得中・取得失敗・正常時の出し分け、
-// TicketDetailInfo・TicketDetailHistoryへの橋渡し）のみをテストする
-// （TicketDetailInfo/TicketDetailHistory自体の見た目はそれぞれのtestが担保する）
+// TicketDetailInfo・TicketDetailCommentForm・TicketDetailHistoryへの橋渡し）のみをテストする
+// （TicketDetailInfo/TicketDetailCommentForm/TicketDetailHistory自体の見た目はそれぞれのtestが担保する）
 
 vi.mock('../ui/TicketDetailInfo', () => ({
   TicketDetailInfo: vi.fn(() => <div data-testid='mocked-ticket-detail-info' />),
+}))
+
+vi.mock('../ui/TicketDetailCommentForm', () => ({
+  TicketDetailCommentForm: vi.fn(() => <div data-testid='mocked-ticket-detail-comment-form' />),
 }))
 
 vi.mock('../ui/TicketDetailHistory', () => ({
@@ -20,6 +25,7 @@ vi.mock('../ui/TicketDetailHistory', () => ({
 }))
 
 const mockTicketDetailInfo = vi.mocked(TicketDetailInfo)
+const mockTicketDetailCommentForm = vi.mocked(TicketDetailCommentForm)
 const mockTicketDetailHistory = vi.mocked(TicketDetailHistory)
 
 const mockTicket: TicketDetailView = {
@@ -40,6 +46,12 @@ const mockComments: TicketCommentView[] = [
   },
 ]
 
+const mockCommentForm = {
+  data: { content: '', fieldErrors: {} },
+  uiState: { isSubmitting: false },
+  handlers: { setContent: vi.fn(), onSubmit: vi.fn() },
+}
+
 describe('TicketDetailPresentational', () => {
   describe('正常系', () => {
     it('IDが見出しに表示されること', () => {
@@ -47,6 +59,7 @@ describe('TicketDetailPresentational', () => {
         <TicketDetailPresentational
           data={{ role: 'employee', ticket: mockTicket, comments: mockComments }}
           uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
         />,
       )
 
@@ -58,6 +71,7 @@ describe('TicketDetailPresentational', () => {
         <TicketDetailPresentational
           data={{ role: 'employee', ticket: mockTicket, comments: mockComments }}
           uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
         />,
       )
 
@@ -68,11 +82,32 @@ describe('TicketDetailPresentational', () => {
       )
     })
 
+    it('TicketDetailCommentFormにcommentFormのdata/uiState/handlersがそのまま渡されること', () => {
+      customRender(
+        <TicketDetailPresentational
+          data={{ role: 'employee', ticket: mockTicket, comments: mockComments }}
+          uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
+        />,
+      )
+
+      expect(screen.getByTestId('mocked-ticket-detail-comment-form')).toBeInTheDocument()
+      expect(mockTicketDetailCommentForm).toHaveBeenCalledWith(
+        {
+          data: mockCommentForm.data,
+          uiState: mockCommentForm.uiState,
+          handlers: mockCommentForm.handlers,
+        },
+        undefined,
+      )
+    })
+
     it('TicketDetailHistoryにcommentsがそのまま渡されること', () => {
       customRender(
         <TicketDetailPresentational
           data={{ role: 'employee', ticket: mockTicket, comments: mockComments }}
           uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
         />,
       )
 
@@ -91,6 +126,7 @@ describe('TicketDetailPresentational', () => {
         <TicketDetailPresentational
           data={{ role: 'employee', ticket: undefined, comments: [] }}
           uiState={{ isLoading: true, isError: false }}
+          commentForm={mockCommentForm}
         />,
       )
 
@@ -103,6 +139,7 @@ describe('TicketDetailPresentational', () => {
         <TicketDetailPresentational
           data={{ role: 'employee', ticket: undefined, comments: [] }}
           uiState={{ isLoading: false, isError: true }}
+          commentForm={mockCommentForm}
         />,
       )
 
@@ -115,6 +152,7 @@ describe('TicketDetailPresentational', () => {
         <TicketDetailPresentational
           data={{ role: 'employee', ticket: undefined, comments: [] }}
           uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
         />,
       )
 
@@ -126,6 +164,7 @@ describe('TicketDetailPresentational', () => {
         <TicketDetailPresentational
           data={{ role: 'employee', ticket: undefined, comments: [] }}
           uiState={{ isLoading: true, isError: true }}
+          commentForm={mockCommentForm}
         />,
       )
 

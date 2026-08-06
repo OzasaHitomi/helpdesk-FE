@@ -1,0 +1,111 @@
+import { useState } from 'react'
+import { useCreateTicketCommentMutation } from '../mutations/useCreateTicketCommentMutation'
+import { createTicketCommentFormSchema } from '../../types/CreateTicketCommentForm'
+import { toaster } from '@/components/ui/toaster'
+import { extractErrorInfo } from '@/share/logic/extractErrorInfo'
+import {
+  transformValidationErrorTypeToJa,
+  GENERAL_VALIDATION_ERROR_MESSAGE,
+} from '@/share/logic/transform/transformValidationErrorTypeToJa'
+import { type TicketCommentFieldErrors } from '../../types/TicketCommentFieldErrors'
+import { type CreateTicketCommentRequest } from '@/services/internal/backend/v1/types/request/ticketComments'
+
+// ── 型ガード ─────────────────────────────────────────────────────────────
+// contentという値だけを持つ、変更できない配列を作る
+const TICKET_COMMENT_FIELDS = ['content'] as const
+// 配列の型に対して[number]を書く -> 「この配列の要素の型を取り出す」
+type TicketCommentField = (typeof TICKET_COMMENT_FIELDS)[number]
+
+// path[0]が'content'であることを確認する型ガード
+// 渡された値が、許可された項目名（今回は content）かどうかを確認する関数
+const isTicketCommentField = (field: unknown): field is TicketCommentField =>
+  typeof field === 'string' && (TICKET_COMMENT_FIELDS as readonly string[]).includes(field)
+
+// 質疑応答（対応履歴への投稿）フォームの状態とロジックをまとめたカスタムフック
+export const useCreateTicketCommentHandler = (ticketId: number) => {
+  // ── 状態（state） ────────────────────────────────────────────────────
+  // mutateAsync: 実際にBEへPOSTするための関数
+  // isPending: 通信中かどうか（trueの間は送信ボタンを無効化して二重送信を防ぐ）
+  const { mutateAsync, isPending } = useCreateTicketCommentMutation()
+
+  const [content, setContent] = useState('')
+  // フィールドごとのバリデーションエラー。入力欄の直下に表示するため、フィールド単位で持つ
+  const [fieldErrors, setFieldErrors] = useState<TicketCommentFieldErrors>({})
+
+  // ── コメント送信 ──────────────────────────────────────────────────────
+  // 「送信」ボタンが押された時の処理
+  const onSubmit = async () => {
+    // 前回のエラー表示をいったんクリアしてから、今回の入力内容を検証する
+    setFieldErrors({})
+
+    // ── ① FE側のバリデーション（zod） ──
+    const parsed = createTicketCommentFormSchema.safeParse({ content })
+    if (!parsed.success) {
+      const errors: TicketCommentFieldErrors = {}
+      parsed.error.issues.forEach(({ path, message }) => {
+        const field = path[0]
+        if (isTicketCommentField(field)) {
+          errors[field] = message
+        }
+      })
+      setFieldErrors(errors)
+      return
+    }
+
+    // ── ② BEへの送信 ──
+    const requestData: CreateTicketCommentRequest = { ...parsed.data }
+
+    try {
+      // BEへPOSTし、成功したら入力欄をクリアして成功トーストを表示する
+      await mutateAsync({ ticketId, request: requestData })
+      setContent('')
+      toaster.create({
+        type: 'success',
+        title: `ID:${String(ticketId)} 質疑応答を送信しました`,
+      })
+    } catch (e) {
+      // ── ③ 送信に失敗した場合のエラー処理 ──
+      const info = extractErrorInfo(e)
+      const errors: TicketCommentFieldErrors = {}
+
+      // ③-1. ここまでで「何が起きたか」の情報だけをerrorsに詰める
+      if (info?.type === 'VALIDATION_ERROR') {
+        const detail = info.detail
+        if (!Array.isArray(detail) || detail.length === 0) {
+          errors.general = GENERAL_VALIDATION_ERROR_MESSAGE
+        } else {
+          detail.forEach(({ loc, type }) => {
+            const field = loc.pop()
+            const message = transformValidationErrorTypeToJa(type)
+            if (isTicketCommentField(field)) {
+              errors[field] = message
+            } else {
+              errors.general = GENERAL_VALIDATION_ERROR_MESSAGE
+            }
+          })
+        }
+      } else {
+        // 403・500はBEが{ detail: string }で日本語の理由をそのまま返すため、その文言を使う
+        errors.general =
+          typeof info?.detail === 'string' ? info.detail : '質疑応答の送信に失敗しました'
+      }
+
+      // ③-2. ここから先は「どう出力するか」だけを考える
+      // 特定の入力欄に紐付けられないエラーは、トーストで通知する
+      if (errors.general) {
+        toaster.create({ type: 'error', title: errors.general })
+      }
+      setFieldErrors(errors)
+    }
+  }
+
+  // ── 画面への受け渡し ──────────────────────────────────────────────────
+  return {
+    // 画面の表示に使う値
+    data: { content, fieldErrors },
+    // 通信中かどうかなど、表示の見た目だけに関わる状態
+    uiState: { isSubmitting: isPending },
+    // 画面から呼び出してもらう操作
+    handlers: { setContent, onSubmit },
+  }
+}
