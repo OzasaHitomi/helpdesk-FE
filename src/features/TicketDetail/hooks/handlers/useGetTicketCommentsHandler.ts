@@ -7,8 +7,8 @@ import { type TicketCommentView } from '../../types/TicketCommentView'
 export const useGetTicketCommentsHandler = (id: number) => {
   const { data=[], isLoading, isError } = useGetTicketCommentsQuery(id)
 
-  // サービス層の型(GetTicketCommentsResponseItem[])からFE用の型(TicketCommentView[])に詰め替える
-  // dataが未取得の間は、空配列を返す（一覧表示のため、ticket詳細のようにundefinedにはしない）
+  // dataのデフォルト値が[]のため、未取得の間も空配列を返す（一覧表示のため、ticket詳細のようにundefinedにはしない）
+  // GetTicketCommentsResponseItemとTicketCommentViewはフィールドが一致するため、spreadでFE用の型に詰め替える
   const comments: TicketCommentView[] = [...data]
   
 
