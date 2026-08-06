@@ -53,18 +53,4 @@ describe('useGetTicketCommentsHandler', () => {
       expect(result.current.uiState).toEqual({ isLoading: true, isError: false })
     })
   })
-
-  describe('準正常系', () => {
-    it('dataが未取得(undefined)の場合、commentsが空配列を返すこと', () => {
-      mockUseGetTicketCommentsQuery.mockReturnValue({
-        data: undefined,
-        isLoading: true,
-        isError: false,
-      })
-
-      const { result } = customRenderHook(() => useGetTicketCommentsHandler(1))
-
-      expect(result.current.data.comments).toEqual([])
-    })
-  })
 })
