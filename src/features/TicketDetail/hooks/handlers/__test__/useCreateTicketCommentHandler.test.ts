@@ -124,7 +124,7 @@ describe('useCreateTicketCommentHandler', () => {
       expect(mockToasterCreate).not.toHaveBeenCalled()
     })
 
-    it('BEが422で未知のフィールドのdetailを返す場合、汎用エラートーストが出ること', async () => {
+    it('BEが422で未知のフィールドのdetailを返す場合、そのフィールド名でfieldErrorsが設定されること', async () => {
       mockMutateAsync.mockRejectedValueOnce({
         isAxiosError: true,
         response: {
@@ -144,10 +144,8 @@ describe('useCreateTicketCommentHandler', () => {
         await result.current.handlers.onSubmit()
       })
 
-      expect(mockToasterCreate).toHaveBeenCalledWith({
-        type: 'error',
-        title: '入力内容を確認してください',
-      })
+      expect(result.current.data.fieldErrors).toEqual({ unknown: '入力してください' })
+      expect(mockToasterCreate).not.toHaveBeenCalled()
     })
 
     it('axios以外のエラーの場合、汎用エラートーストが出ること', async () => {

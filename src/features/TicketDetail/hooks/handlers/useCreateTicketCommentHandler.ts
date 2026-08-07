@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { useCreateTicketCommentMutation } from '../mutations/useCreateTicketCommentMutation'
 import { createTicketCommentFormSchema } from '../../types/CreateTicketCommentForm'
 import { toaster } from '@/components/ui/toaster'
-import { buildFieldErrorsFromApiError } from '@/share/logic/buildFieldErrorsFromApiError'
+import { mapValidationErrorsToFiledMessage } from '@/share/logic/buildFieldErrorsFromApiError'
 import { type TicketCommentFieldErrors } from '../../types/TicketCommentFieldErrors'
 import { type CreateTicketCommentRequest } from '@/services/internal/backend/v1/types/request/ticketComments'
+import { extractErrorInfo } from '@/share/logic/extractErrorInfo'
 
 // ── 型ガード ─────────────────────────────────────────────────────────────
 // contentという値だけを持つ、変更できない配列を作る
@@ -60,20 +61,18 @@ export const useCreateTicketCommentHandler = (ticketId: number) => {
         title: `ID:${String(ticketId)} 質疑応答を送信しました`,
       })
     } catch (e) {
-      // ── ③ 送信に失敗した場合のエラー処理 ──
-      // ③-1. 「何が起きたか」の情報をerrorsに詰める処理はbuildFieldErrorsFromApiErrorに委譲する
-      const errors: TicketCommentFieldErrors = buildFieldErrorsFromApiError(
-        e,
-        isTicketCommentField,
-        '質疑応答の送信に失敗しました',
-      )
-
-      // ③-2. ここから先は「どう出力するか」だけを考える
-      // 特定の入力欄に紐付けられないエラーは、トーストで通知する
-      if (errors.general) {
-        toaster.create({ type: 'error', title: errors.general })
+      const info = extractErrorInfo(e)
+      if (info == undefined) {
+        toaster.create({ type: 'error', title: '質疑応答の送信に失敗しました' })
+      } else if (info.type === 'VALIDATION_ERROR') {
+        // 関数化
+        // errors = {content: 'xxxxxxxx', nara: "ssss",  general: "aaaaaaa"}
+        const errors = mapValidationErrorsToFiledMessage(info)
+        setFieldErrors(errors)
+      } else {
+        const title = typeof info.detail === 'string' ? info.detail : 'システムエラーが発生しました'
+        toaster.create({ type: 'error', title: title })
       }
-      setFieldErrors(errors)
     }
   }
 

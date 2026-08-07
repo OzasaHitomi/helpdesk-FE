@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useCreateTicketMutation } from '../mutations/useCreateTicketMutation'
 import { createTicketFormSchema, type CreateTicketForm } from '../../types/CreateTicketForm'
 import { toaster } from '@/components/ui/toaster'
-import { buildFieldErrorsFromApiError } from '@/share/logic/buildFieldErrorsFromApiError'
+import { mapValidationErrorsToFiledMessage } from '@/share/logic/buildFieldErrorsFromApiError'
+import { extractErrorInfo } from '@/share/logic/extractErrorInfo'
 import { type TicketFieldErrors } from '../../types/TicketFieldErrors'
 import { type CreateTicketRequest } from '@/services/internal/backend/v1/types/request/tickets'
 
@@ -96,24 +97,18 @@ export const useCreateTicketHandler = () => {
         title: `チケット：${requestData.title} が新規登録されました`,
       })
     } catch (e) {
-      // ── ③ 送信に失敗した場合のエラー処理 ──
-      // ③-1. 「何が起きたか」の情報をerrorsに詰める処理はbuildFieldErrorsFromApiErrorに委譲する
-      const errors: TicketFieldErrors = buildFieldErrorsFromApiError(
-        e,
-        isTicketField,
-        'チケットの登録に失敗しました',
-      )
-
-      // ③-2. ここから先は「どう出力するか」だけを考える
-      if (errors.general) {
-        // 特定の入力欄に紐付けられないエラーは、ダイアログを閉じてトーストで通知する
-        onCloseDialog()
-        toaster.create({ type: 'error', title: errors.general })
-        return
+      const info = extractErrorInfo(e)
+      if (info == undefined) {
+        toaster.create({ type: 'error', title: '質疑応答の送信に失敗しました' })
+      } else if (info.type === 'VALIDATION_ERROR') {
+        // 関数化
+        // errors = {content: 'xxxxxxxx', nara: "ssss",  general: "aaaaaaa"}
+        const errors = mapValidationErrorsToFiledMessage(info)
+        setFieldErrors(errors)
+      } else {
+        const title = typeof info.detail === 'string' ? info.detail : 'システムエラーが発生しました'
+        toaster.create({ type: 'error', title: title })
       }
-
-      // フィールドごとのエラーは、ダイアログを閉じずに各入力欄の直下に表示する
-      setFieldErrors(errors)
     }
   }
 
