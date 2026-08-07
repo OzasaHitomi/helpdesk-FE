@@ -12,7 +12,7 @@ const { mockMutateAsync, mockToasterCreate, mockIsPending } = vi.hoisted(() => (
 }))
 
 vi.mock('../../mutations/useCreateTicketCommentMutation', () => ({
-  useCreateTicketCommentMutation: (_ticketId: number) => ({
+  useCreateTicketCommentMutation: () => ({
     mutateAsync: mockMutateAsync,
     isPending: mockIsPending.current,
   }),
