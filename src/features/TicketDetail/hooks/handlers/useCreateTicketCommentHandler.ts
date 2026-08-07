@@ -26,7 +26,7 @@ export const useCreateTicketCommentHandler = (ticketId: number) => {
   // ── 状態（state） ────────────────────────────────────────────────────
   // mutateAsync: 実際にBEへPOSTするための関数
   // isPending: 通信中かどうか（trueの間は送信ボタンを無効化して二重送信を防ぐ）
-  const { mutateAsync, isPending } = useCreateTicketCommentMutation()
+  const { mutateAsync, isPending } = useCreateTicketCommentMutation(ticketId)
 
   const [content, setContent] = useState('')
   // フィールドごとのバリデーションエラー。入力欄の直下に表示するため、フィールド単位で持つ
@@ -57,7 +57,7 @@ export const useCreateTicketCommentHandler = (ticketId: number) => {
 
     try {
       // BEへPOSTし、成功したら入力欄をクリアして成功トーストを表示する
-      await mutateAsync({ ticketId, request: requestData })
+      await mutateAsync(requestData)
       setContent('')
       toaster.create({
         type: 'success',

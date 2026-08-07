@@ -47,10 +47,10 @@ describe('useCreateTicketCommentMutation', () => {
         .spyOn(ticketCommentsService, 'createTicketComment')
         .mockResolvedValue(mockResponse)
 
-      const { result } = customRenderHook(() => useCreateTicketCommentMutation())
+      const { result } = customRenderHook(() => useCreateTicketCommentMutation(1))
 
       await act(async () => {
-        await result.current.mutateAsync({ ticketId: 1, request: mockRequest })
+        await result.current.mutateAsync(mockRequest)
       })
 
       expect(createTicketCommentSpy).toHaveBeenCalledWith(1, mockRequest)
@@ -68,12 +68,10 @@ describe('useCreateTicketCommentMutation', () => {
     it('createTicketCommentが失敗した場合、mutateAsyncがエラーになること', async () => {
       vi.spyOn(ticketCommentsService, 'createTicketComment').mockRejectedValue(new Error('failed'))
 
-      const { result } = customRenderHook(() => useCreateTicketCommentMutation())
+      const { result } = customRenderHook(() => useCreateTicketCommentMutation(1))
 
       await act(async () => {
-        await expect(
-          result.current.mutateAsync({ ticketId: 1, request: mockRequest }),
-        ).rejects.toThrow('failed')
+        await expect(result.current.mutateAsync(mockRequest)).rejects.toThrow('failed')
       })
 
       await waitFor(() => {

@@ -12,7 +12,7 @@ const { mockMutateAsync, mockToasterCreate, mockIsPending } = vi.hoisted(() => (
 }))
 
 vi.mock('../../mutations/useCreateTicketCommentMutation', () => ({
-  useCreateTicketCommentMutation: () => ({
+  useCreateTicketCommentMutation: (_ticketId: number) => ({
     mutateAsync: mockMutateAsync,
     isPending: mockIsPending.current,
   }),
@@ -67,10 +67,7 @@ describe('useCreateTicketCommentHandler', () => {
         await result.current.handlers.onSubmit()
       })
 
-      expect(mockMutateAsync).toHaveBeenCalledWith({
-        ticketId: 1234,
-        request: { content: '質問内容' },
-      })
+      expect(mockMutateAsync).toHaveBeenCalledWith({ content: '質問内容' })
       expect(result.current.data.content).toBe('')
       expect(mockToasterCreate).toHaveBeenCalledWith({
         type: 'success',
