@@ -13,3 +13,12 @@ export type GetTicketCommentsResponseItem = {
 export type GetTicketCommentsResponseItemJson = Omit<GetTicketCommentsResponseItem, 'createdAt'> & {
   createdAt: string
 }
+
+// POST /tickets/{id}/comments のレスポンス型
+// 登録後はcommentsのキャッシュを再取得して一覧に反映するため、画面表示に使うのはidのみ
+export type CreateTicketCommentResponse = {
+  id: number
+  ticketId: number
+  content: string
+  createdByUserId: number
+}

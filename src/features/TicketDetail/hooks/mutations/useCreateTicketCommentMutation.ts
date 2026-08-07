@@ -1,0 +1,23 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createTicketComment } from '@/services/internal/backend/v1/ticketComments'
+import { type CreateTicketCommentRequest } from '@/services/internal/backend/v1/types/request/ticketComments'
+import { ticketDetailQueryKeys } from '../queries/queryKeys'
+
+// TanStack Queryの「更新系（POST）通信」をラップするフック
+// 通信そのもの(createTicketComment)や画面のロジック(useCreateTicketCommentHandler)とは分けて、
+// 「送信する」「送信できたらキャッシュをどうするか」だけに責務を絞っている
+// ticketIdは詳細ページ表示時点で確定しているため、mutateAsyncの引数ではなくフック自体の引数として受け取る
+export const useCreateTicketCommentMutation = (ticketId: number) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (request: CreateTicketCommentRequest) => createTicketComment(ticketId, request),
+    // onSuccess: mutationFnが成功した直後に呼ばれるコールバック
+    onSuccess: () => {
+      // 対応履歴のキャッシュを無効化し、次回表示時に今回登録した内容を含む最新の履歴を再取得させる
+      void queryClient.invalidateQueries({
+        queryKey: ticketDetailQueryKeys.comments(ticketId),
+      })
+    },
+  })
+}

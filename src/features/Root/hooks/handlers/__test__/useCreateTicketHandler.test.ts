@@ -133,7 +133,7 @@ describe('useCreateTicketHandler', () => {
 
   // ── 異常系 ────────────────────────────────────────────────────────────────
   describe('異常系', () => {
-    it('BEが403等でdetail(文字列)を返す場合、その文言のエラートーストが出て、ダイアログが閉じること', async () => {
+    it('BEが403等でdetail(文字列)を返す場合、その文言のエラートーストが出ること', async () => {
       mockMutateAsync.mockRejectedValueOnce({
         isAxiosError: true,
         response: { data: { detail: '社員アカウントのみチケットを作成できます' } },
@@ -148,7 +148,7 @@ describe('useCreateTicketHandler', () => {
         await result.current.handlers.onSubmitTicket(mockForm)
       })
 
-      expect(result.current.data.isDialogOpen).toBe(false)
+      expect(result.current.data.isDialogOpen).toBe(true)
       expect(mockToasterCreate).toHaveBeenCalledWith({
         type: 'error',
         title: '社員アカウントのみチケットを作成できます',
@@ -207,7 +207,7 @@ describe('useCreateTicketHandler', () => {
       })
     })
 
-    it('BEが422で未知のフィールドのdetailを返す場合、汎用エラートーストが出ること', async () => {
+    it('BEが422で未知のフィールドのdetailを返す場合、そのフィールド名でfieldErrorsが設定されること', async () => {
       mockMutateAsync.mockRejectedValueOnce({
         isAxiosError: true,
         response: {
@@ -223,10 +223,8 @@ describe('useCreateTicketHandler', () => {
         await result.current.handlers.onSubmitTicket(mockForm)
       })
 
-      expect(mockToasterCreate).toHaveBeenCalledWith({
-        type: 'error',
-        title: '入力内容を確認してください',
-      })
+      expect(result.current.data.fieldErrors).toEqual({ unknown: '入力してください' })
+      expect(mockToasterCreate).not.toHaveBeenCalled()
     })
 
     // typeが無い(≒VALIDATION_ERRORでない)場合はdetailの形にかかわらず422として扱わない、
@@ -246,15 +244,15 @@ describe('useCreateTicketHandler', () => {
         await result.current.handlers.onSubmitTicket(mockForm)
       })
 
-      expect(result.current.data.isDialogOpen).toBe(false)
+      expect(result.current.data.isDialogOpen).toBe(true)
       expect(result.current.data.fieldErrors).toEqual({})
       expect(mockToasterCreate).toHaveBeenCalledWith({
         type: 'error',
-        title: 'チケットの登録に失敗しました',
+        title: 'システムエラーが発生しました',
       })
     })
 
-    it('axios以外のエラーの場合、汎用エラートーストが出て、ダイアログが閉じること', async () => {
+    it('axios以外のエラーの場合、汎用エラートーストが出ること', async () => {
       mockMutateAsync.mockRejectedValueOnce(new Error('network error'))
       const { result } = customRenderHook(() => useCreateTicketHandler())
 
@@ -266,10 +264,10 @@ describe('useCreateTicketHandler', () => {
         await result.current.handlers.onSubmitTicket(mockForm)
       })
 
-      expect(result.current.data.isDialogOpen).toBe(false)
+      expect(result.current.data.isDialogOpen).toBe(true)
       expect(mockToasterCreate).toHaveBeenCalledWith({
         type: 'error',
-        title: 'チケットの登録に失敗しました',
+        title: '質疑応答の送信に失敗しました',
       })
     })
   })

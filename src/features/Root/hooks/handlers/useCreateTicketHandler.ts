@@ -2,11 +2,8 @@ import { useState } from 'react'
 import { useCreateTicketMutation } from '../mutations/useCreateTicketMutation'
 import { createTicketFormSchema, type CreateTicketForm } from '../../types/CreateTicketForm'
 import { toaster } from '@/components/ui/toaster'
+import { mapValidationErrorsToFiledMessage } from '@/share/logic/buildFieldErrorsFromApiError'
 import { extractErrorInfo } from '@/share/logic/extractErrorInfo'
-import {
-  transformValidationErrorTypeToJa,
-  GENERAL_VALIDATION_ERROR_MESSAGE,
-} from '@/share/logic/transform/transformValidationErrorTypeToJa'
 import { type TicketFieldErrors } from '../../types/TicketFieldErrors'
 import { type CreateTicketRequest } from '@/services/internal/backend/v1/types/request/tickets'
 
@@ -100,50 +97,18 @@ export const useCreateTicketHandler = () => {
         title: `チケット：${requestData.title} が新規登録されました`,
       })
     } catch (e) {
-      // ── ③ 送信に失敗した場合のエラー処理 ──
-      // BEが返すエラーのdetail・typeを取り出す
       const info = extractErrorInfo(e)
-      const errors: TicketFieldErrors = {}
-
-      // ③-1. ここまでで「何が起きたか」の情報だけをerrorsに詰める
-      if (info?.type === 'VALIDATION_ERROR') {
-        // 422(入力バリデーションエラー)。BEはloc(エラー箇所)とtype(エラー種別)のみを返すため、FE側で以下を行う
-        //   1. loc（例: ['body', 'title']）の末尾から、エラーの原因になった入力フォームを特定する
-        //   2. typeを翻訳dict(transformValidationErrorTypeToJa)で日本語文言に変換する
-        //   3. フィールドごとの文言としてerrorsにセットする
-        const detail = info.detail
-        if (!Array.isArray(detail) || detail.length === 0) {
-          // detailが配列でない、または空（＝BEの仕様変更などで想定外の形になった）場合は汎用メッセージにフォールバックする
-          errors.general = GENERAL_VALIDATION_ERROR_MESSAGE
-        } else {
-          detail.forEach(({ loc, type }) => {
-            const field = loc.pop()
-            const message = transformValidationErrorTypeToJa(type)
-            if (isTicketField(field)) {
-              errors[field] = message
-            } else {
-              // 想定していないフィールド名は特定の入力欄に紐付けられないため、generalに寄せる
-              errors.general = GENERAL_VALIDATION_ERROR_MESSAGE
-            }
-          })
-        }
+      if (info == undefined) {
+        toaster.create({ type: 'error', title: '質疑応答の送信に失敗しました' })
+      } else if (info.type === 'VALIDATION_ERROR') {
+        // 関数化
+        // errors = {content: 'xxxxxxxx', nara: "ssss",  general: "aaaaaaa"}
+        const errors = mapValidationErrorsToFiledMessage(info)
+        setFieldErrors(errors)
       } else {
-        // 422以外（403・500・ネットワークエラー等）
-        // 403・500はBEが{ detail: string }で日本語の理由をそのまま返すため、その文言を使う
-        errors.general =
-          typeof info?.detail === 'string' ? info.detail : 'チケットの登録に失敗しました'
+        const title = typeof info.detail === 'string' ? info.detail : 'システムエラーが発生しました'
+        toaster.create({ type: 'error', title: title })
       }
-
-      // ③-2. ここから先は「どう出力するか」だけを考える
-      if (errors.general) {
-        // 特定の入力欄に紐付けられないエラーは、ダイアログを閉じてトーストで通知する
-        onCloseDialog()
-        toaster.create({ type: 'error', title: errors.general })
-        return
-      }
-
-      // フィールドごとのエラーは、ダイアログを閉じずに各入力欄の直下に表示する
-      setFieldErrors(errors)
     }
   }
 
