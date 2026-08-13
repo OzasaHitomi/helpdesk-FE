@@ -15,6 +15,8 @@ const mockTicket: TicketDetailView = {
   detail: 'パスワードを変更したらログインできなくなりました',
   visibility: 'private',
   status: 'in_progress',
+  supportUserId: null,
+  supportUserName: null,
   createdAt: new Date('2026-07-30T00:00:00'),
 }
 

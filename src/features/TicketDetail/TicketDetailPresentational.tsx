@@ -1,8 +1,9 @@
-import { EmptyState, Heading, Stack, VStack } from '@chakra-ui/react'
+import { EmptyState, Heading, HStack, Stack, VStack } from '@chakra-ui/react'
 import { LuCircleAlert } from 'react-icons/lu'
 import { TicketDetailInfo } from './ui/TicketDetailInfo'
 import { TicketDetailCommentForm } from './ui/TicketDetailCommentForm'
 import { TicketDetailHistory } from './ui/TicketDetailHistory'
+import { TicketDetailAssignButton } from './ui/TicketDetailAssignButton'
 import { LoadingPage } from '@/components/pages/LoadingPage'
 import { type TicketDetailView } from './types/TicketDetailView'
 import { type TicketCommentView } from './types/TicketCommentView'
@@ -34,6 +35,20 @@ interface TicketDetailPresentationalProps {
       onSubmit: () => Promise<void>
     }
   }
+  // useAssignTicketHandlerの戻り値(data/uiState/handlers)を、
+  // そのままTicketDetailAssignButtonのpropsとして渡せる形で受け取る
+  assignment: {
+    data: {
+      buttonLabel: string | null
+      supportUserName: string | null
+    }
+    uiState: {
+      isSubmitting: boolean
+    }
+    handlers: {
+      onClick: (() => Promise<void>) | undefined
+    }
+  }
 }
 
 // Presentational: 実際の画面表示を担当する層
@@ -43,6 +58,7 @@ export const TicketDetailPresentational = ({
   data,
   uiState,
   commentForm,
+  assignment,
 }: TicketDetailPresentationalProps) => {
   // 初回取得中は配下の画面が一瞬映ってしまうのを防ぐため、ローディング画面を表示する
   // （キャッシュがある状態の再取得は対象外にするため、isFetchingではなくisLoadingで判定する）
@@ -71,7 +87,14 @@ export const TicketDetailPresentational = ({
 
   return (
     <Stack gap={6}>
-      <Heading size={'lg'}>{`ID：${String(data.ticket.id)}`}</Heading>
+      <HStack gap={4}>
+        <Heading size={'lg'}>{`ID：${String(data.ticket.id)}`}</Heading>
+        <TicketDetailAssignButton
+          data={assignment.data}
+          uiState={assignment.uiState}
+          handlers={assignment.handlers}
+        />
+      </HStack>
       <TicketDetailInfo data={{ ticket: data.ticket, role: data.role }} />
       <TicketDetailCommentForm
         data={commentForm.data}
