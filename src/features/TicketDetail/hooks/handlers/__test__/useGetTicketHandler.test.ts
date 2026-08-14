@@ -20,6 +20,8 @@ const mockTicketResponse: GetTicketResponse = {
   detail: 'パスワードを変更したらログインできなくなりました',
   visibility: 'private',
   status: 'new_question',
+  supportUserId: null,
+  supportUserName: null,
   createdAt: new Date('2026-07-29T00:00:00Z'),
 }
 
@@ -36,9 +38,21 @@ describe('useGetTicketHandler', () => {
         isError: false,
       })
 
-      const { result } = customRenderHook(() => useGetTicketHandler(1))
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support'))
 
-      expect(result.current.data.ticket).toEqual(mockTicketResponse)
+      expect(result.current.data.ticket).toEqual({ ...mockTicketResponse, isAssignableToMe: true })
+    })
+
+    it('roleがsupport以外の場合、isAssignableToMeがfalseになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: mockTicketResponse,
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'employee'))
+
+      expect(result.current.data.ticket?.isAssignableToMe).toBe(false)
     })
 
     it('uiStateにisLoading/isErrorがそのまま渡されること', () => {
@@ -48,7 +62,7 @@ describe('useGetTicketHandler', () => {
         isError: false,
       })
 
-      const { result } = customRenderHook(() => useGetTicketHandler(1))
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support'))
 
       expect(result.current.uiState).toEqual({ isLoading: true, isError: false })
     })
@@ -62,7 +76,7 @@ describe('useGetTicketHandler', () => {
         isError: false,
       })
 
-      const { result } = customRenderHook(() => useGetTicketHandler(1))
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support'))
 
       expect(result.current.data.ticket).toBeUndefined()
     })

@@ -10,5 +10,8 @@ export type TicketDetailView = {
   detail: string
   visibility: TicketVisibility
   status: TicketStatus
+  supportUserId: number | null
+  supportUserName: string | null
+  isAssignableToMe: boolean
   createdAt: Date
 }

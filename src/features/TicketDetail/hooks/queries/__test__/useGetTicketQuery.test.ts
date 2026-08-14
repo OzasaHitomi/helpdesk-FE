@@ -14,6 +14,8 @@ const mockTicketResponse: GetTicketResponse = {
   detail: 'パスワードを変更したらログインできなくなりました',
   visibility: 'private',
   status: 'new_question',
+  supportUserId: null,
+  supportUserName: null,
   createdAt: new Date('2026-07-29T00:00:00Z'),
 }
 
