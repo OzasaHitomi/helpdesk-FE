@@ -6,6 +6,8 @@ import {
   type GetTicketsResponseItemJson,
   type GetTicketResponse,
   type GetTicketResponseJson,
+  type UnassignTicketResponse,
+  type UnassignTicketResponseJson,
 } from '@/services/internal/backend/v1/types/response/tickets'
 
 const COMMON_URL = '/tickets'
@@ -35,4 +37,13 @@ export const getTicket = async (id: number): Promise<GetTicketResponse> => {
   )
 
   return { ...response.data, createdAt: new Date(response.data.createdAt) }
+}
+
+// 成功時は200（担当解除後のチケット情報を返す。FE側では値を使わない）
+export const unassignTicket = async (id: number): Promise<UnassignTicketResponse> => {
+  const response = await internalBackendV1Client.delete<UnassignTicketResponseJson>(
+    `${COMMON_URL}/${String(id)}/assign`,
+  )
+
+  return { ...response.data, updatedAt: new Date(response.data.updatedAt) }
 }

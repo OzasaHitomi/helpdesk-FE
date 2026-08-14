@@ -44,3 +44,18 @@ export type GetTicketResponse = {
 export type GetTicketResponseJson = Omit<GetTicketResponse, 'createdAt'> & {
   createdAt: string
 }
+
+// DELETE /tickets/{id}/assign のレスポンス型（チケット担当解除API）
+// 解除後は担当者がいなくなるため、PUT /tickets/{id}/assign（担当者になるAPI）のレスポンスとは異なる型として定義する
+export type UnassignTicketResponse = {
+  id: number
+  status: TicketStatus
+  supportUserId: null
+  supportUserName: null
+  updatedAt: Date
+}
+
+// 通信では受け取れないため、updatedAtはDate型ではなく文字列型として受け取る
+export type UnassignTicketResponseJson = Omit<UnassignTicketResponse, 'updatedAt'> & {
+  updatedAt: string
+}
