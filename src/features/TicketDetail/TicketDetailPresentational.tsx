@@ -38,9 +38,6 @@ interface TicketDetailPresentationalProps {
   // useAssignTicketHandlerの戻り値(data/uiState/handlers)を、
   // そのままTicketDetailAssignButtonのpropsとして渡せる形で受け取る
   assignment: {
-    data: {
-      isAssignableToMe: boolean
-    }
     uiState: {
       isSubmitting: boolean
     }
@@ -89,7 +86,7 @@ export const TicketDetailPresentational = ({
       <HStack gap={4}>
         <Heading size={'lg'}>{`ID：${String(data.ticket.id)}`}</Heading>
         <TicketDetailAssignButton
-          data={assignment.data}
+          data={{isAssignableToMe:data.ticket.isAssignableToMe}}
           uiState={assignment.uiState}
           handlers={assignment.handlers}
         />

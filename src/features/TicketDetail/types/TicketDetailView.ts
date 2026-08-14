@@ -12,5 +12,6 @@ export type TicketDetailView = {
   status: TicketStatus
   supportUserId: number | null
   supportUserName: string | null
+  isAssignableToMe: boolean
   createdAt: Date
 }
