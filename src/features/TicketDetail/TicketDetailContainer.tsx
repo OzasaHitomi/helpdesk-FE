@@ -28,8 +28,8 @@ export const TicketDetailContainer = () => {
   // ---------------------------
   // ログインしているユーザーの情報を取得
   const { data: meData } = useMeQuery()
-  // 担当者になる／担当解除ボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
-  const assignment = useAssignTicketHandler(Number(id), data.ticket, meData?.role, meData?.id)
+  // 担当者になるボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
+  const assignment = useAssignTicketHandler(Number(id), data.ticket, meData?.role)
 
   // ---------------------------
   return (

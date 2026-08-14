@@ -1,4 +1,4 @@
-import { EmptyState, Heading, HStack, Stack, VStack } from '@chakra-ui/react'
+import { EmptyState, Heading, HStack, Stack, Text, VStack } from '@chakra-ui/react'
 import { LuCircleAlert } from 'react-icons/lu'
 import { TicketDetailInfo } from './ui/TicketDetailInfo'
 import { TicketDetailCommentForm } from './ui/TicketDetailCommentForm'
@@ -39,14 +39,13 @@ interface TicketDetailPresentationalProps {
   // そのままTicketDetailAssignButtonのpropsとして渡せる形で受け取る
   assignment: {
     data: {
-      buttonLabel: string | null
-      supportUserName: string | null
+      isAssignableToMe: boolean
     }
     uiState: {
       isSubmitting: boolean
     }
     handlers: {
-      onClick: (() => Promise<void>) | undefined
+      onClick: () => Promise<void>
     }
   }
 }
@@ -94,6 +93,7 @@ export const TicketDetailPresentational = ({
           uiState={assignment.uiState}
           handlers={assignment.handlers}
         />
+        {data.ticket.supportUserName && <Text>{data.ticket.supportUserName}</Text>}
       </HStack>
       <TicketDetailInfo data={{ ticket: data.ticket, role: data.role }} />
       <TicketDetailCommentForm

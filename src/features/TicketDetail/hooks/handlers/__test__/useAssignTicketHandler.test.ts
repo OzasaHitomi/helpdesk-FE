@@ -41,71 +41,44 @@ describe('useAssignTicketHandler', () => {
   })
 
   // ── ボタン表示の出し分け ────────────────────────────────────────────────
-  describe('ボタン表示の出し分け', () => {
-    it('サポート担当かつ新規質問かつ担当者未割り当ての場合、「担当者になる」が表示されonClickが呼べること', () => {
-      const { result } = customRenderHook(() =>
-        useAssignTicketHandler(1, baseTicket, 'support', 10),
-      )
+  describe('isAssignableToMeの出し分け', () => {
+    it('サポート担当かつ新規質問かつ担当者未割り当ての場合、isAssignableToMeがtrueになること', () => {
+      const { result } = customRenderHook(() => useAssignTicketHandler(1, baseTicket, 'support'))
 
-      expect(result.current.data.buttonLabel).toBe('担当者になる')
-      expect(result.current.handlers.onClick).toBeDefined()
+      expect(result.current.data.isAssignableToMe).toBe(true)
     })
 
-    it('サポート担当かつ担当者が自分の場合、「担当解除」が表示されonClickは未接続(undefined)であること', () => {
+    it('サポート担当かつ担当者が既に割り当て済みの場合、isAssignableToMeがfalseになること', () => {
       const ticket = { ...baseTicket, status: 'assigned' as const, supportUserId: 10 }
-      const { result } = customRenderHook(() => useAssignTicketHandler(1, ticket, 'support', 10))
+      const { result } = customRenderHook(() => useAssignTicketHandler(1, ticket, 'support'))
 
-      expect(result.current.data.buttonLabel).toBe('担当解除')
-      expect(result.current.handlers.onClick).toBeUndefined()
+      expect(result.current.data.isAssignableToMe).toBe(false)
     })
 
-    it('サポート担当かつ担当者が他人の場合、ボタンが表示されないこと', () => {
-      const ticket = { ...baseTicket, status: 'assigned' as const, supportUserId: 99 }
-      const { result } = customRenderHook(() => useAssignTicketHandler(1, ticket, 'support', 10))
+    it('roleがemployeeの場合、担当者未割り当てでもisAssignableToMeがfalseになること', () => {
+      const { result } = customRenderHook(() => useAssignTicketHandler(1, baseTicket, 'employee'))
 
-      expect(result.current.data.buttonLabel).toBeNull()
+      expect(result.current.data.isAssignableToMe).toBe(false)
     })
 
-    it('roleがemployeeの場合、担当者未割り当てでもボタンが表示されないこと', () => {
-      const { result } = customRenderHook(() =>
-        useAssignTicketHandler(1, baseTicket, 'employee', 10),
-      )
+    it('ticketが未取得(undefined)の場合、isAssignableToMeがfalseになること', () => {
+      const { result } = customRenderHook(() => useAssignTicketHandler(1, undefined, 'support'))
 
-      expect(result.current.data.buttonLabel).toBeNull()
+      expect(result.current.data.isAssignableToMe).toBe(false)
     })
 
-    it('担当者割り当て済みでもステータスが対応中に進んでいる場合、自分が担当者ならボタンが表示されること', () => {
-      const ticket = { ...baseTicket, status: 'in_progress' as const, supportUserId: 10 }
-      const { result } = customRenderHook(() => useAssignTicketHandler(1, ticket, 'support', 10))
+    it('handlers.onClickは常に関数として返されること', () => {
+      const ticket = { ...baseTicket, status: 'assigned' as const, supportUserId: 10 }
+      const { result } = customRenderHook(() => useAssignTicketHandler(1, ticket, 'support'))
 
-      expect(result.current.data.buttonLabel).toBe('担当解除')
-    })
-
-    it('supportUserNameがそのままdataに渡されること', () => {
-      const ticket = {
-        ...baseTicket,
-        status: 'assigned' as const,
-        supportUserId: 10,
-        supportUserName: '山田太郎',
-      }
-      const { result } = customRenderHook(() => useAssignTicketHandler(1, ticket, 'support', 10))
-
-      expect(result.current.data.supportUserName).toBe('山田太郎')
-    })
-
-    it('ticketが未取得(undefined)の場合、ボタンが表示されないこと', () => {
-      const { result } = customRenderHook(() => useAssignTicketHandler(1, undefined, 'support', 10))
-
-      expect(result.current.data.buttonLabel).toBeNull()
+      expect(result.current.handlers.onClick).toBeInstanceOf(Function)
     })
   })
 
   describe('登録処理中の状態', () => {
     it('登録処理中の場合、uiState.isSubmittingがtrueになること', () => {
       mockIsPending.current = true
-      const { result } = customRenderHook(() =>
-        useAssignTicketHandler(1, baseTicket, 'support', 10),
-      )
+      const { result } = customRenderHook(() => useAssignTicketHandler(1, baseTicket, 'support'))
 
       expect(result.current.uiState.isSubmitting).toBe(true)
     })
@@ -115,12 +88,10 @@ describe('useAssignTicketHandler', () => {
   describe('担当者になるボタンの操作', () => {
     it('登録に成功した場合、mutateAsyncが呼ばれ、成功トーストが出ること', async () => {
       mockMutateAsync.mockResolvedValueOnce(undefined)
-      const { result } = customRenderHook(() =>
-        useAssignTicketHandler(1, baseTicket, 'support', 10),
-      )
+      const { result } = customRenderHook(() => useAssignTicketHandler(1, baseTicket, 'support'))
 
       await act(async () => {
-        await result.current.handlers.onClick?.()
+        await result.current.handlers.onClick()
       })
 
       expect(mockMutateAsync).toHaveBeenCalled()
@@ -137,12 +108,10 @@ describe('useAssignTicketHandler', () => {
           data: { detail: 'すでに担当者が設定されています', type: 'BUSINESS_ERROR' },
         },
       })
-      const { result } = customRenderHook(() =>
-        useAssignTicketHandler(1, baseTicket, 'support', 10),
-      )
+      const { result } = customRenderHook(() => useAssignTicketHandler(1, baseTicket, 'support'))
 
       await act(async () => {
-        await result.current.handlers.onClick?.()
+        await result.current.handlers.onClick()
       })
 
       expect(mockToasterCreate).toHaveBeenCalledWith({
@@ -156,12 +125,10 @@ describe('useAssignTicketHandler', () => {
         isAxiosError: true,
         response: { data: { detail: '担当者を設定する権限がありません' } },
       })
-      const { result } = customRenderHook(() =>
-        useAssignTicketHandler(1, baseTicket, 'support', 10),
-      )
+      const { result } = customRenderHook(() => useAssignTicketHandler(1, baseTicket, 'support'))
 
       await act(async () => {
-        await result.current.handlers.onClick?.()
+        await result.current.handlers.onClick()
       })
 
       expect(mockToasterCreate).toHaveBeenCalledWith({
@@ -172,12 +139,10 @@ describe('useAssignTicketHandler', () => {
 
     it('axios以外のエラーの場合、汎用エラートーストが出ること', async () => {
       mockMutateAsync.mockRejectedValueOnce(new Error('network error'))
-      const { result } = customRenderHook(() =>
-        useAssignTicketHandler(1, baseTicket, 'support', 10),
-      )
+      const { result } = customRenderHook(() => useAssignTicketHandler(1, baseTicket, 'support'))
 
       await act(async () => {
-        await result.current.handlers.onClick?.()
+        await result.current.handlers.onClick()
       })
 
       expect(mockToasterCreate).toHaveBeenCalledWith({

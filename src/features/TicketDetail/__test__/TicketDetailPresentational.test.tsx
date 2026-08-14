@@ -61,7 +61,7 @@ const mockCommentForm = {
 }
 
 const mockAssignment = {
-  data: { buttonLabel: '担当者になる', supportUserName: null },
+  data: { isAssignableToMe: true },
   uiState: { isSubmitting: false },
   handlers: { onClick: vi.fn() },
 }
@@ -155,6 +155,36 @@ describe('TicketDetailPresentational', () => {
         },
         undefined,
       )
+    })
+
+    it('ticket.supportUserNameが設定されている場合、担当者名が表示されること', () => {
+      customRender(
+        <TicketDetailPresentational
+          data={{
+            role: 'employee',
+            ticket: { ...mockTicket, supportUserName: '山田太郎' },
+            comments: mockComments,
+          }}
+          uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
+          assignment={mockAssignment}
+        />,
+      )
+
+      expect(screen.getByText('山田太郎')).toBeInTheDocument()
+    })
+
+    it('ticket.supportUserNameがnullの場合、担当者名が表示されないこと', () => {
+      customRender(
+        <TicketDetailPresentational
+          data={{ role: 'employee', ticket: mockTicket, comments: mockComments }}
+          uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
+          assignment={mockAssignment}
+        />,
+      )
+
+      expect(screen.queryByText('山田太郎')).not.toBeInTheDocument()
     })
   })
 

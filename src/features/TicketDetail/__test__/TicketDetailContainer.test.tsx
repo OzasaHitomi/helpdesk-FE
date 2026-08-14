@@ -76,7 +76,7 @@ const mockTicket: TicketDetailView = {
 const mockMeData: GetMeResponse = { id: 1, role: 'support' }
 
 const mockAssignment = {
-  data: { buttonLabel: '担当者になる', supportUserName: null },
+  data: { isAssignableToMe: true },
   uiState: { isSubmitting: false },
   handlers: { onClick: vi.fn() },
 }
@@ -167,10 +167,10 @@ describe('TicketDetailContainer', () => {
       expect(mockTicketDetailPresentational.mock.calls[0]?.[0].data.role).toBeUndefined()
     })
 
-    it('ルートパラメータのid・ticket・meDataのrole/idをuseAssignTicketHandlerに渡すこと', () => {
+    it('ルートパラメータのid・ticket・meDataのroleをuseAssignTicketHandlerに渡すこと', () => {
       customRender(<TicketDetailContainer />)
 
-      expect(mockUseAssignTicketHandler).toHaveBeenCalledWith(1, mockTicket, 'support', 1)
+      expect(mockUseAssignTicketHandler).toHaveBeenCalledWith(1, mockTicket, 'support')
     })
 
     it('useAssignTicketHandlerの戻り値をそのままassignmentとしてPresentationalに渡すこと', () => {
