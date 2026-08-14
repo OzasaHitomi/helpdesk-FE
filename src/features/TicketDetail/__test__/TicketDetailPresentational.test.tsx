@@ -42,6 +42,7 @@ const mockTicket: TicketDetailView = {
   status: 'new_question',
   supportUserId: null,
   supportUserName: null,
+  isAssignableToMe: true,
   createdAt: new Date('2026-07-29T00:00:00'),
 }
 
@@ -61,7 +62,6 @@ const mockCommentForm = {
 }
 
 const mockAssignment = {
-  data: { isAssignableToMe: true },
   uiState: { isSubmitting: false },
   handlers: { onClick: vi.fn() },
 }
@@ -136,7 +136,7 @@ describe('TicketDetailPresentational', () => {
       )
     })
 
-    it('TicketDetailAssignButtonにassignmentのdata/uiState/handlersがそのまま渡されること', () => {
+    it('TicketDetailAssignButtonにticket.isAssignableToMeとassignmentのuiState/handlersが渡されること', () => {
       customRender(
         <TicketDetailPresentational
           data={{ role: 'employee', ticket: mockTicket, comments: mockComments }}
@@ -149,7 +149,7 @@ describe('TicketDetailPresentational', () => {
       expect(screen.getByTestId('mocked-ticket-detail-assign-button')).toBeInTheDocument()
       expect(mockTicketDetailAssignButton).toHaveBeenCalledWith(
         {
-          data: mockAssignment.data,
+          data: { isAssignableToMe: mockTicket.isAssignableToMe },
           uiState: mockAssignment.uiState,
           handlers: mockAssignment.handlers,
         },

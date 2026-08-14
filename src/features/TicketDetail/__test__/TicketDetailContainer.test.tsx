@@ -70,13 +70,13 @@ const mockTicket: TicketDetailView = {
   status: 'new_question',
   supportUserId: null,
   supportUserName: null,
+  isAssignableToMe: true,
   createdAt: new Date('2026-07-29T00:00:00Z'),
 }
 
 const mockMeData: GetMeResponse = { id: 1, role: 'support' }
 
 const mockAssignment = {
-  data: { isAssignableToMe: true },
   uiState: { isSubmitting: false },
   handlers: { onClick: vi.fn() },
 }
@@ -123,10 +123,10 @@ describe('TicketDetailContainer', () => {
       expect(screen.getByTestId('mocked-ticket-detail-presentational')).toBeInTheDocument()
     })
 
-    it('ルートパラメータのidを数値に変換してuseGetTicketHandlerに渡すこと', () => {
+    it('ルートパラメータのidとmeDataのroleを数値に変換してuseGetTicketHandlerに渡すこと', () => {
       customRender(<TicketDetailContainer />)
 
-      expect(mockUseGetTicketHandler).toHaveBeenCalledWith(1)
+      expect(mockUseGetTicketHandler).toHaveBeenCalledWith(1, 'support')
     })
 
     it('useGetTicketHandlerのticketをPresentationalにそのまま渡すこと', () => {
@@ -167,10 +167,10 @@ describe('TicketDetailContainer', () => {
       expect(mockTicketDetailPresentational.mock.calls[0]?.[0].data.role).toBeUndefined()
     })
 
-    it('ルートパラメータのid・ticket・meDataのroleをuseAssignTicketHandlerに渡すこと', () => {
+    it('ルートパラメータのidを数値に変換してuseAssignTicketHandlerに渡すこと', () => {
       customRender(<TicketDetailContainer />)
 
-      expect(mockUseAssignTicketHandler).toHaveBeenCalledWith(1, mockTicket, 'support')
+      expect(mockUseAssignTicketHandler).toHaveBeenCalledWith(1)
     })
 
     it('useAssignTicketHandlerの戻り値をそのままassignmentとしてPresentationalに渡すこと', () => {

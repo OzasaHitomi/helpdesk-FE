@@ -17,6 +17,7 @@ const mockTicket: TicketDetailView = {
   status: 'in_progress',
   supportUserId: null,
   supportUserName: null,
+  isAssignableToMe: false,
   createdAt: new Date('2026-07-30T00:00:00'),
 }
 
