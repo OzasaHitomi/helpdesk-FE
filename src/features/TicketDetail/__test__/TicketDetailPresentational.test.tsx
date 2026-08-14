@@ -136,7 +136,7 @@ describe('TicketDetailPresentational', () => {
       )
     })
 
-    it('TicketDetailAssignButtonにticket.isAssignableToMeとassignmentのuiState/handlersが渡されること', () => {
+    it('TicketDetailAssignButtonにassignmentのuiState/handlersが渡されること', () => {
       customRender(
         <TicketDetailPresentational
           data={{ role: 'employee', ticket: mockTicket, comments: mockComments }}
@@ -149,12 +149,28 @@ describe('TicketDetailPresentational', () => {
       expect(screen.getByTestId('mocked-ticket-detail-assign-button')).toBeInTheDocument()
       expect(mockTicketDetailAssignButton).toHaveBeenCalledWith(
         {
-          data: { isAssignableToMe: mockTicket.isAssignableToMe },
           uiState: mockAssignment.uiState,
           handlers: mockAssignment.handlers,
         },
         undefined,
       )
+    })
+
+    it('ticket.isAssignableToMeがfalseの場合、TicketDetailAssignButtonが表示されないこと', () => {
+      customRender(
+        <TicketDetailPresentational
+          data={{
+            role: 'employee',
+            ticket: { ...mockTicket, isAssignableToMe: false },
+            comments: mockComments,
+          }}
+          uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
+          assignment={mockAssignment}
+        />,
+      )
+
+      expect(screen.queryByTestId('mocked-ticket-detail-assign-button')).not.toBeInTheDocument()
     })
 
     it('ticket.supportUserNameが設定されている場合、担当者名が表示されること', () => {

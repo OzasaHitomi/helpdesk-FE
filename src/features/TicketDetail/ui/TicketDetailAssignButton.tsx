@@ -1,9 +1,6 @@
 import { Button } from '@chakra-ui/react'
 
 interface TicketDetailAssignButtonProps {
-  data: {
-    isAssignableToMe: boolean
-  }
   uiState: {
     isSubmitting: boolean
   }
@@ -13,16 +10,8 @@ interface TicketDetailAssignButtonProps {
 }
 
 // チケットIDの横に表示する「担当者になる」ボタン（見た目専用のコンポーネント）
-// ボタンを出す条件の決定はuseAssignTicketHandlerが担当し、このコンポーネントは受け取った内容をそのまま表示するだけ
-export const TicketDetailAssignButton = ({
-  data,
-  uiState,
-  handlers,
-}: TicketDetailAssignButtonProps) => {
-  if (!data.isAssignableToMe) {
-    return null
-  }
-
+// ボタンを出すかどうかの判断は呼び出し元(TicketDetailPresentational)のShowが担当する
+export const TicketDetailAssignButton = ({ uiState, handlers }: TicketDetailAssignButtonProps) => {
   return (
     <Button
       size={'sm'}

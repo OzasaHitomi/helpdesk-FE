@@ -1,4 +1,4 @@
-import { EmptyState, Heading, HStack, Stack, Text, VStack } from '@chakra-ui/react'
+import { EmptyState, Heading, HStack, Show, Stack, Text, VStack } from '@chakra-ui/react'
 import { LuCircleAlert } from 'react-icons/lu'
 import { TicketDetailInfo } from './ui/TicketDetailInfo'
 import { TicketDetailCommentForm } from './ui/TicketDetailCommentForm'
@@ -85,11 +85,9 @@ export const TicketDetailPresentational = ({
     <Stack gap={6}>
       <HStack gap={4}>
         <Heading size={'lg'}>{`ID：${String(data.ticket.id)}`}</Heading>
-        <TicketDetailAssignButton
-          data={{ isAssignableToMe: data.ticket.isAssignableToMe }}
-          uiState={assignment.uiState}
-          handlers={assignment.handlers}
-        />
+        <Show when={data.ticket.isAssignableToMe}>
+          <TicketDetailAssignButton uiState={assignment.uiState} handlers={assignment.handlers} />
+        </Show>
         {data.ticket.supportUserName && <Text>{data.ticket.supportUserName}</Text>}
       </HStack>
       <TicketDetailInfo data={{ ticket: data.ticket, role: data.role }} />
