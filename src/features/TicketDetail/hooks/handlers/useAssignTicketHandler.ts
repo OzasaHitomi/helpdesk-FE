@@ -3,11 +3,8 @@ import { toaster } from '@/components/ui/toaster'
 import { extractErrorInfo } from '@/share/logic/extractErrorInfo'
 
 // チケット担当者になる操作のFE側ロジックを担当するhook（担当解除は別hookの担当）
-export const useAssignTicketHandler = (
-  ticketId: number,
-) => {
+export const useAssignTicketHandler = (ticketId: number) => {
   const { mutateAsync, isPending } = useAssignTicketToSelfMutation(ticketId)
-
 
   const onClick = async () => {
     try {

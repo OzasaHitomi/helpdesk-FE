@@ -14,7 +14,7 @@ export const useGetTicketHandler = (
 
   // サービス層の型(GetTicketResponse)からFE用の型(TicketDetailView)に詰め替える
   // dataが未取得(undefined)の間は、詰め替えずそのままundefinedを返す
-  
+
   const ticket: TicketDetailView | undefined = data
     ? {
         ...data,

@@ -86,7 +86,7 @@ export const TicketDetailPresentational = ({
       <HStack gap={4}>
         <Heading size={'lg'}>{`ID：${String(data.ticket.id)}`}</Heading>
         <TicketDetailAssignButton
-          data={{isAssignableToMe:data.ticket.isAssignableToMe}}
+          data={{ isAssignableToMe: data.ticket.isAssignableToMe }}
           uiState={assignment.uiState}
           handlers={assignment.handlers}
         />
