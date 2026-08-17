@@ -105,7 +105,7 @@ export const TicketDetailPresentational = ({
             uiState={unassignment.uiState}
             handlers={unassignment.handlers}
           />
-          <Text as={'span'} color={'gray.500'}>
+          <Text as={'span'} color={'gray.500'} data-testid={'ticket-detail-unassign-separator'}>
             |
           </Text>
         </Show>

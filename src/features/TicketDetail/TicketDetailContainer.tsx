@@ -14,27 +14,28 @@ export const TicketDetailContainer = () => {
   // チケット情報を取得
   // ルートパラメータ(/tickets/:id)からチケットIDを取得する
   const { id } = useParams<{ id: string }>()
+  const ticketId = Number(id)
   // ログインしているユーザーの情報を取得
   const { data: meData } = useMeQuery()
-  const { data, uiState } = useGetTicketHandler(Number(id), meData?.role, meData?.id)
+  const { data, uiState } = useGetTicketHandler(ticketId, meData?.role, meData?.id)
 
   // ---------------------------
   // コメント情報を取得
-  const { data: commentsData, uiState: commentsUiState } = useGetTicketCommentsHandler(Number(id))
+  const { data: commentsData, uiState: commentsUiState } = useGetTicketCommentsHandler(ticketId)
 
   // ---------------------------
   // コメントフォームを取得
   // 質疑応答フォームの状態・送信処理は、そのままTicketDetailCommentFormのpropsの形で受け取れるため、
   // 分解せずcommentFormとしてひとまとめにPresentationalへ渡す
-  const commentForm = useCreateTicketCommentHandler(Number(id))
+  const commentForm = useCreateTicketCommentHandler(ticketId)
 
   // ---------------------------
 
   // 担当者になるボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
-  const assignment = useAssignTicketHandler(Number(id))
+  const assignment = useAssignTicketHandler(ticketId)
 
   // 担当解除ボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
-  const unassignment = useUnassignTicketHandler(Number(id))
+  const unassignment = useUnassignTicketHandler(ticketId)
 
   // ---------------------------
   return (

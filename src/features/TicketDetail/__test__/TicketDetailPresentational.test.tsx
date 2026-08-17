@@ -234,7 +234,7 @@ describe('TicketDetailPresentational', () => {
         />,
       )
 
-      expect(screen.getByText('|')).toBeInTheDocument()
+      expect(screen.getByTestId('ticket-detail-unassign-separator')).toBeInTheDocument()
     })
 
     it('ticket.isUnassignableByMeがfalseの場合、TicketDetailUnassignButtonが表示されないこと', () => {
@@ -270,7 +270,7 @@ describe('TicketDetailPresentational', () => {
         />,
       )
 
-      expect(screen.queryByText('|')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('ticket-detail-unassign-separator')).not.toBeInTheDocument()
     })
 
     it('ticket.supportUserNameが設定されている場合、担当者名が表示されること', () => {
