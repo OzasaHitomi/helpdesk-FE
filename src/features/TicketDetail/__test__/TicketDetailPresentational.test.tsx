@@ -3,6 +3,7 @@ import { TicketDetailInfo } from '../ui/TicketDetailInfo'
 import { TicketDetailCommentForm } from '../ui/TicketDetailCommentForm'
 import { TicketDetailHistory } from '../ui/TicketDetailHistory'
 import { TicketDetailAssignButton } from '../ui/TicketDetailAssignButton'
+import { TicketDetailUnassignButton } from '../ui/TicketDetailUnassignButton'
 import { customRender } from '@/tests/helpers/customRender'
 import { describe, it, expect, vi } from 'vitest'
 import { screen } from '@testing-library/react'
@@ -10,7 +11,8 @@ import { type TicketDetailView } from '../types/TicketDetailView'
 import { type TicketCommentView } from '../types/TicketCommentView'
 
 // TicketDetailPresentationalの表示内容（取得中・取得失敗・正常時の出し分け、
-// TicketDetailInfo・TicketDetailCommentForm・TicketDetailHistory・TicketDetailAssignButtonへの橋渡し）のみをテストする
+// TicketDetailInfo・TicketDetailCommentForm・TicketDetailHistory・TicketDetailAssignButton・
+// TicketDetailUnassignButtonへの橋渡し）のみをテストする
 // （各子コンポーネント自体の見た目はそれぞれのtestが担保する）
 
 vi.mock('../ui/TicketDetailInfo', () => ({
@@ -29,10 +31,17 @@ vi.mock('../ui/TicketDetailAssignButton', () => ({
   TicketDetailAssignButton: vi.fn(() => <div data-testid='mocked-ticket-detail-assign-button' />),
 }))
 
+vi.mock('../ui/TicketDetailUnassignButton', () => ({
+  TicketDetailUnassignButton: vi.fn(() => (
+    <div data-testid='mocked-ticket-detail-unassign-button' />
+  )),
+}))
+
 const mockTicketDetailInfo = vi.mocked(TicketDetailInfo)
 const mockTicketDetailCommentForm = vi.mocked(TicketDetailCommentForm)
 const mockTicketDetailHistory = vi.mocked(TicketDetailHistory)
 const mockTicketDetailAssignButton = vi.mocked(TicketDetailAssignButton)
+const mockTicketDetailUnassignButton = vi.mocked(TicketDetailUnassignButton)
 
 const mockTicket: TicketDetailView = {
   id: 1,
@@ -43,6 +52,7 @@ const mockTicket: TicketDetailView = {
   supportUserId: null,
   supportUserName: null,
   isAssignableToMe: true,
+  isUnassignableByMe: false,
   createdAt: new Date('2026-07-29T00:00:00'),
 }
 
@@ -66,6 +76,11 @@ const mockAssignment = {
   handlers: { onClick: vi.fn() },
 }
 
+const mockUnassignment = {
+  uiState: { isSubmitting: false },
+  handlers: { onClick: vi.fn() },
+}
+
 describe('TicketDetailPresentational', () => {
   describe('正常系', () => {
     it('IDが見出しに表示されること', () => {
@@ -75,6 +90,7 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: false, isError: false }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 
@@ -88,6 +104,7 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: false, isError: false }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 
@@ -105,6 +122,7 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: false, isError: false }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 
@@ -126,6 +144,7 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: false, isError: false }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 
@@ -143,6 +162,7 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: false, isError: false }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 
@@ -167,10 +187,90 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: false, isError: false }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 
       expect(screen.queryByTestId('mocked-ticket-detail-assign-button')).not.toBeInTheDocument()
+    })
+
+    it('TicketDetailUnassignButtonにunassignmentのuiState/handlersが渡されること', () => {
+      customRender(
+        <TicketDetailPresentational
+          data={{
+            role: 'employee',
+            ticket: { ...mockTicket, isUnassignableByMe: true },
+            comments: mockComments,
+          }}
+          uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
+          assignment={mockAssignment}
+          unassignment={mockUnassignment}
+        />,
+      )
+
+      expect(screen.getByTestId('mocked-ticket-detail-unassign-button')).toBeInTheDocument()
+      expect(mockTicketDetailUnassignButton).toHaveBeenCalledWith(
+        {
+          uiState: mockUnassignment.uiState,
+          handlers: mockUnassignment.handlers,
+        },
+        undefined,
+      )
+    })
+
+    it('ticket.isUnassignableByMeがtrueの場合、担当解除ボタンと担当者名の間の区切り「|」が表示されること', () => {
+      customRender(
+        <TicketDetailPresentational
+          data={{
+            role: 'employee',
+            ticket: { ...mockTicket, isUnassignableByMe: true },
+            comments: mockComments,
+          }}
+          uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
+          assignment={mockAssignment}
+          unassignment={mockUnassignment}
+        />,
+      )
+
+      expect(screen.getByText('|')).toBeInTheDocument()
+    })
+
+    it('ticket.isUnassignableByMeがfalseの場合、TicketDetailUnassignButtonが表示されないこと', () => {
+      customRender(
+        <TicketDetailPresentational
+          data={{
+            role: 'employee',
+            ticket: { ...mockTicket, isUnassignableByMe: false },
+            comments: mockComments,
+          }}
+          uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
+          assignment={mockAssignment}
+          unassignment={mockUnassignment}
+        />,
+      )
+
+      expect(screen.queryByTestId('mocked-ticket-detail-unassign-button')).not.toBeInTheDocument()
+    })
+
+    it('ticket.isUnassignableByMeがfalseの場合、区切り「|」も表示されないこと', () => {
+      customRender(
+        <TicketDetailPresentational
+          data={{
+            role: 'employee',
+            ticket: { ...mockTicket, isUnassignableByMe: false },
+            comments: mockComments,
+          }}
+          uiState={{ isLoading: false, isError: false }}
+          commentForm={mockCommentForm}
+          assignment={mockAssignment}
+          unassignment={mockUnassignment}
+        />,
+      )
+
+      expect(screen.queryByText('|')).not.toBeInTheDocument()
     })
 
     it('ticket.supportUserNameが設定されている場合、担当者名が表示されること', () => {
@@ -184,6 +284,7 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: false, isError: false }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 
@@ -197,6 +298,7 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: false, isError: false }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 
@@ -213,6 +315,7 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: true, isError: false }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 
@@ -227,6 +330,7 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: false, isError: true }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 
@@ -241,6 +345,7 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: false, isError: false }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 
@@ -254,6 +359,7 @@ describe('TicketDetailPresentational', () => {
           uiState={{ isLoading: true, isError: true }}
           commentForm={mockCommentForm}
           assignment={mockAssignment}
+          unassignment={mockUnassignment}
         />,
       )
 

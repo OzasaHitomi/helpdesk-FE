@@ -38,9 +38,13 @@ describe('useGetTicketHandler', () => {
         isError: false,
       })
 
-      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support'))
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 1))
 
-      expect(result.current.data.ticket).toEqual({ ...mockTicketResponse, isAssignableToMe: true })
+      expect(result.current.data.ticket).toEqual({
+        ...mockTicketResponse,
+        isAssignableToMe: true,
+        isUnassignableByMe: false,
+      })
     })
 
     it('roleがsupport以外の場合、isAssignableToMeがfalseになること', () => {
@@ -50,7 +54,7 @@ describe('useGetTicketHandler', () => {
         isError: false,
       })
 
-      const { result } = customRenderHook(() => useGetTicketHandler(1, 'employee'))
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'employee', 1))
 
       expect(result.current.data.ticket?.isAssignableToMe).toBe(false)
     })
@@ -62,9 +66,72 @@ describe('useGetTicketHandler', () => {
         isError: false,
       })
 
-      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support'))
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 1))
 
       expect(result.current.uiState).toEqual({ isLoading: true, isError: false })
+    })
+  })
+
+  // ── isUnassignableByMeの判定 ─────────────────────────────────────────────
+  describe('担当解除ボタンの表示可否(isUnassignableByMe)', () => {
+    it('roleがsupport・ステータスがassigned・自身が担当者の場合、trueになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: { ...mockTicketResponse, status: 'assigned', supportUserId: 1 },
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 1))
+
+      expect(result.current.data.ticket?.isUnassignableByMe).toBe(true)
+    })
+
+    it('ステータスがin_progress・自身が担当者の場合、trueになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: { ...mockTicketResponse, status: 'in_progress', supportUserId: 1 },
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 1))
+
+      expect(result.current.data.ticket?.isUnassignableByMe).toBe(true)
+    })
+
+    it('roleがsupport以外の場合、falseになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: { ...mockTicketResponse, status: 'assigned', supportUserId: 1 },
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'employee', 1))
+
+      expect(result.current.data.ticket?.isUnassignableByMe).toBe(false)
+    })
+
+    it('ステータスがassigned/in_progress以外の場合、falseになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: { ...mockTicketResponse, status: 'resolved', supportUserId: 1 },
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 1))
+
+      expect(result.current.data.ticket?.isUnassignableByMe).toBe(false)
+    })
+
+    it('担当者が自分以外の場合、falseになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: { ...mockTicketResponse, status: 'assigned', supportUserId: 2 },
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 1))
+
+      expect(result.current.data.ticket?.isUnassignableByMe).toBe(false)
     })
   })
 
@@ -76,7 +143,7 @@ describe('useGetTicketHandler', () => {
         isError: false,
       })
 
-      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support'))
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 1))
 
       expect(result.current.data.ticket).toBeUndefined()
     })

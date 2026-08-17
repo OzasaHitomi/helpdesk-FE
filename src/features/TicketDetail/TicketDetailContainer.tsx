@@ -4,6 +4,7 @@ import { useGetTicketHandler } from './hooks/handlers/useGetTicketHandler'
 import { useGetTicketCommentsHandler } from './hooks/handlers/useGetTicketCommentsHandler'
 import { useCreateTicketCommentHandler } from './hooks/handlers/useCreateTicketCommentHandler'
 import { useAssignTicketHandler } from './hooks/handlers/useAssignTicketHandler'
+import { useUnassignTicketHandler } from './hooks/handlers/useUnassignTicketHandler'
 import { useMeQuery } from '@/share/hooks/queries/useMeQuery'
 
 // Container: 各hookを呼び出して値を集め、Presentational（見た目）に橋渡しするだけの層
@@ -15,7 +16,7 @@ export const TicketDetailContainer = () => {
   const { id } = useParams<{ id: string }>()
   // ログインしているユーザーの情報を取得
   const { data: meData } = useMeQuery()
-  const { data, uiState } = useGetTicketHandler(Number(id), meData?.role)
+  const { data, uiState } = useGetTicketHandler(Number(id), meData?.role, meData?.id)
 
   // ---------------------------
   // コメント情報を取得
@@ -32,6 +33,9 @@ export const TicketDetailContainer = () => {
   // 担当者になるボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
   const assignment = useAssignTicketHandler(Number(id))
 
+  // 担当解除ボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
+  const unassignment = useUnassignTicketHandler(Number(id))
+
   // ---------------------------
   return (
     <TicketDetailPresentational
@@ -42,6 +46,7 @@ export const TicketDetailContainer = () => {
       }}
       commentForm={commentForm}
       assignment={assignment}
+      unassignment={unassignment}
     />
   )
 }

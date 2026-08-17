@@ -41,7 +41,6 @@ export const getTicket = async (id: number): Promise<GetTicketResponse> => {
   return { ...response.data, createdAt: new Date(response.data.createdAt) }
 }
 
-
 // 成功時は200（担当者に設定された自分自身の情報を返す。リクエストボディは無し）
 export const assignTicketToSelf = async (id: number): Promise<AssignTicketResponse> => {
   const response = await internalBackendV1Client.put<AssignTicketResponseJson>(
