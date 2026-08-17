@@ -8,6 +8,8 @@ import {
   type GetTicketResponseJson,
   type UnassignTicketResponse,
   type UnassignTicketResponseJson,
+  type AssignTicketResponse,
+  type AssignTicketResponseJson,
 } from '@/services/internal/backend/v1/types/response/tickets'
 
 const COMMON_URL = '/tickets'
@@ -30,13 +32,23 @@ export const getTickets = async (): Promise<GetTicketsResponseItem[]> => {
   }))
 }
 
-// 成功時は200（チケット詳細を返す。質問者・担当者名は現時点の画面要件に無いため含まれない）
+// 成功時は200（チケット詳細を返す。質問者名は現時点の画面要件に無いため含まれない）
 export const getTicket = async (id: number): Promise<GetTicketResponse> => {
   const response = await internalBackendV1Client.get<GetTicketResponseJson>(
     `${COMMON_URL}/${String(id)}`,
   )
 
   return { ...response.data, createdAt: new Date(response.data.createdAt) }
+}
+
+
+// 成功時は200（担当者に設定された自分自身の情報を返す。リクエストボディは無し）
+export const assignTicketToSelf = async (id: number): Promise<AssignTicketResponse> => {
+  const response = await internalBackendV1Client.put<AssignTicketResponseJson>(
+    `${COMMON_URL}/${String(id)}/assign`,
+  )
+
+  return { ...response.data, updatedAt: new Date(response.data.updatedAt) }
 }
 
 // 成功時は200（担当解除後のチケット情報を返す。FE側では値を使わない）

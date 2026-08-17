@@ -1,14 +1,15 @@
-import { createTicket, getTickets, getTicket, unassignTicket } from '../tickets'
+import { createTicket, getTickets, getTicket, assignTicketToSelf, unassignTicket } from '../tickets'
 import { internalBackendV1Client } from '../client'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
   type CreateTicketResponse,
   type GetTicketsResponseItemJson,
   type GetTicketResponseJson,
+  type AssignTicketResponseJson,
   type UnassignTicketResponseJson,
 } from '../types/response/tickets'
 
-// internalBackendV1Client（axiosインスタンス）のget/postをspyOnし、各関数が正しいURL・メソッド・bodyで
+// internalBackendV1Client（axiosインスタンス）のget/post/putをspyOnし、各関数が正しいURL・メソッド・bodyで
 // 通信を呼び出しているか、レスポンスを正しく返す（createdAtは文字列からDateへ変換される）かのみを
 // テストする（実際の通信は行わない）
 
@@ -84,6 +85,8 @@ describe('tickets', () => {
           detail: 'パスワードを変更したらログインできなくなりました',
           visibility: 'private',
           status: 'new_question',
+          supportUserId: null,
+          supportUserName: null,
           createdAt: '2026-07-29T00:00:00Z',
         }
         const getSpy = vi
@@ -96,6 +99,31 @@ describe('tickets', () => {
         expect(result).toEqual({
           ...mockResponseJson,
           createdAt: new Date('2026-07-29T00:00:00Z'),
+        })
+      })
+    })
+  })
+
+  describe('assignTicketToSelf', () => {
+    describe('正常系', () => {
+      it('/tickets/{id}/assignへPUTし、updatedAtを文字列からDateに変換したうえで返すこと', async () => {
+        const mockResponseJson: AssignTicketResponseJson = {
+          id: 1,
+          status: 'assigned',
+          supportUserId: 2,
+          supportUserName: '鈴木一郎',
+          updatedAt: '2026-08-12T00:00:00Z',
+        }
+        const putSpy = vi
+          .spyOn(internalBackendV1Client, 'put')
+          .mockResolvedValue({ data: mockResponseJson })
+
+        const result = await assignTicketToSelf(1)
+
+        expect(putSpy).toHaveBeenCalledWith('/tickets/1/assign')
+        expect(result).toEqual({
+          ...mockResponseJson,
+          updatedAt: new Date('2026-08-12T00:00:00Z'),
         })
       })
     })
