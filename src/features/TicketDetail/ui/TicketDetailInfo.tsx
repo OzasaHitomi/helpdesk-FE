@@ -2,7 +2,7 @@ import { type ReactNode } from 'react'
 import { Button, Field, HStack, Input, Stack, Text, Textarea } from '@chakra-ui/react'
 import { TicketVisibilityList } from '@/share/constants/business/ticketVisibilityType'
 import { TicketStatusList } from '@/share/constants/business/ticketStatusType'
-import { TicketStatusTransitions } from '@/share/constants/business/ticketStatusTransitions'
+import { TicketStatusDisplayTransitions } from '@/share/constants/business/ticketStatusDisplayTransitions'
 import { transformTicketVisibilityToJa } from '@/share/logic/transform/transformTicketVisibilityToJa'
 import { transformTicketStatusToJa } from '@/share/logic/transform/transformTicketStatusToJa'
 import { formatDateToYmdSlash } from '@/share/logic/format/formatDateToYmdSlash'
@@ -75,6 +75,14 @@ export const TicketDetailInfo = ({ data, statusChange }: TicketDetailInfoProps) 
   // （実際の変更操作自体は別タスクで実装予定。現時点ではdisabledの出し分けのみ）
   const isVisibilityDisabled = role === 'employee'
 
+  const isClickable = (status: TicketStatus) => {
+    return (
+      !(ticket.status === status) &&
+      ticket.isStatusEditableByMe &&
+      TicketStatusDisplayTransitions[ticket.status].includes(status)
+    )
+  }
+
   return (
     <Stack gap={5}>
       {/* ── 質問日 ───────────────────────────────────────────────── */}
@@ -137,12 +145,6 @@ export const TicketDetailInfo = ({ data, statusChange }: TicketDetailInfoProps) 
         >
           {TicketStatusList.map((status, index) => {
             const isSelected = ticket.status === status
-            // 現在のステータスから直接遷移可能、かつ自分に変更権限がある場合のみクリック可能にする
-            // （権限自体はisStatusEditableByMeとしてhandler側で算出済みのものをそのまま使う）
-            const isClickable =
-              !isSelected &&
-              ticket.isStatusEditableByMe &&
-              TicketStatusTransitions[ticket.status].includes(status)
 
             const statusStyle = {
               w: '12rem',
@@ -160,7 +162,7 @@ export const TicketDetailInfo = ({ data, statusChange }: TicketDetailInfoProps) 
 
             return (
               <HStack key={status} gap={2}>
-                {isClickable ? (
+                {isClickable(status) ? (
                   <Button
                     size={'sm'}
                     {...statusStyle}

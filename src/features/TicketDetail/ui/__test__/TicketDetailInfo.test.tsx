@@ -8,7 +8,7 @@ import { type UserRole } from '@/share/types/userRole'
 // TicketDetailInfoの表示内容（各項目の値・質問日のフォーマット・公開設定/ステータスの選択状態）
 // と、ステータスの編集可否（遷移可能かつ権限がある場合のみボタンとして操作できること）のみをテストする
 // （日本語変換自体のロジックはtransformTicketVisibilityToJa.test.ts/transformTicketStatusToJa.test.tsが担保する）
-// （遷移ルール自体の判定はTicketStatusTransitionsを直接参照するため、ここでは組み合わせの出し分けのみを見る）
+// （遷移ルール自体の判定はTicketStatusDisplayTransitionsを直接参照するため、ここでは組み合わせの出し分けのみを見る）
 
 const mockTicket: TicketDetailView = {
   id: 1,
