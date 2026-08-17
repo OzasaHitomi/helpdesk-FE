@@ -57,6 +57,7 @@ export type AssignTicketResponse = {
   updatedAt: Date
 }
 
+// 通信では受け取れないため、updatedAtはDate型ではなく文字列型として受け取る
 export type AssignTicketResponseJson = Omit<AssignTicketResponse, 'updatedAt'> & {
   updatedAt: string
 }
