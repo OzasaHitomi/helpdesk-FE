@@ -2,16 +2,28 @@ import { type ReactNode } from 'react'
 import { Button, Field, HStack, Input, Stack, Text, Textarea } from '@chakra-ui/react'
 import { TicketVisibilityList } from '@/share/constants/business/ticketVisibilityType'
 import { TicketStatusList } from '@/share/constants/business/ticketStatusType'
+import { TicketStatusDisplayTransitions } from '@/share/constants/business/ticketStatusDisplayTransitions'
 import { transformTicketVisibilityToJa } from '@/share/logic/transform/transformTicketVisibilityToJa'
 import { transformTicketStatusToJa } from '@/share/logic/transform/transformTicketStatusToJa'
 import { formatDateToYmdSlash } from '@/share/logic/format/formatDateToYmdSlash'
 import { type TicketDetailView } from '../types/TicketDetailView'
 import { type UserRole } from '@/share/types/userRole'
+import { type TicketStatus } from '@/share/types/ticketStatus'
 
 interface TicketDetailInfoProps {
   data: {
     ticket: TicketDetailView
     role: UserRole | undefined
+  }
+  // useUpdateTicketStatusHandlerの戻り値(uiState/handlers)を、
+  // そのままステータスボタンのpropsとして渡せる形で受け取る
+  statusChange: {
+    uiState: {
+      isSubmitting: boolean
+    }
+    handlers: {
+      onClick: (status: TicketStatus) => Promise<void>
+    }
   }
 }
 
@@ -52,7 +64,7 @@ const LabeledField = ({ label, alignItems = 'center', labelPt, children }: Label
 // チケット詳細の内容を表示する専用コンポーネント（見た目専用、編集操作は持たない）
 // 公開設定は新規登録ダイアログ(CreateTicketDialog)の選択ボタンと同じ見た目にし、現在の値だけをハイライト表示する
 // （onClickは持たせていないため、実際の編集操作はまだできない）
-export const TicketDetailInfo = ({ data }: TicketDetailInfoProps) => {
+export const TicketDetailInfo = ({ data, statusChange }: TicketDetailInfoProps) => {
   const { ticket, role } = data
 
   // 質問日は「2026/07/30」形式（スラッシュ区切り）で表示する
@@ -62,6 +74,14 @@ export const TicketDetailInfo = ({ data }: TicketDetailInfoProps) => {
   // 公開設定の変更はサポート担当・管理者のみに許可する想定のため、社員アカウントの場合はボタンを無効化する
   // （実際の変更操作自体は別タスクで実装予定。現時点ではdisabledの出し分けのみ）
   const isVisibilityDisabled = role === 'employee'
+
+  const isClickable = (status: TicketStatus) => {
+    return (
+      !(ticket.status === status) &&
+      ticket.isStatusEditableByMe &&
+      TicketStatusDisplayTransitions[ticket.status].includes(status)
+    )
+  }
 
   return (
     <Stack gap={5}>
@@ -125,25 +145,40 @@ export const TicketDetailInfo = ({ data }: TicketDetailInfoProps) => {
         >
           {TicketStatusList.map((status, index) => {
             const isSelected = ticket.status === status
+
+            const statusStyle = {
+              w: '12rem',
+              whiteSpace: 'nowrap' as const,
+              textAlign: 'center' as const,
+              px: 2,
+              py: 1,
+              borderRadius: '8px',
+              borderWidth: '2px',
+              borderColor: isSelected ? 'green.400' : 'transparent',
+              bg: isSelected ? 'white' : 'gray.100',
+              color: 'gray.700',
+              fontWeight: isSelected ? 'bold' : 'normal',
+            }
+
             return (
               <HStack key={status} gap={2}>
-                <Text
-                  as={'span'}
-                  w={'12rem'}
-                  whiteSpace={'nowrap'}
-                  textAlign={'center'}
-                  px={2}
-                  py={1}
-                  borderRadius={'8px'}
-                  borderWidth={'2px'}
-                  borderColor={isSelected ? 'green.400' : 'transparent'}
-                  bg={isSelected ? 'white' : 'gray.100'}
-                  color={'gray.700'}
-                  fontWeight={isSelected ? 'bold' : 'normal'}
-                  aria-current={isSelected}
-                >
-                  {transformTicketStatusToJa(status)}
-                </Text>
+                {isClickable(status) ? (
+                  <Button
+                    size={'sm'}
+                    {...statusStyle}
+                    disabled={statusChange.uiState.isSubmitting}
+                    _disabled={{ cursor: 'default', opacity: 1 }}
+                    onClick={() => {
+                      void statusChange.handlers.onClick(status)
+                    }}
+                  >
+                    {transformTicketStatusToJa(status)}
+                  </Button>
+                ) : (
+                  <Text as={'span'} {...statusStyle} aria-current={isSelected}>
+                    {transformTicketStatusToJa(status)}
+                  </Text>
+                )}
                 {/* 最後の要素の後ろには「ー」を付けない */}
                 {index < TicketStatusList.length - 1 && (
                   <Text as={'span'} color={'gray.500'}>

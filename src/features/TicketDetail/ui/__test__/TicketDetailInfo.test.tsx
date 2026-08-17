@@ -1,13 +1,14 @@
 import { TicketDetailInfo } from '../TicketDetailInfo'
 import { customRender } from '@/tests/helpers/customRender'
-import { describe, it, expect } from 'vitest'
-import { screen } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { screen, fireEvent } from '@testing-library/react'
 import { type TicketDetailView } from '../../types/TicketDetailView'
 import { type UserRole } from '@/share/types/userRole'
 
 // TicketDetailInfoの表示内容（各項目の値・質問日のフォーマット・公開設定/ステータスの選択状態）
-// と、編集不可であること（disabled表示・ステータスがボタンではなく表示専用の要素であること）のみをテストする
+// と、ステータスの編集可否（遷移可能かつ権限がある場合のみボタンとして操作できること）のみをテストする
 // （日本語変換自体のロジックはtransformTicketVisibilityToJa.test.ts/transformTicketStatusToJa.test.tsが担保する）
+// （遷移ルール自体の判定はTicketStatusDisplayTransitionsを直接参照するため、ここでは組み合わせの出し分けのみを見る）
 
 const mockTicket: TicketDetailView = {
   id: 1,
@@ -19,12 +20,29 @@ const mockTicket: TicketDetailView = {
   supportUserName: null,
   isAssignableToMe: false,
   isUnassignableByMe: false,
+  isStatusEditableByMe: false,
   createdAt: new Date('2026-07-30T00:00:00'),
 }
 
+const mockOnClick = vi.fn()
+
+const mockStatusChange = {
+  uiState: { isSubmitting: false },
+  handlers: { onClick: mockOnClick },
+}
+
 // 公開設定の編集可否はroleによって変わるため、デフォルトはsupport(非社員)で描画する
-const renderInfo = (role: UserRole | undefined = 'support') => {
-  customRender(<TicketDetailInfo data={{ ticket: mockTicket, role }} />)
+const renderInfo = (
+  role: UserRole | undefined = 'support',
+  ticketOverrides?: Partial<TicketDetailView>,
+  statusChangeOverrides?: Partial<typeof mockStatusChange>,
+) => {
+  customRender(
+    <TicketDetailInfo
+      data={{ ticket: { ...mockTicket, ...ticketOverrides }, role }}
+      statusChange={{ ...mockStatusChange, ...statusChangeOverrides }}
+    />,
+  )
 }
 
 describe('TicketDetailInfo', () => {
@@ -118,12 +136,55 @@ describe('TicketDetailInfo', () => {
     })
   })
 
-  // ── 準正常系（ステータスは常に編集不可であること） ───────────────
-  describe('準正常系', () => {
-    it('ステータスはボタンではなく、クリック操作を持たない表示専用の要素であること', () => {
-      renderInfo()
+  // ── ステータスの編集可否（遷移可能かつ権限がある場合のみボタンになる） ───
+  describe('ステータスの編集可否', () => {
+    it('isStatusEditableByMeがfalseの場合、遷移可能なステータスもボタンにならないこと', () => {
+      renderInfo('support', { isStatusEditableByMe: false })
+
+      expect(screen.queryByRole('button', { name: '解決済み' })).not.toBeInTheDocument()
+      expect(screen.getByText('解決済み')).toBeInTheDocument()
+    })
+
+    it('isStatusEditableByMeがtrueの場合、現在のステータスから直接遷移可能なステータスがボタンになること', () => {
+      renderInfo('support', { status: 'in_progress', isStatusEditableByMe: true })
+
+      // in_progressから直接遷移可能なのはassigned/resolved/closed
+      expect(screen.getByRole('button', { name: '担当者アサイン済み' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: '解決済み' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'クローズ' })).toBeInTheDocument()
+    })
+
+    it('isStatusEditableByMeがtrueでも、現在選択中のステータスはボタンにならないこと', () => {
+      renderInfo('support', { status: 'in_progress', isStatusEditableByMe: true })
 
       expect(screen.queryByRole('button', { name: '対応中' })).not.toBeInTheDocument()
+      expect(screen.getByText('対応中')).toBeInTheDocument()
+    })
+
+    it('isStatusEditableByMeがtrueでも、直接遷移不可能なステータスはボタンにならないこと', () => {
+      renderInfo('support', { status: 'in_progress', isStatusEditableByMe: true })
+
+      // in_progressからnew_questionへは直接遷移できない
+      expect(screen.queryByRole('button', { name: '新規質問' })).not.toBeInTheDocument()
+      expect(screen.getByText('新規質問')).toBeInTheDocument()
+    })
+
+    it('ステータスボタンを押すと、そのステータスでstatusChange.handlers.onClickが呼ばれること', () => {
+      renderInfo('support', { status: 'in_progress', isStatusEditableByMe: true })
+
+      fireEvent.click(screen.getByRole('button', { name: '解決済み' }))
+
+      expect(mockOnClick).toHaveBeenCalledWith('resolved')
+    })
+
+    it('statusChange.uiState.isSubmittingがtrueの場合、ステータスボタンが無効化されること', () => {
+      renderInfo(
+        'support',
+        { status: 'in_progress', isStatusEditableByMe: true },
+        { uiState: { isSubmitting: true } },
+      )
+
+      expect(screen.getByRole('button', { name: '解決済み' })).toBeDisabled()
     })
   })
 })

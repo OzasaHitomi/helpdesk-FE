@@ -53,6 +53,7 @@ const mockTicket: TicketDetailView = {
   supportUserName: null,
   isAssignableToMe: true,
   isUnassignableByMe: false,
+  isStatusEditableByMe: false,
   createdAt: new Date('2026-07-29T00:00:00'),
 }
 
@@ -81,6 +82,11 @@ const mockUnassignment = {
   handlers: { onClick: vi.fn() },
 }
 
+const mockStatusChange = {
+  uiState: { isSubmitting: false },
+  handlers: { onClick: vi.fn() },
+}
+
 describe('TicketDetailPresentational', () => {
   describe('正常系', () => {
     it('IDが見出しに表示されること', () => {
@@ -91,6 +97,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -105,12 +112,16 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
       expect(screen.getByTestId('mocked-ticket-detail-info')).toBeInTheDocument()
       expect(mockTicketDetailInfo).toHaveBeenCalledWith(
-        { data: { ticket: mockTicket, role: 'employee' } },
+        {
+          data: { ticket: mockTicket, role: 'employee' },
+          statusChange: mockStatusChange,
+        },
         undefined,
       )
     })
@@ -123,6 +134,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -145,6 +157,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -163,6 +176,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -188,6 +202,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -206,6 +221,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -231,6 +247,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -249,6 +266,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -267,6 +285,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -285,6 +304,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -299,6 +319,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -316,6 +337,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -331,6 +353,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -346,6 +369,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 
@@ -360,6 +384,7 @@ describe('TicketDetailPresentational', () => {
           commentForm={mockCommentForm}
           assignment={mockAssignment}
           unassignment={mockUnassignment}
+          statusChange={mockStatusChange}
         />,
       )
 

@@ -24,6 +24,7 @@ export const useGetTicketHandler = (
           role === 'support' &&
           (data.status === 'assigned' || data.status === 'in_progress') &&
           data.supportUserId === userId,
+        isStatusEditableByMe: role === 'admin' || data.supportUserId === userId,
       }
     : undefined
 

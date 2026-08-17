@@ -76,3 +76,15 @@ export type UnassignTicketResponse = {
 export type UnassignTicketResponseJson = Omit<UnassignTicketResponse, 'updatedAt'> & {
   updatedAt: string
 }
+
+// PUT /tickets/{id}/status のレスポンス型（チケットステータス変更API）
+export type UpdateTicketStatusResponse = {
+  id: number
+  status: TicketStatus
+  updatedAt: Date
+}
+
+// 通信では受け取れないため、updatedAtはDate型ではなく文字列型として受け取る
+export type UpdateTicketStatusResponseJson = Omit<UpdateTicketStatusResponse, 'updatedAt'> & {
+  updatedAt: string
+}

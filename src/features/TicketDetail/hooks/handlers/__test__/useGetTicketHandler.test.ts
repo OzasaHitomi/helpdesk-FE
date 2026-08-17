@@ -44,6 +44,7 @@ describe('useGetTicketHandler', () => {
         ...mockTicketResponse,
         isAssignableToMe: true,
         isUnassignableByMe: false,
+        isStatusEditableByMe: false,
       })
     })
 
@@ -132,6 +133,57 @@ describe('useGetTicketHandler', () => {
       const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 1))
 
       expect(result.current.data.ticket?.isUnassignableByMe).toBe(false)
+    })
+  })
+
+  // ── isStatusEditableByMeの判定 ───────────────────────────────────────────
+  describe('ステータス変更の編集可否(isStatusEditableByMe)', () => {
+    it('roleがadminの場合、自身が担当者でなくてもtrueになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: { ...mockTicketResponse, status: 'assigned', supportUserId: 2 },
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'admin', 1))
+
+      expect(result.current.data.ticket?.isStatusEditableByMe).toBe(true)
+    })
+
+    it('roleがsupportで自身が担当者の場合、trueになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: { ...mockTicketResponse, status: 'assigned', supportUserId: 1 },
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 1))
+
+      expect(result.current.data.ticket?.isStatusEditableByMe).toBe(true)
+    })
+
+    it('roleがsupportで自身が担当者でない場合、falseになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: { ...mockTicketResponse, status: 'assigned', supportUserId: 2 },
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 1))
+
+      expect(result.current.data.ticket?.isStatusEditableByMe).toBe(false)
+    })
+
+    it('roleがemployeeかつ自身が担当者でない場合、falseになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: { ...mockTicketResponse, status: 'assigned', supportUserId: 2 },
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'employee', 1))
+
+      expect(result.current.data.ticket?.isStatusEditableByMe).toBe(false)
     })
   })
 

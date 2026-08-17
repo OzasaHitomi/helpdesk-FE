@@ -1,5 +1,8 @@
 import { internalBackendV1Client } from '@/services/internal/backend/v1/client'
-import { type CreateTicketRequest } from '@/services/internal/backend/v1/types/request/tickets'
+import {
+  type CreateTicketRequest,
+  type UpdateTicketStatusRequest,
+} from '@/services/internal/backend/v1/types/request/tickets'
 import {
   type CreateTicketResponse,
   type GetTicketsResponseItem,
@@ -10,6 +13,8 @@ import {
   type UnassignTicketResponseJson,
   type AssignTicketResponse,
   type AssignTicketResponseJson,
+  type UpdateTicketStatusResponse,
+  type UpdateTicketStatusResponseJson,
 } from '@/services/internal/backend/v1/types/response/tickets'
 
 const COMMON_URL = '/tickets'
@@ -54,6 +59,19 @@ export const assignTicketToSelf = async (id: number): Promise<AssignTicketRespon
 export const unassignTicket = async (id: number): Promise<UnassignTicketResponse> => {
   const response = await internalBackendV1Client.delete<UnassignTicketResponseJson>(
     `${COMMON_URL}/${String(id)}/assign`,
+  )
+
+  return { ...response.data, updatedAt: new Date(response.data.updatedAt) }
+}
+
+// 成功時は200（変更後のステータスを含むチケット情報を返す）
+export const updateTicketStatus = async (
+  id: number,
+  body: UpdateTicketStatusRequest,
+): Promise<UpdateTicketStatusResponse> => {
+  const response = await internalBackendV1Client.put<UpdateTicketStatusResponseJson>(
+    `${COMMON_URL}/${String(id)}/status`,
+    body,
   )
 
   return { ...response.data, updatedAt: new Date(response.data.updatedAt) }

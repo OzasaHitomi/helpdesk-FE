@@ -1,4 +1,5 @@
 import { type TicketVisibility } from '@/share/types/ticketVisibility'
+import { type TicketStatus } from '@/share/types/ticketStatus'
 
 // POST /tickets に送るリクエストボディの型
 // フォームの型(CreateTicketForm)と現状フィールドは同じだが、
@@ -7,4 +8,9 @@ export type CreateTicketRequest = {
   title: string
   detail: string
   visibility: TicketVisibility
+}
+
+// PUT /tickets/{id}/status に送るリクエストボディの型
+export type UpdateTicketStatusRequest = {
+  status: TicketStatus
 }

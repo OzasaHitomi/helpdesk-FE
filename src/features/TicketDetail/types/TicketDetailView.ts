@@ -14,5 +14,6 @@ export type TicketDetailView = {
   supportUserName: string | null
   isAssignableToMe: boolean
   isUnassignableByMe: boolean
+  isStatusEditableByMe: boolean
   createdAt: Date
 }

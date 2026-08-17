@@ -1,4 +1,11 @@
-import { createTicket, getTickets, getTicket, assignTicketToSelf, unassignTicket } from '../tickets'
+import {
+  createTicket,
+  getTickets,
+  getTicket,
+  assignTicketToSelf,
+  unassignTicket,
+  updateTicketStatus,
+} from '../tickets'
 import { internalBackendV1Client } from '../client'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
@@ -7,6 +14,7 @@ import {
   type GetTicketResponseJson,
   type AssignTicketResponseJson,
   type UnassignTicketResponseJson,
+  type UpdateTicketStatusResponseJson,
 } from '../types/response/tickets'
 
 // internalBackendV1Client（axiosインスタンス）のget/post/putをspyOnし、各関数が正しいURL・メソッド・bodyで
@@ -149,6 +157,29 @@ describe('tickets', () => {
         expect(result).toEqual({
           ...mockResponseJson,
           updatedAt: new Date('2026-08-14T00:00:00Z'),
+        })
+      })
+    })
+  })
+
+  describe('updateTicketStatus', () => {
+    describe('正常系', () => {
+      it('/tickets/{id}/statusへbodyをPUTし、updatedAtを文字列からDateに変換したうえで返すこと', async () => {
+        const mockResponseJson: UpdateTicketStatusResponseJson = {
+          id: 1,
+          status: 'in_progress',
+          updatedAt: '2026-08-17T00:00:00Z',
+        }
+        const putSpy = vi
+          .spyOn(internalBackendV1Client, 'put')
+          .mockResolvedValue({ data: mockResponseJson })
+
+        const result = await updateTicketStatus(1, { status: 'in_progress' })
+
+        expect(putSpy).toHaveBeenCalledWith('/tickets/1/status', { status: 'in_progress' })
+        expect(result).toEqual({
+          ...mockResponseJson,
+          updatedAt: new Date('2026-08-17T00:00:00Z'),
         })
       })
     })
