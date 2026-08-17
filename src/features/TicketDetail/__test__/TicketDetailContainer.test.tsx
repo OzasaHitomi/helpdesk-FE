@@ -16,12 +16,14 @@ const {
   mockUseGetTicketCommentsHandler,
   mockUseCreateTicketCommentHandler,
   mockUseAssignTicketHandler,
+  mockUseUnassignTicketHandler,
   mockUseMeQuery,
 } = vi.hoisted(() => ({
   mockUseGetTicketHandler: vi.fn(),
   mockUseGetTicketCommentsHandler: vi.fn(),
   mockUseCreateTicketCommentHandler: vi.fn(),
   mockUseAssignTicketHandler: vi.fn(),
+  mockUseUnassignTicketHandler: vi.fn(),
   mockUseMeQuery: vi.fn(),
 }))
 
@@ -39,6 +41,10 @@ vi.mock('../hooks/handlers/useCreateTicketCommentHandler', () => ({
 
 vi.mock('../hooks/handlers/useAssignTicketHandler', () => ({
   useAssignTicketHandler: mockUseAssignTicketHandler,
+}))
+
+vi.mock('../hooks/handlers/useUnassignTicketHandler', () => ({
+  useUnassignTicketHandler: mockUseUnassignTicketHandler,
 }))
 
 vi.mock('@/share/hooks/queries/useMeQuery', () => ({
@@ -71,12 +77,18 @@ const mockTicket: TicketDetailView = {
   supportUserId: null,
   supportUserName: null,
   isAssignableToMe: true,
+  isUnassignableByMe: false,
   createdAt: new Date('2026-07-29T00:00:00Z'),
 }
 
 const mockMeData: GetMeResponse = { id: 1, role: 'support' }
 
 const mockAssignment = {
+  uiState: { isSubmitting: false },
+  handlers: { onClick: vi.fn() },
+}
+
+const mockUnassignment = {
   uiState: { isSubmitting: false },
   handlers: { onClick: vi.fn() },
 }
@@ -109,6 +121,7 @@ describe('TicketDetailContainer', () => {
     })
     mockUseCreateTicketCommentHandler.mockReturnValue(mockCommentForm)
     mockUseAssignTicketHandler.mockReturnValue(mockAssignment)
+    mockUseUnassignTicketHandler.mockReturnValue(mockUnassignment)
   })
 
   afterEach(() => {
@@ -123,10 +136,10 @@ describe('TicketDetailContainer', () => {
       expect(screen.getByTestId('mocked-ticket-detail-presentational')).toBeInTheDocument()
     })
 
-    it('ルートパラメータのidとmeDataのroleを数値に変換してuseGetTicketHandlerに渡すこと', () => {
+    it('ルートパラメータのidとmeDataのrole・idを数値に変換してuseGetTicketHandlerに渡すこと', () => {
       customRender(<TicketDetailContainer />)
 
-      expect(mockUseGetTicketHandler).toHaveBeenCalledWith(1, 'support')
+      expect(mockUseGetTicketHandler).toHaveBeenCalledWith(1, 'support', 1)
     })
 
     it('useGetTicketHandlerのticketをPresentationalにそのまま渡すこと', () => {
@@ -177,6 +190,20 @@ describe('TicketDetailContainer', () => {
       customRender(<TicketDetailContainer />)
 
       expect(mockTicketDetailPresentational.mock.calls[0]?.[0].assignment).toEqual(mockAssignment)
+    })
+
+    it('ルートパラメータのidを数値に変換してuseUnassignTicketHandlerに渡すこと', () => {
+      customRender(<TicketDetailContainer />)
+
+      expect(mockUseUnassignTicketHandler).toHaveBeenCalledWith(1)
+    })
+
+    it('useUnassignTicketHandlerの戻り値をそのままunassignmentとしてPresentationalに渡すこと', () => {
+      customRender(<TicketDetailContainer />)
+
+      expect(mockTicketDetailPresentational.mock.calls[0]?.[0].unassignment).toEqual(
+        mockUnassignment,
+      )
     })
 
     it('useGetTicketHandlerがisLoading=trueの場合、uiState.isLoadingがtrueになること', () => {

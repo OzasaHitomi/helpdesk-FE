@@ -4,6 +4,7 @@ import { TicketDetailInfo } from './ui/TicketDetailInfo'
 import { TicketDetailCommentForm } from './ui/TicketDetailCommentForm'
 import { TicketDetailHistory } from './ui/TicketDetailHistory'
 import { TicketDetailAssignButton } from './ui/TicketDetailAssignButton'
+import { TicketDetailUnassignButton } from './ui/TicketDetailUnassignButton'
 import { LoadingPage } from '@/components/pages/LoadingPage'
 import { type TicketDetailView } from './types/TicketDetailView'
 import { type TicketCommentView } from './types/TicketCommentView'
@@ -45,6 +46,16 @@ interface TicketDetailPresentationalProps {
       onClick: () => Promise<void>
     }
   }
+  // useUnassignTicketHandlerの戻り値(uiState/handlers)を、
+  // そのままTicketDetailUnassignButtonのpropsとして渡せる形で受け取る
+  unassignment: {
+    uiState: {
+      isSubmitting: boolean
+    }
+    handlers: {
+      onClick: () => Promise<void>
+    }
+  }
 }
 
 // Presentational: 実際の画面表示を担当する層
@@ -55,6 +66,7 @@ export const TicketDetailPresentational = ({
   uiState,
   commentForm,
   assignment,
+  unassignment,
 }: TicketDetailPresentationalProps) => {
   // 初回取得中は配下の画面が一瞬映ってしまうのを防ぐため、ローディング画面を表示する
   // （キャッシュがある状態の再取得は対象外にするため、isFetchingではなくisLoadingで判定する）
@@ -87,6 +99,15 @@ export const TicketDetailPresentational = ({
         <Heading size={'lg'}>{`ID：${String(data.ticket.id)}`}</Heading>
         <Show when={data.ticket.isAssignableToMe}>
           <TicketDetailAssignButton uiState={assignment.uiState} handlers={assignment.handlers} />
+        </Show>
+        <Show when={data.ticket.isUnassignableByMe}>
+          <TicketDetailUnassignButton
+            uiState={unassignment.uiState}
+            handlers={unassignment.handlers}
+          />
+          <Text as={'span'} color={'gray.500'} data-testid={'ticket-detail-unassign-separator'}>
+            |
+          </Text>
         </Show>
         {data.ticket.supportUserName && <Text>{data.ticket.supportUserName}</Text>}
       </HStack>

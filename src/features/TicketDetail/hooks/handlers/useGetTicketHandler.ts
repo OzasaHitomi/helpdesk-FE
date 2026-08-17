@@ -8,7 +8,7 @@ import { type UserRole } from '@/share/types/userRole'
 export const useGetTicketHandler = (
   ticketId: number,
   role: UserRole | undefined,
-  // userId: number | undefined,
+  userId: number | undefined,
 ) => {
   const { data, isLoading, isError } = useGetTicketQuery(ticketId)
 
@@ -20,6 +20,10 @@ export const useGetTicketHandler = (
         ...data,
         isAssignableToMe:
           role === 'support' && data.status === 'new_question' && data.supportUserId == null,
+        isUnassignableByMe:
+          role === 'support' &&
+          (data.status === 'assigned' || data.status === 'in_progress') &&
+          data.supportUserId === userId,
       }
     : undefined
 

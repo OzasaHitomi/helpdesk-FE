@@ -4,6 +4,7 @@ import { useGetTicketHandler } from './hooks/handlers/useGetTicketHandler'
 import { useGetTicketCommentsHandler } from './hooks/handlers/useGetTicketCommentsHandler'
 import { useCreateTicketCommentHandler } from './hooks/handlers/useCreateTicketCommentHandler'
 import { useAssignTicketHandler } from './hooks/handlers/useAssignTicketHandler'
+import { useUnassignTicketHandler } from './hooks/handlers/useUnassignTicketHandler'
 import { useMeQuery } from '@/share/hooks/queries/useMeQuery'
 
 // Container: 各hookを呼び出して値を集め、Presentational（見た目）に橋渡しするだけの層
@@ -13,24 +14,28 @@ export const TicketDetailContainer = () => {
   // チケット情報を取得
   // ルートパラメータ(/tickets/:id)からチケットIDを取得する
   const { id } = useParams<{ id: string }>()
+  const ticketId = Number(id)
   // ログインしているユーザーの情報を取得
   const { data: meData } = useMeQuery()
-  const { data, uiState } = useGetTicketHandler(Number(id), meData?.role)
+  const { data, uiState } = useGetTicketHandler(ticketId, meData?.role, meData?.id)
 
   // ---------------------------
   // コメント情報を取得
-  const { data: commentsData, uiState: commentsUiState } = useGetTicketCommentsHandler(Number(id))
+  const { data: commentsData, uiState: commentsUiState } = useGetTicketCommentsHandler(ticketId)
 
   // ---------------------------
   // コメントフォームを取得
   // 質疑応答フォームの状態・送信処理は、そのままTicketDetailCommentFormのpropsの形で受け取れるため、
   // 分解せずcommentFormとしてひとまとめにPresentationalへ渡す
-  const commentForm = useCreateTicketCommentHandler(Number(id))
+  const commentForm = useCreateTicketCommentHandler(ticketId)
 
   // ---------------------------
 
   // 担当者になるボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
-  const assignment = useAssignTicketHandler(Number(id))
+  const assignment = useAssignTicketHandler(ticketId)
+
+  // 担当解除ボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
+  const unassignment = useUnassignTicketHandler(ticketId)
 
   // ---------------------------
   return (
@@ -42,6 +47,7 @@ export const TicketDetailContainer = () => {
       }}
       commentForm={commentForm}
       assignment={assignment}
+      unassignment={unassignment}
     />
   )
 }

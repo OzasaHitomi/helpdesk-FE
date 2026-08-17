@@ -6,6 +6,8 @@ import {
   type GetTicketsResponseItemJson,
   type GetTicketResponse,
   type GetTicketResponseJson,
+  type UnassignTicketResponse,
+  type UnassignTicketResponseJson,
   type AssignTicketResponse,
   type AssignTicketResponseJson,
 } from '@/services/internal/backend/v1/types/response/tickets'
@@ -42,6 +44,15 @@ export const getTicket = async (id: number): Promise<GetTicketResponse> => {
 // 成功時は200（担当者に設定された自分自身の情報を返す。リクエストボディは無し）
 export const assignTicketToSelf = async (id: number): Promise<AssignTicketResponse> => {
   const response = await internalBackendV1Client.put<AssignTicketResponseJson>(
+    `${COMMON_URL}/${String(id)}/assign`,
+  )
+
+  return { ...response.data, updatedAt: new Date(response.data.updatedAt) }
+}
+
+// 成功時は200（担当解除後のチケット情報を返す。FE側では値を使わない）
+export const unassignTicket = async (id: number): Promise<UnassignTicketResponse> => {
+  const response = await internalBackendV1Client.delete<UnassignTicketResponseJson>(
     `${COMMON_URL}/${String(id)}/assign`,
   )
 

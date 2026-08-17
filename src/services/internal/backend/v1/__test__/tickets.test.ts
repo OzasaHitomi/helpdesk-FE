@@ -1,4 +1,4 @@
-import { createTicket, getTickets, getTicket, assignTicketToSelf } from '../tickets'
+import { createTicket, getTickets, getTicket, assignTicketToSelf, unassignTicket } from '../tickets'
 import { internalBackendV1Client } from '../client'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
@@ -6,6 +6,7 @@ import {
   type GetTicketsResponseItemJson,
   type GetTicketResponseJson,
   type AssignTicketResponseJson,
+  type UnassignTicketResponseJson,
 } from '../types/response/tickets'
 
 // internalBackendV1Client（axiosインスタンス）のget/post/putをspyOnし、各関数が正しいURL・メソッド・bodyで
@@ -123,6 +124,31 @@ describe('tickets', () => {
         expect(result).toEqual({
           ...mockResponseJson,
           updatedAt: new Date('2026-08-12T00:00:00Z'),
+        })
+      })
+    })
+  })
+
+  describe('unassignTicket', () => {
+    describe('正常系', () => {
+      it('/tickets/{id}/assignへDELETEし、updatedAtを文字列からDateに変換したうえで返すこと', async () => {
+        const mockResponseJson: UnassignTicketResponseJson = {
+          id: 1,
+          status: 'new_question',
+          supportUserId: null,
+          supportUserName: null,
+          updatedAt: '2026-08-14T00:00:00Z',
+        }
+        const deleteSpy = vi
+          .spyOn(internalBackendV1Client, 'delete')
+          .mockResolvedValue({ data: mockResponseJson })
+
+        const result = await unassignTicket(1)
+
+        expect(deleteSpy).toHaveBeenCalledWith('/tickets/1/assign')
+        expect(result).toEqual({
+          ...mockResponseJson,
+          updatedAt: new Date('2026-08-14T00:00:00Z'),
         })
       })
     })
