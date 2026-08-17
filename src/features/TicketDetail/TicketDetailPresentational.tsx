@@ -10,6 +10,7 @@ import { type TicketDetailView } from './types/TicketDetailView'
 import { type TicketCommentView } from './types/TicketCommentView'
 import { type TicketCommentFieldErrors } from './types/TicketCommentFieldErrors'
 import { type UserRole } from '@/share/types/userRole'
+import { type TicketStatus } from '@/share/types/ticketStatus'
 
 interface TicketDetailPresentationalProps {
   data: {
@@ -56,6 +57,16 @@ interface TicketDetailPresentationalProps {
       onClick: () => Promise<void>
     }
   }
+  // useUpdateTicketStatusHandlerの戻り値(uiState/handlers)を、
+  // そのままTicketDetailInfoのstatusChangeとして渡せる形で受け取る
+  statusChange: {
+    uiState: {
+      isSubmitting: boolean
+    }
+    handlers: {
+      onClick: (status: TicketStatus) => Promise<void>
+    }
+  }
 }
 
 // Presentational: 実際の画面表示を担当する層
@@ -67,6 +78,7 @@ export const TicketDetailPresentational = ({
   commentForm,
   assignment,
   unassignment,
+  statusChange,
 }: TicketDetailPresentationalProps) => {
   // 初回取得中は配下の画面が一瞬映ってしまうのを防ぐため、ローディング画面を表示する
   // （キャッシュがある状態の再取得は対象外にするため、isFetchingではなくisLoadingで判定する）
@@ -111,7 +123,10 @@ export const TicketDetailPresentational = ({
         </Show>
         {data.ticket.supportUserName && <Text>{data.ticket.supportUserName}</Text>}
       </HStack>
-      <TicketDetailInfo data={{ ticket: data.ticket, role: data.role }} />
+      <TicketDetailInfo
+        data={{ ticket: data.ticket, role: data.role }}
+        statusChange={statusChange}
+      />
       <TicketDetailCommentForm
         data={commentForm.data}
         uiState={commentForm.uiState}

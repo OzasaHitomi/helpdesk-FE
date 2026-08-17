@@ -5,6 +5,7 @@ import { useGetTicketCommentsHandler } from './hooks/handlers/useGetTicketCommen
 import { useCreateTicketCommentHandler } from './hooks/handlers/useCreateTicketCommentHandler'
 import { useAssignTicketHandler } from './hooks/handlers/useAssignTicketHandler'
 import { useUnassignTicketHandler } from './hooks/handlers/useUnassignTicketHandler'
+import { useUpdateTicketStatusHandler } from './hooks/handlers/useUpdateTicketStatusHandler'
 import { useMeQuery } from '@/share/hooks/queries/useMeQuery'
 
 // Container: 各hookを呼び出して値を集め、Presentational（見た目）に橋渡しするだけの層
@@ -37,6 +38,9 @@ export const TicketDetailContainer = () => {
   // 担当解除ボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
   const unassignment = useUnassignTicketHandler(ticketId)
 
+  // ステータス変更ボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
+  const statusChange = useUpdateTicketStatusHandler(ticketId)
+
   // ---------------------------
   return (
     <TicketDetailPresentational
@@ -48,6 +52,7 @@ export const TicketDetailContainer = () => {
       commentForm={commentForm}
       assignment={assignment}
       unassignment={unassignment}
+      statusChange={statusChange}
     />
   )
 }

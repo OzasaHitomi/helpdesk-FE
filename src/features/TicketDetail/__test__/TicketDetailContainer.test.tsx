@@ -17,6 +17,7 @@ const {
   mockUseCreateTicketCommentHandler,
   mockUseAssignTicketHandler,
   mockUseUnassignTicketHandler,
+  mockUseUpdateTicketStatusHandler,
   mockUseMeQuery,
 } = vi.hoisted(() => ({
   mockUseGetTicketHandler: vi.fn(),
@@ -24,6 +25,7 @@ const {
   mockUseCreateTicketCommentHandler: vi.fn(),
   mockUseAssignTicketHandler: vi.fn(),
   mockUseUnassignTicketHandler: vi.fn(),
+  mockUseUpdateTicketStatusHandler: vi.fn(),
   mockUseMeQuery: vi.fn(),
 }))
 
@@ -45,6 +47,10 @@ vi.mock('../hooks/handlers/useAssignTicketHandler', () => ({
 
 vi.mock('../hooks/handlers/useUnassignTicketHandler', () => ({
   useUnassignTicketHandler: mockUseUnassignTicketHandler,
+}))
+
+vi.mock('../hooks/handlers/useUpdateTicketStatusHandler', () => ({
+  useUpdateTicketStatusHandler: mockUseUpdateTicketStatusHandler,
 }))
 
 vi.mock('@/share/hooks/queries/useMeQuery', () => ({
@@ -78,6 +84,7 @@ const mockTicket: TicketDetailView = {
   supportUserName: null,
   isAssignableToMe: true,
   isUnassignableByMe: false,
+  isStatusEditableByMe: false,
   createdAt: new Date('2026-07-29T00:00:00Z'),
 }
 
@@ -89,6 +96,11 @@ const mockAssignment = {
 }
 
 const mockUnassignment = {
+  uiState: { isSubmitting: false },
+  handlers: { onClick: vi.fn() },
+}
+
+const mockStatusChange = {
   uiState: { isSubmitting: false },
   handlers: { onClick: vi.fn() },
 }
@@ -122,6 +134,7 @@ describe('TicketDetailContainer', () => {
     mockUseCreateTicketCommentHandler.mockReturnValue(mockCommentForm)
     mockUseAssignTicketHandler.mockReturnValue(mockAssignment)
     mockUseUnassignTicketHandler.mockReturnValue(mockUnassignment)
+    mockUseUpdateTicketStatusHandler.mockReturnValue(mockStatusChange)
   })
 
   afterEach(() => {
@@ -203,6 +216,20 @@ describe('TicketDetailContainer', () => {
 
       expect(mockTicketDetailPresentational.mock.calls[0]?.[0].unassignment).toEqual(
         mockUnassignment,
+      )
+    })
+
+    it('ルートパラメータのidを数値に変換してuseUpdateTicketStatusHandlerに渡すこと', () => {
+      customRender(<TicketDetailContainer />)
+
+      expect(mockUseUpdateTicketStatusHandler).toHaveBeenCalledWith(1)
+    })
+
+    it('useUpdateTicketStatusHandlerの戻り値をそのままstatusChangeとしてPresentationalに渡すこと', () => {
+      customRender(<TicketDetailContainer />)
+
+      expect(mockTicketDetailPresentational.mock.calls[0]?.[0].statusChange).toEqual(
+        mockStatusChange,
       )
     })
 
