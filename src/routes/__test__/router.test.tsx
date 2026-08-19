@@ -25,6 +25,10 @@ vi.mock('@/features/TicketDetail/TicketDetailContainer', () => ({
   TicketDetailContainer: () => <div data-testid='mocked-ticket-detail-container' />,
 }))
 
+vi.mock('@/features/AccountManagement/AccountManagementContainer', () => ({
+  AccountManagementContainer: () => <div data-testid='mocked-account-management-container' />,
+}))
+
 vi.mock('@/routes/RequireAuth', () => ({
   RequireAuth: () => (
     <div data-testid='mocked-require-auth'>
@@ -61,6 +65,13 @@ describe('AppRouter', () => {
       expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-ticket-detail-container')).toBeInTheDocument()
+    })
+
+    it('/accountsにアクセスした場合、RequireAuth・BaseLayoutを経由してAccountManagementContainerが表示されること', () => {
+      renderAppRouter('/accounts')
+      expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
+      expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
+      expect(screen.getByTestId('mocked-account-management-container')).toBeInTheDocument()
     })
   })
 
