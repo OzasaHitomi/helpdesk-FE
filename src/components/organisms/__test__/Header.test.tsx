@@ -86,14 +86,17 @@ describe('Header', () => {
       expect(screen.getByRole('button', { name: 'Logout' })).toBeDisabled()
     })
 
-    it('roleがadminの場合、Accountリンクが表示され、リンク先が/accountsであること', () => {
+    it('roleがadminの場合、Accountリンクが表示され、リンク先が/admin/accountsであること', () => {
       customRender(
         <Header
           data={{ role: 'admin', isLoggingOut: false }}
           handlers={{ onLogout: mockOnLogout }}
         />,
       )
-      expect(screen.getByRole('link', { name: 'Account' })).toHaveAttribute('href', '/accounts')
+      expect(screen.getByRole('link', { name: 'Account' })).toHaveAttribute(
+        'href',
+        '/admin/accounts',
+      )
     })
   })
 

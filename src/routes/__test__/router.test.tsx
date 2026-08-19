@@ -67,8 +67,8 @@ describe('AppRouter', () => {
       expect(screen.getByTestId('mocked-ticket-detail-container')).toBeInTheDocument()
     })
 
-    it('/accountsにアクセスした場合、RequireAuth・BaseLayoutを経由してAccountManagementContainerが表示されること', () => {
-      renderAppRouter('/accounts')
+    it('/admin/accountsにアクセスした場合、RequireAuth・BaseLayoutを経由してAccountManagementContainerが表示されること', () => {
+      renderAppRouter('/admin/accounts')
       expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-account-management-container')).toBeInTheDocument()

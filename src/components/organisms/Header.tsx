@@ -34,10 +34,10 @@ export const Header = ({ data, handlers }: HeaderProps) => {
               <HStack gap={{ base: 4, md: 8 }}>
                 {/* ↓Account・｜・Ticketは他要素より間隔を詰めたいため、専用のgapを持つHStackでまとめる */}
                 <HStack gap={2}>
-                  {/* ↓管理者のみアカウント管理画面（'/accounts'）へのリンクと、Ticketとの区切り線を表示する */}
+                  {/* ↓管理者のみアカウント管理画面（'/admin/accounts'）へのリンクと、Ticketとの区切り線を表示する */}
                   {data.role === 'admin' && (
                     <>
-                      <Link href={'/accounts'} _hover={{ textDecoration: 'none' }}>
+                      <Link href={'/admin/accounts'} _hover={{ textDecoration: 'none' }}>
                         <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} color={'gray.500'}>
                           Account
                         </Text>

@@ -15,7 +15,7 @@ export const AppRouter = () => {
         <Route element={<BaseLayout />}>
           <Route path='/' element={<RootContainer />} />
           <Route path='/tickets/:id' element={<TicketDetailContainer />} />
-          <Route path='/accounts' element={<AccountManagementContainer />} />
+          <Route path='/admin/accounts' element={<AccountManagementContainer />} />
           <Route path='*' element={<div>404 Not Found</div>} />
         </Route>
       </Route>
