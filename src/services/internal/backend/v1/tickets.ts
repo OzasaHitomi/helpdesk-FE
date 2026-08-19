@@ -15,6 +15,10 @@ import {
   type AssignTicketResponseJson,
   type UpdateTicketStatusResponse,
   type UpdateTicketStatusResponseJson,
+  type PublishTicketResponse,
+  type PublishTicketResponseJson,
+  type UnpublishTicketResponse,
+  type UnpublishTicketResponseJson,
 } from '@/services/internal/backend/v1/types/response/tickets'
 
 const COMMON_URL = '/tickets'
@@ -72,6 +76,24 @@ export const updateTicketStatus = async (
   const response = await internalBackendV1Client.put<UpdateTicketStatusResponseJson>(
     `${COMMON_URL}/${String(id)}/status`,
     body,
+  )
+
+  return { ...response.data, updatedAt: new Date(response.data.updatedAt) }
+}
+
+// 成功時は200（変更後の公開設定を含むチケット情報を返す）
+export const publishTicket = async (id: number): Promise<PublishTicketResponse> => {
+  const response = await internalBackendV1Client.put<PublishTicketResponseJson>(
+    `${COMMON_URL}/${String(id)}/publish`,
+  )
+
+  return { ...response.data, updatedAt: new Date(response.data.updatedAt) }
+}
+
+// 成功時は200（変更後の公開設定を含むチケット情報を返す）
+export const unpublishTicket = async (id: number): Promise<UnpublishTicketResponse> => {
+  const response = await internalBackendV1Client.put<UnpublishTicketResponseJson>(
+    `${COMMON_URL}/${String(id)}/unpublish`,
   )
 
   return { ...response.data, updatedAt: new Date(response.data.updatedAt) }

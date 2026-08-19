@@ -18,6 +18,8 @@ const {
   mockUseAssignTicketHandler,
   mockUseUnassignTicketHandler,
   mockUseUpdateTicketStatusHandler,
+  mockUsePublishTicketHandler,
+  mockUseUnpublishTicketHandler,
   mockUseMeQuery,
 } = vi.hoisted(() => ({
   mockUseGetTicketHandler: vi.fn(),
@@ -26,6 +28,8 @@ const {
   mockUseAssignTicketHandler: vi.fn(),
   mockUseUnassignTicketHandler: vi.fn(),
   mockUseUpdateTicketStatusHandler: vi.fn(),
+  mockUsePublishTicketHandler: vi.fn(),
+  mockUseUnpublishTicketHandler: vi.fn(),
   mockUseMeQuery: vi.fn(),
 }))
 
@@ -51,6 +55,14 @@ vi.mock('../hooks/handlers/useUnassignTicketHandler', () => ({
 
 vi.mock('../hooks/handlers/useUpdateTicketStatusHandler', () => ({
   useUpdateTicketStatusHandler: mockUseUpdateTicketStatusHandler,
+}))
+
+vi.mock('../hooks/handlers/usePublishTicketHandler', () => ({
+  usePublishTicketHandler: mockUsePublishTicketHandler,
+}))
+
+vi.mock('../hooks/handlers/useUnpublishTicketHandler', () => ({
+  useUnpublishTicketHandler: mockUseUnpublishTicketHandler,
 }))
 
 vi.mock('@/share/hooks/queries/useMeQuery', () => ({
@@ -80,11 +92,14 @@ const mockTicket: TicketDetailView = {
   detail: 'パスワードを変更したらログインできなくなりました',
   visibility: 'private',
   status: 'new_question',
+  createdByUserId: 1,
   supportUserId: null,
   supportUserName: null,
   isAssignableToMe: true,
   isUnassignableByMe: false,
   isStatusEditableByMe: false,
+  isPublishableByMe: false,
+  isUnpublishableByMe: false,
   createdAt: new Date('2026-07-29T00:00:00Z'),
 }
 
@@ -101,6 +116,16 @@ const mockUnassignment = {
 }
 
 const mockStatusChange = {
+  uiState: { isSubmitting: false },
+  handlers: { onClick: vi.fn() },
+}
+
+const mockPublish = {
+  uiState: { isSubmitting: false },
+  handlers: { onClick: vi.fn() },
+}
+
+const mockUnpublish = {
   uiState: { isSubmitting: false },
   handlers: { onClick: vi.fn() },
 }
@@ -135,6 +160,8 @@ describe('TicketDetailContainer', () => {
     mockUseAssignTicketHandler.mockReturnValue(mockAssignment)
     mockUseUnassignTicketHandler.mockReturnValue(mockUnassignment)
     mockUseUpdateTicketStatusHandler.mockReturnValue(mockStatusChange)
+    mockUsePublishTicketHandler.mockReturnValue(mockPublish)
+    mockUseUnpublishTicketHandler.mockReturnValue(mockUnpublish)
   })
 
   afterEach(() => {
@@ -231,6 +258,30 @@ describe('TicketDetailContainer', () => {
       expect(mockTicketDetailPresentational.mock.calls[0]?.[0].statusChange).toEqual(
         mockStatusChange,
       )
+    })
+
+    it('ルートパラメータのidを数値に変換してusePublishTicketHandlerに渡すこと', () => {
+      customRender(<TicketDetailContainer />)
+
+      expect(mockUsePublishTicketHandler).toHaveBeenCalledWith(1)
+    })
+
+    it('usePublishTicketHandlerの戻り値をそのままpublishとしてPresentationalに渡すこと', () => {
+      customRender(<TicketDetailContainer />)
+
+      expect(mockTicketDetailPresentational.mock.calls[0]?.[0].publish).toEqual(mockPublish)
+    })
+
+    it('ルートパラメータのidを数値に変換してuseUnpublishTicketHandlerに渡すこと', () => {
+      customRender(<TicketDetailContainer />)
+
+      expect(mockUseUnpublishTicketHandler).toHaveBeenCalledWith(1)
+    })
+
+    it('useUnpublishTicketHandlerの戻り値をそのままunpublishとしてPresentationalに渡すこと', () => {
+      customRender(<TicketDetailContainer />)
+
+      expect(mockTicketDetailPresentational.mock.calls[0]?.[0].unpublish).toEqual(mockUnpublish)
     })
 
     it('useGetTicketHandlerがisLoading=trueの場合、uiState.isLoadingがtrueになること', () => {

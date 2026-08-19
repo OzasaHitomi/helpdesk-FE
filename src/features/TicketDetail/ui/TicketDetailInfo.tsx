@@ -1,14 +1,15 @@
 import { type ReactNode } from 'react'
 import { Button, Field, HStack, Input, Stack, Text, Textarea } from '@chakra-ui/react'
-import { TicketVisibilityList } from '@/share/constants/business/ticketVisibilityType'
 import { TicketStatusList } from '@/share/constants/business/ticketStatusType'
 import { TicketStatusDisplayTransitions } from '@/share/constants/business/ticketStatusDisplayTransitions'
-import { transformTicketVisibilityToJa } from '@/share/logic/transform/transformTicketVisibilityToJa'
 import { transformTicketStatusToJa } from '@/share/logic/transform/transformTicketStatusToJa'
 import { formatDateToYmdSlash } from '@/share/logic/format/formatDateToYmdSlash'
+import { TicketDetailPublishButton } from './TicketDetailPublishButton/TicketDetailPublishButton'
+import { TicketDetailUnpublishButton } from './TicketDetailUnpublishButton/TicketDetailUnpublishButton'
 import { type TicketDetailView } from '../types/TicketDetailView'
 import { type UserRole } from '@/share/types/userRole'
 import { type TicketStatus } from '@/share/types/ticketStatus'
+import { type TicketVisibility } from '@/share/types/ticketVisibility'
 
 interface TicketDetailInfoProps {
   data: {
@@ -23,6 +24,26 @@ interface TicketDetailInfoProps {
     }
     handlers: {
       onClick: (status: TicketStatus) => Promise<void>
+    }
+  }
+  // usePublishTicketHandlerの戻り値(uiState/handlers)を、
+  // そのまま公開ボタンのpropsとして渡せる形で受け取る
+  publish: {
+    uiState: {
+      isSubmitting: boolean
+    }
+    handlers: {
+      onClick: () => Promise<void>
+    }
+  }
+  // useUnpublishTicketHandlerの戻り値(uiState/handlers)を、
+  // そのまま非公開ボタンのpropsとして渡せる形で受け取る
+  unpublish: {
+    uiState: {
+      isSubmitting: boolean
+    }
+    handlers: {
+      onClick: () => Promise<void>
     }
   }
 }
@@ -64,17 +85,34 @@ const LabeledField = ({ label, alignItems = 'center', labelPt, children }: Label
 // チケット詳細の内容を表示する専用コンポーネント（見た目専用、編集操作は持たない）
 // 公開設定は新規登録ダイアログ(CreateTicketDialog)の選択ボタンと同じ見た目にし、現在の値だけをハイライト表示する
 // （onClickは持たせていないため、実際の編集操作はまだできない）
-export const TicketDetailInfo = ({ data, statusChange }: TicketDetailInfoProps) => {
-  const { ticket, role } = data
+export const TicketDetailInfo = ({
+  data,
+  statusChange,
+  publish,
+  unpublish,
+}: TicketDetailInfoProps) => {
+  const { ticket } = data
 
   // 質問日は「2026/07/30」形式（スラッシュ区切り）で表示する
   // 一覧(TicketsTable)の質問日表示（半角スペース区切り）とは別仕様のため、専用のformatDateToYmdSlashを使う
   const createdAtText = formatDateToYmdSlash(ticket.createdAt)
 
-  // 公開設定の変更はサポート担当・管理者のみに許可する想定のため、社員アカウントの場合はボタンを無効化する
-  // （実際の変更操作自体は別タスクで実装予定。現時点ではdisabledの出し分けのみ）
-  const isVisibilityDisabled = role === 'employee'
+  // 引数visibilityは「これから変更しようとしている先の設定（public/private）」を表す
+  // 「今すでにその設定ではないか」と「その方向に変更する権限を自分が持っているか」の両方を満たす場合のみtrueを返す
+  // （公開: 管理者/サポートのみ／非公開: 管理者/サポート+質問者本人、と方向によって権限ルールが異なるため、
+  //  isPublishableByMe/isUnpublishableByMeを方向ごとに使い分けている）
+  const isVisibilityClickable = (visibility: TicketVisibility) => {
+    return (
+      ticket.visibility !== visibility &&
+      (visibility === 'public' ? ticket.isPublishableByMe : ticket.isUnpublishableByMe)
+    )
+  }
+  // 公開・非公開どちらかの通信中は、もう一方のボタンも含めて両方クリック不可にするためのフラグ
+  // （別々のAPIだが、連打や競合を防ぐため送信中は両方まとめて固める）
+  const isVisibilitySubmitting = publish.uiState.isSubmitting || unpublish.uiState.isSubmitting
 
+  // ステータスボタンがクリック可能かどうかを判定する
+  // ①すでに選択中のステータスではない ②自分にステータス編集権限がある ③現在のステータスから遷移可能な先である、の3つを満たす場合のみtrue
   const isClickable = (status: TicketStatus) => {
     return (
       !(ticket.status === status) &&
@@ -91,30 +129,41 @@ export const TicketDetailInfo = ({ data, statusChange }: TicketDetailInfoProps) 
       </LabeledField>
 
       {/* ── 公開設定 ─────────────────────────────────────────────── */}
+      {/* 各ボタンには役割の異なる3つの真偽値を渡している
+          ・isSelected: 現在の公開設定と一致するか（枠線の色だけを決める。権限の有無は関係ない）
+          ・isEditable : 「選択中（＝現在の設定）」かつ「反対方向に自分で変更できる」場合のみtrue（背景を白にして操作可能に見せる。
+                         選択中でも権限が無ければグレーのまま＝見た目上は選ばれているが変更はできない、と伝える）
+          ・disabled   : 実際にクリックできるかどうか（自分がその方向に変更する権限を持ち、かつ送信中でない場合のみクリック可） */}
       <LabeledField label={'公開設定'}>
         <HStack justifyContent={'flex-start'} flex={1}>
-          {TicketVisibilityList.map((visibility) => {
-            const isSelected = ticket.visibility === visibility
-            return (
-              <Button
-                key={visibility}
-                size={'sm'}
-                w={'3xs'}
-                borderRadius={'12px'}
-                aria-pressed={isSelected}
-                // 選択中でも、社員アカウント(disabled)の場合は背景をグレーにする（枠線の色はそのまま）
-                bg={isSelected && !isVisibilityDisabled ? 'white' : 'gray.100'}
-                borderWidth={'2px'}
-                borderColor={isSelected ? 'green.400' : 'transparent'}
-                color={'gray.700'}
-                disabled={isVisibilityDisabled}
-                // disabled自体は維持しつつ、hover時の禁止カーソル(not-allowed)だけを打ち消す
-                _disabled={{ cursor: 'default', opacity: 1 }}
-              >
-                {transformTicketVisibilityToJa(visibility)}
-              </Button>
-            )
-          })}
+          <TicketDetailPublishButton
+            // 今の設定が「公開」かどうかだけを見る（権限は無関係）。枠線の色を決める
+            isSelected={ticket.visibility === 'public'}
+            // 「公開」が選択中であり、かつ自分が「非公開」へ変更できる権限を持つ場合のみtrue。背景を白にするかを決める
+            // （選択中でも非公開への変更権限が無ければfalseのまま＝選ばれているのに背景はグレー、という見た目になる）
+            isEditable={
+              ticket.visibility === 'public' &&
+              isVisibilityClickable('private') &&
+              !isVisibilitySubmitting
+            }
+            // 実際にこの「公開」ボタンをクリックしてよいか（自分に公開への変更権限があり、今は公開中ではなく、送信中でもない場合のみtrue）
+            disabled={!isVisibilityClickable('public') || isVisibilitySubmitting}
+            handlers={publish.handlers}
+          />
+          <TicketDetailUnpublishButton
+            // 今の設定が「非公開」かどうかだけを見る（権限は無関係）。枠線の色を決める
+            isSelected={ticket.visibility === 'private'}
+            // 「非公開」が選択中であり、かつ自分が「公開」へ変更できる権限を持つ場合のみtrue。背景を白にするかを決める
+            // （選択中でも公開への変更権限が無ければfalseのまま＝選ばれているのに背景はグレー、という見た目になる）
+            isEditable={
+              ticket.visibility === 'private' &&
+              isVisibilityClickable('public') &&
+              !isVisibilitySubmitting
+            }
+            // 実際にこの「非公開」ボタンをクリックしてよいか（自分に非公開への変更権限があり、今は非公開ではなく、送信中でもない場合のみtrue）
+            disabled={!isVisibilityClickable('private') || isVisibilitySubmitting}
+            handlers={unpublish.handlers}
+          />
         </HStack>
       </LabeledField>
 

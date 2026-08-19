@@ -3,7 +3,7 @@ import { type TicketStatus } from '@/share/types/ticketStatus'
 // Record<K, V>: キーがK型、値がV型のオブジェクトを表す型。TicketStatusの全パターンを網羅しないとエラーになる
 const TicketStatusJaMap: Record<TicketStatus, string> = {
   new_question: '新規質問',
-  assigned: '担当者アサイン済み',
+  assigned: '担当者割り当て済み',
   in_progress: '対応中',
   resolved: '解決済み',
   closed: 'クローズ',

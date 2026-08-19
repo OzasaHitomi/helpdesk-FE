@@ -7,8 +7,8 @@ describe('transformTicketStatusToJa', () => {
       expect(transformTicketStatusToJa('new_question')).toBe('新規質問')
     })
 
-    it('assigned を渡すと「担当者アサイン済み」が返ること', () => {
-      expect(transformTicketStatusToJa('assigned')).toBe('担当者アサイン済み')
+    it('assigned を渡すと「担当者割り当て済み」が返ること', () => {
+      expect(transformTicketStatusToJa('assigned')).toBe('担当者割り当て済み')
     })
 
     it('in_progress を渡すと「対応中」が返ること', () => {

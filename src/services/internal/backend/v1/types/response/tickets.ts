@@ -30,13 +30,14 @@ export type GetTicketsResponseItemJson = Omit<GetTicketsResponseItem, 'createdAt
 }
 
 // GET /tickets/{id} のレスポンス型
-// 質問者名は現時点の画面要件に無いためBE側のレスポンスにも含まれない
 export type GetTicketResponse = {
   id: number
   title: string
   detail: string
   visibility: TicketVisibility
   status: TicketStatus
+  // 質問者（チケット作成者）のuser_id。公開設定の変更可否をFE側で判定するために使用する
+  createdByUserId: number
   // 担当者が未割当ての場合はNone
   supportUserId: number | null
   supportUserName: string | null
@@ -86,5 +87,29 @@ export type UpdateTicketStatusResponse = {
 
 // 通信では受け取れないため、updatedAtはDate型ではなく文字列型として受け取る
 export type UpdateTicketStatusResponseJson = Omit<UpdateTicketStatusResponse, 'updatedAt'> & {
+  updatedAt: string
+}
+
+// PUT /tickets/{id}/publish のレスポンス型（チケット公開設定変更API：非公開→公開）
+export type PublishTicketResponse = {
+  id: number
+  visibility: TicketVisibility
+  updatedAt: Date
+}
+
+// 通信では受け取れないため、updatedAtはDate型ではなく文字列型として受け取る
+export type PublishTicketResponseJson = Omit<PublishTicketResponse, 'updatedAt'> & {
+  updatedAt: string
+}
+
+// PUT /tickets/{id}/unpublish のレスポンス型（チケット公開設定変更API：公開→非公開）
+export type UnpublishTicketResponse = {
+  id: number
+  visibility: TicketVisibility
+  updatedAt: Date
+}
+
+// 通信では受け取れないため、updatedAtはDate型ではなく文字列型として受け取る
+export type UnpublishTicketResponseJson = Omit<UnpublishTicketResponse, 'updatedAt'> & {
   updatedAt: string
 }
