@@ -1,6 +1,6 @@
 import { TicketDetailInfo } from '../TicketDetailInfo'
-import { TicketDetailPublishButton } from '../Button/TicketDetailPublishButton'
-import { TicketDetailUnpublishButton } from '../Button/TicketDetailUnpublishButton'
+import { TicketDetailPublishButton } from '../TicketDetailPublishButton/TicketDetailPublishButton'
+import { TicketDetailUnpublishButton } from '../TicketDetailUnpublishButton/TicketDetailUnpublishButton'
 import { customRender } from '@/tests/helpers/customRender'
 import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
@@ -15,11 +15,11 @@ import { type UserRole } from '@/share/types/userRole'
 //  TicketDetailUnpublishButton.test.tsxが担保するため、ここではisSelected/isEditable/disabled/handlersが
 //  ticketの状態から正しく計算されて渡っているかのみを見る）
 
-vi.mock('../Button/TicketDetailPublishButton', () => ({
+vi.mock('../TicketDetailPublishButton/TicketDetailPublishButton', () => ({
   TicketDetailPublishButton: vi.fn(() => <div data-testid='mocked-ticket-detail-publish-button' />),
 }))
 
-vi.mock('../Button/TicketDetailUnpublishButton', () => ({
+vi.mock('../TicketDetailUnpublishButton/TicketDetailUnpublishButton', () => ({
   TicketDetailUnpublishButton: vi.fn(() => (
     <div data-testid='mocked-ticket-detail-unpublish-button' />
   )),
