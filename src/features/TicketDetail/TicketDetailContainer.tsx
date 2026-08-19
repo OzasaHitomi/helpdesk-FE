@@ -6,6 +6,8 @@ import { useCreateTicketCommentHandler } from './hooks/handlers/useCreateTicketC
 import { useAssignTicketHandler } from './hooks/handlers/useAssignTicketHandler'
 import { useUnassignTicketHandler } from './hooks/handlers/useUnassignTicketHandler'
 import { useUpdateTicketStatusHandler } from './hooks/handlers/useUpdateTicketStatusHandler'
+import { usePublishTicketHandler } from './hooks/handlers/usePublishTicketHandler'
+import { useUnpublishTicketHandler } from './hooks/handlers/useUnpublishTicketHandler'
 import { useMeQuery } from '@/share/hooks/queries/useMeQuery'
 
 // Container: 各hookを呼び出して値を集め、Presentational（見た目）に橋渡しするだけの層
@@ -41,6 +43,12 @@ export const TicketDetailContainer = () => {
   // ステータス変更ボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
   const statusChange = useUpdateTicketStatusHandler(ticketId)
 
+  // 公開ボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
+  const publish = usePublishTicketHandler(ticketId)
+
+  // 非公開ボタンの状態・操作も、同様にひとまとめにPresentationalへ渡す
+  const unpublish = useUnpublishTicketHandler(ticketId)
+
   // ---------------------------
   return (
     <TicketDetailPresentational
@@ -53,6 +61,8 @@ export const TicketDetailContainer = () => {
       assignment={assignment}
       unassignment={unassignment}
       statusChange={statusChange}
+      publish={publish}
+      unpublish={unpublish}
     />
   )
 }

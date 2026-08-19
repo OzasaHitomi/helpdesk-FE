@@ -49,11 +49,14 @@ const mockTicket: TicketDetailView = {
   detail: 'パスワードを変更したらログインできなくなりました',
   visibility: 'private',
   status: 'new_question',
+  createdByUserId: 1,
   supportUserId: null,
   supportUserName: null,
   isAssignableToMe: true,
   isUnassignableByMe: false,
   isStatusEditableByMe: false,
+  isPublishableByMe: false,
+  isUnpublishableByMe: false,
   createdAt: new Date('2026-07-29T00:00:00'),
 }
 
@@ -87,6 +90,16 @@ const mockStatusChange = {
   handlers: { onClick: vi.fn() },
 }
 
+const mockPublish = {
+  uiState: { isSubmitting: false },
+  handlers: { onClick: vi.fn() },
+}
+
+const mockUnpublish = {
+  uiState: { isSubmitting: false },
+  handlers: { onClick: vi.fn() },
+}
+
 describe('TicketDetailPresentational', () => {
   describe('正常系', () => {
     it('IDが見出しに表示されること', () => {
@@ -98,6 +111,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -113,6 +128,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -121,6 +138,8 @@ describe('TicketDetailPresentational', () => {
         {
           data: { ticket: mockTicket, role: 'employee' },
           statusChange: mockStatusChange,
+          publish: mockPublish,
+          unpublish: mockUnpublish,
         },
         undefined,
       )
@@ -135,6 +154,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -158,6 +179,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -177,6 +200,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -203,6 +228,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -222,6 +249,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -248,6 +277,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -267,6 +298,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -286,6 +319,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -305,6 +340,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -320,6 +357,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -338,6 +377,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -354,6 +395,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -370,6 +413,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 
@@ -385,6 +430,8 @@ describe('TicketDetailPresentational', () => {
           assignment={mockAssignment}
           unassignment={mockUnassignment}
           statusChange={mockStatusChange}
+          publish={mockPublish}
+          unpublish={mockUnpublish}
         />,
       )
 

@@ -20,6 +20,7 @@ const mockTicketResponse: GetTicketResponse = {
   detail: 'パスワードを変更したらログインできなくなりました',
   visibility: 'private',
   status: 'new_question',
+  createdByUserId: 1,
   supportUserId: null,
   supportUserName: null,
   createdAt: new Date('2026-07-29T00:00:00Z'),
@@ -45,6 +46,8 @@ describe('useGetTicketHandler', () => {
         isAssignableToMe: true,
         isUnassignableByMe: false,
         isStatusEditableByMe: false,
+        isPublishableByMe: true,
+        isUnpublishableByMe: true,
       })
     })
 
@@ -184,6 +187,96 @@ describe('useGetTicketHandler', () => {
       const { result } = customRenderHook(() => useGetTicketHandler(1, 'employee', 1))
 
       expect(result.current.data.ticket?.isStatusEditableByMe).toBe(false)
+    })
+  })
+
+  // ── isPublishableByMeの判定 ─────────────────────────────────────────────
+  describe('公開ボタンの活性可否(isPublishableByMe)', () => {
+    it('roleがadminの場合、trueになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: mockTicketResponse,
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'admin', 2))
+
+      expect(result.current.data.ticket?.isPublishableByMe).toBe(true)
+    })
+
+    it('roleがsupportの場合、trueになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: mockTicketResponse,
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 2))
+
+      expect(result.current.data.ticket?.isPublishableByMe).toBe(true)
+    })
+
+    it('roleがemployeeの場合、自身が質問者本人でもfalseになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: mockTicketResponse,
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'employee', 1))
+
+      expect(result.current.data.ticket?.isPublishableByMe).toBe(false)
+    })
+  })
+
+  // ── isUnpublishableByMeの判定 ───────────────────────────────────────────
+  describe('非公開ボタンの活性可否(isUnpublishableByMe)', () => {
+    it('roleがadminの場合、質問者でなくてもtrueになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: mockTicketResponse,
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'admin', 2))
+
+      expect(result.current.data.ticket?.isUnpublishableByMe).toBe(true)
+    })
+
+    it('roleがsupportの場合、質問者でなくてもtrueになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: mockTicketResponse,
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'support', 2))
+
+      expect(result.current.data.ticket?.isUnpublishableByMe).toBe(true)
+    })
+
+    it('roleがemployeeで自身が質問者本人の場合、trueになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: mockTicketResponse,
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'employee', 1))
+
+      expect(result.current.data.ticket?.isUnpublishableByMe).toBe(true)
+    })
+
+    it('roleがemployeeで自身が質問者本人でない場合、falseになること', () => {
+      mockUseGetTicketQuery.mockReturnValue({
+        data: mockTicketResponse,
+        isLoading: false,
+        isError: false,
+      })
+
+      const { result } = customRenderHook(() => useGetTicketHandler(1, 'employee', 2))
+
+      expect(result.current.data.ticket?.isUnpublishableByMe).toBe(false)
     })
   })
 
