@@ -67,6 +67,26 @@ interface TicketDetailPresentationalProps {
       onClick: (status: TicketStatus) => Promise<void>
     }
   }
+  // usePublishTicketHandlerの戻り値(uiState/handlers)を、
+  // そのままTicketDetailInfoのpublishとして渡せる形で受け取る
+  publish: {
+    uiState: {
+      isSubmitting: boolean
+    }
+    handlers: {
+      onClick: () => Promise<void>
+    }
+  }
+  // useUnpublishTicketHandlerの戻り値(uiState/handlers)を、
+  // そのままTicketDetailInfoのunpublishとして渡せる形で受け取る
+  unpublish: {
+    uiState: {
+      isSubmitting: boolean
+    }
+    handlers: {
+      onClick: () => Promise<void>
+    }
+  }
 }
 
 // Presentational: 実際の画面表示を担当する層
@@ -79,6 +99,8 @@ export const TicketDetailPresentational = ({
   assignment,
   unassignment,
   statusChange,
+  publish,
+  unpublish,
 }: TicketDetailPresentationalProps) => {
   // 初回取得中は配下の画面が一瞬映ってしまうのを防ぐため、ローディング画面を表示する
   // （キャッシュがある状態の再取得は対象外にするため、isFetchingではなくisLoadingで判定する）
@@ -126,6 +148,8 @@ export const TicketDetailPresentational = ({
       <TicketDetailInfo
         data={{ ticket: data.ticket, role: data.role }}
         statusChange={statusChange}
+        publish={publish}
+        unpublish={unpublish}
       />
       <TicketDetailCommentForm
         data={commentForm.data}
