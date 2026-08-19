@@ -126,7 +126,7 @@ describe('TicketDetailInfo', () => {
       renderInfo()
 
       expect(screen.getByText('新規質問')).toBeInTheDocument()
-      expect(screen.getByText('担当者アサイン済み')).toBeInTheDocument()
+      expect(screen.getByText('担当者割り当て済み')).toBeInTheDocument()
       expect(screen.getByText('対応中')).toBeInTheDocument()
       expect(screen.getByText('解決済み')).toBeInTheDocument()
       expect(screen.getByText('クローズ')).toBeInTheDocument()
@@ -252,7 +252,7 @@ describe('TicketDetailInfo', () => {
       renderInfo('support', { status: 'in_progress', isStatusEditableByMe: true })
 
       // in_progressから直接遷移可能なのはassigned/resolved/closed
-      expect(screen.getByRole('button', { name: '担当者アサイン済み' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: '担当者割り当て済み' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: '解決済み' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'クローズ' })).toBeInTheDocument()
     })
