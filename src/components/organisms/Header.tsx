@@ -1,8 +1,10 @@
 import { Box, Container, HStack, Spacer, Heading, Link, Text, Button } from '@chakra-ui/react'
 import { SYSTEM_NAME } from '@/share/constants/business/systemName'
+import { type UserRole } from '@/share/types/userRole'
 
 interface HeaderProps {
   data: {
+    role: UserRole | undefined
     isLoggingOut: boolean
   }
   handlers: {
@@ -28,14 +30,30 @@ export const Header = ({ data, handlers }: HeaderProps) => {
                 </Link>
               </Heading>
               <Spacer />
-              {/* 右側要素をまとめるHStack。将来的に社員/サポート担当は「Ticket Logout」、管理者は「Account | Ticket Logout」を表示する想定 */}
+              {/* 右側要素をまとめるHStack。管理者のみAccountリンクを追加表示する */}
               <HStack gap={{ base: 4, md: 8 }}>
-                {/* ↓Ticketクリックでチケット一覧のTopページ（'/'）に遷移する。システム名クリック時と同様の遷移方法 */}
-                <Link href={'/'} _hover={{ textDecoration: 'none' }}>
-                  <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} color={'gray.500'}>
-                    Ticket
-                  </Text>
-                </Link>
+                {/* ↓Account・｜・Ticketは他要素より間隔を詰めたいため、専用のgapを持つHStackでまとめる */}
+                <HStack gap={2}>
+                  {/* ↓管理者のみアカウント管理画面（'/admin/accounts'）へのリンクと、Ticketとの区切り線を表示する */}
+                  {data.role === 'admin' && (
+                    <>
+                      <Link href={'/admin/accounts'} _hover={{ textDecoration: 'none' }}>
+                        <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} color={'gray.500'}>
+                          Account
+                        </Text>
+                      </Link>
+                      <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} color={'gray.500'}>
+                        ｜
+                      </Text>
+                    </>
+                  )}
+                  {/* ↓Ticketクリックでチケット一覧のTopページ（'/'）に遷移する。システム名クリック時と同様の遷移方法 */}
+                  <Link href={'/'} _hover={{ textDecoration: 'none' }}>
+                    <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} color={'gray.500'}>
+                      Ticket
+                    </Text>
+                  </Link>
+                </HStack>
                 {/* ↓Logoutはページ遷移ではなく処理（ログアウトAPI呼び出し）を実行するため、Linkではなく処理実行用のButtonを使う */}
                 <Button
                   variant={'plain'} // ↓ボタンの装飾(背景色や枠線)を消して、文字だけのシンプルな見た目にする

@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { BaseLayout } from '@/components/templates/BaseLayout'
 import { LoginRoute } from './Login/base'
+import { AdminRoute } from './Admin/base'
 import { RootContainer } from '@/features/Root/RootContainer'
 import { TicketDetailContainer } from '@/features/TicketDetail/TicketDetailContainer'
 import { RequireAuth } from './RequireAuth'
@@ -14,6 +15,7 @@ export const AppRouter = () => {
         <Route element={<BaseLayout />}>
           <Route path='/' element={<RootContainer />} />
           <Route path='/tickets/:id' element={<TicketDetailContainer />} />
+          <Route path='/admin/*' element={<AdminRoute />} />
           <Route path='*' element={<div>404 Not Found</div>} />
         </Route>
       </Route>

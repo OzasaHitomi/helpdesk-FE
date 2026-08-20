@@ -15,40 +15,120 @@ describe('Header', () => {
 
   describe('正常系', () => {
     it('Headerが表示されること', () => {
-      customRender(<Header data={{ isLoggingOut: false }} handlers={{ onLogout: mockOnLogout }} />)
+      customRender(
+        <Header
+          data={{ role: 'employee', isLoggingOut: false }}
+          handlers={{ onLogout: mockOnLogout }}
+        />,
+      )
       // 期待するものを書く
       expect(screen.getByRole('heading', { name: SYSTEM_NAME })).toBeInTheDocument()
     })
 
     it('システム名のリンク先がTopページ（/）であること', () => {
-      customRender(<Header data={{ isLoggingOut: false }} handlers={{ onLogout: mockOnLogout }} />)
+      customRender(
+        <Header
+          data={{ role: 'employee', isLoggingOut: false }}
+          handlers={{ onLogout: mockOnLogout }}
+        />,
+      )
       expect(screen.getByRole('link', { name: SYSTEM_NAME })).toHaveAttribute('href', '/')
     })
 
     it('Ticketが表示されること', () => {
-      customRender(<Header data={{ isLoggingOut: false }} handlers={{ onLogout: mockOnLogout }} />)
+      customRender(
+        <Header
+          data={{ role: 'employee', isLoggingOut: false }}
+          handlers={{ onLogout: mockOnLogout }}
+        />,
+      )
       expect(screen.getByText('Ticket')).toBeInTheDocument()
     })
 
     it('Ticketのリンク先がTopページ（/）であること', () => {
-      customRender(<Header data={{ isLoggingOut: false }} handlers={{ onLogout: mockOnLogout }} />)
+      customRender(
+        <Header
+          data={{ role: 'employee', isLoggingOut: false }}
+          handlers={{ onLogout: mockOnLogout }}
+        />,
+      )
       expect(screen.getByRole('link', { name: 'Ticket' })).toHaveAttribute('href', '/')
     })
 
     it('Logoutが表示されること', () => {
-      customRender(<Header data={{ isLoggingOut: false }} handlers={{ onLogout: mockOnLogout }} />)
+      customRender(
+        <Header
+          data={{ role: 'employee', isLoggingOut: false }}
+          handlers={{ onLogout: mockOnLogout }}
+        />,
+      )
       expect(screen.getByRole('button', { name: 'Logout' })).toBeInTheDocument()
     })
 
     it('LogoutをクリックするとハンドラーのonLogoutが呼ばれること', () => {
-      customRender(<Header data={{ isLoggingOut: false }} handlers={{ onLogout: mockOnLogout }} />)
+      customRender(
+        <Header
+          data={{ role: 'employee', isLoggingOut: false }}
+          handlers={{ onLogout: mockOnLogout }}
+        />,
+      )
       fireEvent.click(screen.getByRole('button', { name: 'Logout' }))
       expect(mockOnLogout).toHaveBeenCalled()
     })
 
     it('isLoggingOutがtrueの場合、Logoutボタンが無効化されること', () => {
-      customRender(<Header data={{ isLoggingOut: true }} handlers={{ onLogout: mockOnLogout }} />)
+      customRender(
+        <Header
+          data={{ role: 'employee', isLoggingOut: true }}
+          handlers={{ onLogout: mockOnLogout }}
+        />,
+      )
       expect(screen.getByRole('button', { name: 'Logout' })).toBeDisabled()
+    })
+
+    it('roleがadminの場合、Accountリンクが表示され、リンク先が/admin/accountsであること', () => {
+      customRender(
+        <Header
+          data={{ role: 'admin', isLoggingOut: false }}
+          handlers={{ onLogout: mockOnLogout }}
+        />,
+      )
+      expect(screen.getByRole('link', { name: 'Account' })).toHaveAttribute(
+        'href',
+        '/admin/accounts',
+      )
+    })
+  })
+
+  describe('準正常系', () => {
+    it('roleがemployeeの場合、Accountリンクが表示されないこと', () => {
+      customRender(
+        <Header
+          data={{ role: 'employee', isLoggingOut: false }}
+          handlers={{ onLogout: mockOnLogout }}
+        />,
+      )
+      expect(screen.queryByText('Account')).not.toBeInTheDocument()
+    })
+
+    it('roleがsupportの場合、Accountリンクが表示されないこと', () => {
+      customRender(
+        <Header
+          data={{ role: 'support', isLoggingOut: false }}
+          handlers={{ onLogout: mockOnLogout }}
+        />,
+      )
+      expect(screen.queryByText('Account')).not.toBeInTheDocument()
+    })
+
+    it('roleがundefined(未取得)の場合、Accountリンクが表示されないこと', () => {
+      customRender(
+        <Header
+          data={{ role: undefined, isLoggingOut: false }}
+          handlers={{ onLogout: mockOnLogout }}
+        />,
+      )
+      expect(screen.queryByText('Account')).not.toBeInTheDocument()
     })
   })
 })

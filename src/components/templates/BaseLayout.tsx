@@ -1,15 +1,17 @@
 import { Outlet } from 'react-router-dom'
 import { Container } from '@chakra-ui/react'
 import { Header } from '@/components/organisms/Header'
+import { useMeQuery } from '@/share/hooks/queries/useMeQuery'
 import { useLogoutHandler } from './hooks/handlers/useLogoutHandler'
 
 export const BaseLayout = () => {
+  const { data: meData } = useMeQuery()
   const { data, handlers } = useLogoutHandler()
 
   return (
     <>
       <Header
-        data={{ isLoggingOut: data.isLoggingOut }}
+        data={{ role: meData?.role, isLoggingOut: data.isLoggingOut }}
         handlers={{ onLogout: handlers.onLogout }}
       />
       {/* 保護された各ページの中身が、Header(@/components/organisms/Header)のContainerより

@@ -93,6 +93,7 @@ describe('tickets', () => {
           detail: 'パスワードを変更したらログインできなくなりました',
           visibility: 'private',
           status: 'new_question',
+          createdByUserId: 1,
           supportUserId: null,
           supportUserName: null,
           createdAt: '2026-07-29T00:00:00Z',

@@ -17,6 +17,10 @@ vi.mock('@/routes/Login/base', () => ({
   LoginRoute: () => <div data-testid='mocked-login-route' />,
 }))
 
+vi.mock('@/routes/Admin/base', () => ({
+  AdminRoute: () => <div data-testid='mocked-admin-route' />,
+}))
+
 vi.mock('@/features/Root/RootContainer', () => ({
   RootContainer: () => <div data-testid='mocked-root-container' />,
 }))
@@ -61,6 +65,13 @@ describe('AppRouter', () => {
       expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-ticket-detail-container')).toBeInTheDocument()
+    })
+
+    it('/admin配下にアクセスした場合、RequireAuth・BaseLayoutを経由してAdminRouteが表示されること', () => {
+      renderAppRouter('/admin/account')
+      expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
+      expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
+      expect(screen.getByTestId('mocked-admin-route')).toBeInTheDocument()
     })
   })
 
