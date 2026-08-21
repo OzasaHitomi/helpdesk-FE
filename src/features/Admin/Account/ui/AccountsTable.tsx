@@ -1,21 +1,22 @@
 import { Table } from '@chakra-ui/react'
 import { type AccountItemView } from '../types/AccountItemView'
 import { transformUserRoleToJa } from '@/share/logic/transform/transformUserRoleToJa'
-import { useActivateAccountHandler } from '../hooks/handlers/useActivateAccountHandler'
-import { useDeactivateAccountHandler } from '../hooks/handlers/useDeactivateAccountHandler'
 import { AccountActivateButton } from './AccountActivateButton/AccountActivateButton'
 import { AccountDeactivateButton } from './AccountDeactivateButton/AccountDeactivateButton'
 
 interface AccountsTableProps {
   accounts: AccountItemView[]
+  activate: {
+    uiState: { isSubmitting: boolean }
+    handlers: { onClick: () => Promise<void> }
+  }
+  deactivate: {
+    uiState: { isSubmitting: boolean }
+    handlers: { onClick: () => Promise<void> }
+  }
 }
 
-export const AccountsTable = ({ accounts }: AccountsTableProps) => {
-  // 停止/再開ボタンの状態・onClickは全行共通のプレースホルダーのため、
-  // .map()の中ではなくコンポーネントのトップレベルで1回だけ呼び出す
-  const activate = useActivateAccountHandler()
-  const deactivate = useDeactivateAccountHandler()
-
+export const AccountsTable = ({ accounts, activate, deactivate }: AccountsTableProps) => {
   return (
     <Table.Root variant={'line'}>
       <Table.Header>

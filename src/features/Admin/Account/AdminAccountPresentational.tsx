@@ -7,12 +7,24 @@ interface AdminAccountPresentationalProps {
   data: {
     accounts: AccountItemView[]
   }
+  activate: {
+    uiState: { isSubmitting: boolean }
+    handlers: { onClick: () => Promise<void> }
+  }
+  deactivate: {
+    uiState: { isSubmitting: boolean }
+    handlers: { onClick: () => Promise<void> }
+  }
 }
 
 // Presentational: 実際の画面表示を担当する層
 // Containerから受け取ったdataをそのまま子コンポーネントに渡すだけで、
 // 自分で通信したりstateを持ったりはしない
-export const AdminAccountPresentational = ({ data }: AdminAccountPresentationalProps) => {
+export const AdminAccountPresentational = ({
+  data,
+  activate,
+  deactivate,
+}: AdminAccountPresentationalProps) => {
   return (
     <Stack gap={4}>
       <Heading size={'lg'}>Account一覧</Heading>
@@ -32,7 +44,7 @@ export const AdminAccountPresentational = ({ data }: AdminAccountPresentationalP
         </EmptyState.Root>
       </Show>
       <Show when={data.accounts.length != 0}>
-        <AccountsTable accounts={data.accounts} />
+        <AccountsTable accounts={data.accounts} activate={activate} deactivate={deactivate} />
       </Show>
     </Stack>
   )
