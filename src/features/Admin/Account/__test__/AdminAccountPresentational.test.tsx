@@ -18,8 +18,24 @@ const mockAccounts: AccountItemView[] = [
   { id: 1, name: '山田太郎', email: 'yamada@example.com', role: 'employee', isActive: true },
 ]
 
+const mockActivate = {
+  uiState: { isSubmitting: false },
+  handlers: { onClick: vi.fn() },
+}
+
+const mockDeactivate = {
+  uiState: { isSubmitting: false },
+  handlers: { onClick: vi.fn() },
+}
+
 const renderPresentational = (accounts: AccountItemView[] = mockAccounts) => {
-  customRender(<AdminAccountPresentational data={{ accounts }} />)
+  customRender(
+    <AdminAccountPresentational
+      data={{ accounts }}
+      activate={mockActivate}
+      deactivate={mockDeactivate}
+    />,
+  )
 }
 
 describe('AdminAccountPresentational', () => {
@@ -32,7 +48,10 @@ describe('AdminAccountPresentational', () => {
     it('AccountsTableが表示され、accountsがそのまま渡されること', () => {
       renderPresentational()
       expect(screen.getByTestId('mocked-account-table')).toBeInTheDocument()
-      expect(mockAccountsTable).toHaveBeenCalledWith({ accounts: mockAccounts }, undefined)
+      expect(mockAccountsTable).toHaveBeenCalledWith(
+        { accounts: mockAccounts, activate: mockActivate, deactivate: mockDeactivate },
+        undefined,
+      )
     })
   })
 

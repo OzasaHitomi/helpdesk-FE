@@ -13,10 +13,28 @@ const mockAccounts: AccountItemView[] = [
   { id: 2, name: '鈴木花子', email: 'suzuki@example.com', role: 'support', isActive: false },
 ]
 
+const mockActivate = {
+  uiState: { isSubmitting: false },
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  handlers: { onClick: async () => {} },
+}
+
+const mockDeactivate = {
+  uiState: { isSubmitting: false },
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  handlers: { onClick: async () => {} },
+}
+
 describe('AccountsTable', () => {
   describe('正常系', () => {
     it('列見出しが表示されること', () => {
-      customRender(<AccountsTable accounts={mockAccounts} />)
+      customRender(
+        <AccountsTable
+          accounts={mockAccounts}
+          activate={mockActivate}
+          deactivate={mockDeactivate}
+        />,
+      )
 
       expect(screen.getByText('名前')).toBeInTheDocument()
       expect(screen.getByText('Email')).toBeInTheDocument()
@@ -25,7 +43,13 @@ describe('AccountsTable', () => {
     })
 
     it('各アカウントの内容が表示されること', () => {
-      customRender(<AccountsTable accounts={mockAccounts} />)
+      customRender(
+        <AccountsTable
+          accounts={mockAccounts}
+          activate={mockActivate}
+          deactivate={mockDeactivate}
+        />,
+      )
 
       expect(screen.getByText('山田太郎')).toBeInTheDocument()
       expect(screen.getByText('yamada@example.com')).toBeInTheDocument()
@@ -35,13 +59,25 @@ describe('AccountsTable', () => {
     })
 
     it('isActiveがtrueのアカウントには「停止」ボタンが表示されること', () => {
-      customRender(<AccountsTable accounts={mockAccounts} />)
+      customRender(
+        <AccountsTable
+          accounts={mockAccounts}
+          activate={mockActivate}
+          deactivate={mockDeactivate}
+        />,
+      )
 
       expect(screen.getByRole('button', { name: '停止' })).toBeInTheDocument()
     })
 
     it('isActiveがfalseのアカウントには「再開」ボタンが表示されること', () => {
-      customRender(<AccountsTable accounts={mockAccounts} />)
+      customRender(
+        <AccountsTable
+          accounts={mockAccounts}
+          activate={mockActivate}
+          deactivate={mockDeactivate}
+        />,
+      )
 
       expect(screen.getByRole('button', { name: '再開' })).toBeInTheDocument()
     })
