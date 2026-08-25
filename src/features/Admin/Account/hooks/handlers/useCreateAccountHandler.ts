@@ -95,7 +95,7 @@ export const useCreateAccountHandler = () => {
       onCloseDialog()
       toaster.create({
         type: 'success',
-        title: `アカウント：${requestData.name} が発行されました`,
+        title: `アカウントの新規登録に成功しました`,
       })
     } catch (e) {
       const info = extractErrorInfo(e)
