@@ -129,7 +129,7 @@ describe('useCreateAccountHandler', () => {
       expect(result.current.data.isDialogOpen).toBe(false)
       expect(mockToasterCreate).toHaveBeenCalledWith({
         type: 'success',
-        title: 'アカウント：山田太郎 が発行されました',
+        title: 'アカウントの新規登録に成功しました',
       })
     })
   })
