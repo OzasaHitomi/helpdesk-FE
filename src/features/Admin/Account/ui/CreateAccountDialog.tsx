@@ -162,7 +162,9 @@ export const CreateAccountDialog = ({ data, uiState, handlers }: CreateAccountDi
                         }}
                       >
                         {/* 種別は必ず自分で選ぶ必要があるため、選び直せない空の初期選択肢を用意する */}
-                        <option value={''} disabled hidden></option>
+                        <option value={''} disabled hidden>
+                          選択してください
+                        </option>
                         {CreatableUserRoleList.map((role) => (
                           <option key={role} value={role}>
                             {transformUserRoleToJa(role)}

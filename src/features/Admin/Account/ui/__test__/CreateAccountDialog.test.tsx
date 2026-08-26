@@ -156,7 +156,9 @@ describe('CreateAccountDialog', () => {
       renderDialog({ isDialogOpen: true, fieldErrors: {} })
 
       expect(screen.queryByText('入力してください')).not.toBeInTheDocument()
-      expect(screen.queryByText('選択してください')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('選択してください', { selector: '[data-part="error-text"]' }),
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -171,7 +173,9 @@ describe('CreateAccountDialog', () => {
     it('fieldErrors.roleが存在する場合、種別の欄にその内容が表示されること', () => {
       renderDialog({ isDialogOpen: true, fieldErrors: { role: '選択してください' } })
 
-      expect(screen.getByText('選択してください')).toBeInTheDocument()
+      expect(
+        screen.getByText('選択してください', { selector: '[data-part="error-text"]' }),
+      ).toBeInTheDocument()
     })
 
     it('fieldErrorsに複数フィールド分のエラーがある場合、それぞれの内容が表示されること', () => {
