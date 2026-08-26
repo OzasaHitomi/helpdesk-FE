@@ -2,11 +2,12 @@ import { Button } from '@chakra-ui/react'
 
 interface AccountDeactivateButtonProps {
   userId: number
+  userName: string
   uiState: {
     isSubmitting: boolean
   }
   handlers: {
-    onClick: (userId: number) => Promise<void>
+    onClick: (userId: number, userName: string) => Promise<void>
   }
 }
 
@@ -14,6 +15,7 @@ interface AccountDeactivateButtonProps {
 // ボタンを出すかどうかの判断は呼び出し元(AccountsTable)が担当する
 export const AccountDeactivateButton = ({
   userId,
+  userName,
   uiState,
   handlers,
 }: AccountDeactivateButtonProps) => {
@@ -28,7 +30,7 @@ export const AccountDeactivateButton = ({
       disabled={uiState.isSubmitting}
       _disabled={{ bg: 'gray.100', cursor: 'default', opacity: 1 }}
       onClick={() => {
-        void handlers.onClick(userId)
+        void handlers.onClick(userId, userName)
       }}
     >
       停止

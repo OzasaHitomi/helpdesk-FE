@@ -6,10 +6,10 @@ import { extractErrorInfo } from '@/share/logic/extractErrorInfo'
 export const useDeactivateAccountHandler = () => {
   const { mutateAsync, isPending } = useDeactivateAccountMutation()
 
-  const onClick = async (userId: number) => {
+  const onClick = async (userId: number, userName: string) => {
     try {
       await mutateAsync(userId)
-      toaster.create({ type: 'success', title: 'アカウントを利用停止しました' })
+      toaster.create({ type: 'success', title: `${userName}を利用停止にしました` })
     } catch (e) {
       const info = extractErrorInfo(e)
       if (info == undefined) {

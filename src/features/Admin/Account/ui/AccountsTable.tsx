@@ -12,7 +12,7 @@ interface AccountsTableProps {
   }
   deactivate: {
     uiState: { isSubmitting: boolean }
-    handlers: { onClick: (userId: number) => Promise<void> }
+    handlers: { onClick: (userId: number, userName: string) => Promise<void> }
   }
 }
 
@@ -38,6 +38,7 @@ export const AccountsTable = ({ accounts, activate, deactivate }: AccountsTableP
                 {account.isActive ? (
                   <AccountDeactivateButton
                     userId={account.id}
+                    userName={account.name}
                     uiState={deactivate.uiState}
                     handlers={deactivate.handlers}
                   />

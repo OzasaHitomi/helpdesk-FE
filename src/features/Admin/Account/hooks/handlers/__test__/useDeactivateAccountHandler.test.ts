@@ -27,6 +27,7 @@ vi.mock('@/components/ui/toaster', () => ({
 }))
 
 const mockUserId = 1
+const mockUserName = '山田太郎'
 
 describe('useDeactivateAccountHandler', () => {
   afterEach(() => {
@@ -55,13 +56,13 @@ describe('useDeactivateAccountHandler', () => {
       const { result } = customRenderHook(() => useDeactivateAccountHandler())
 
       await act(async () => {
-        await result.current.handlers.onClick(mockUserId)
+        await result.current.handlers.onClick(mockUserId, mockUserName)
       })
 
       expect(mockMutateAsync).toHaveBeenCalledWith(mockUserId)
       expect(mockToasterCreate).toHaveBeenCalledWith({
         type: 'success',
-        title: 'アカウントを利用停止しました',
+        title: '山田太郎を利用停止にしました',
       })
     })
   })
@@ -76,7 +77,7 @@ describe('useDeactivateAccountHandler', () => {
       const { result } = customRenderHook(() => useDeactivateAccountHandler())
 
       await act(async () => {
-        await result.current.handlers.onClick(mockUserId)
+        await result.current.handlers.onClick(mockUserId, mockUserName)
       })
 
       expect(mockToasterCreate).toHaveBeenCalledWith({
@@ -90,7 +91,7 @@ describe('useDeactivateAccountHandler', () => {
       const { result } = customRenderHook(() => useDeactivateAccountHandler())
 
       await act(async () => {
-        await result.current.handlers.onClick(mockUserId)
+        await result.current.handlers.onClick(mockUserId, mockUserName)
       })
 
       expect(mockToasterCreate).toHaveBeenCalledWith({

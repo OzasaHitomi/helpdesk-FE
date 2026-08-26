@@ -93,7 +93,7 @@ describe('AccountsTable', () => {
       expect(screen.getByRole('button', { name: '再開' })).toBeInTheDocument()
     })
 
-    it('各行の「停止」ボタンを押すと、その行のaccount.idでdeactivate.handlers.onClickが呼ばれること', () => {
+    it('各行の「停止」ボタンを押すと、その行のaccount.id・account.nameでdeactivate.handlers.onClickが呼ばれること', () => {
       customRender(
         <AccountsTable
           accounts={mockActiveAccounts}
@@ -106,10 +106,10 @@ describe('AccountsTable', () => {
       expect(deactivateButtons).toHaveLength(2)
 
       fireEvent.click(deactivateButtons[0])
-      expect(mockDeactivateOnClick).toHaveBeenCalledWith(1)
+      expect(mockDeactivateOnClick).toHaveBeenCalledWith(1, '山田太郎')
 
       fireEvent.click(deactivateButtons[1])
-      expect(mockDeactivateOnClick).toHaveBeenCalledWith(3)
+      expect(mockDeactivateOnClick).toHaveBeenCalledWith(3, '佐藤次郎')
     })
   })
 })

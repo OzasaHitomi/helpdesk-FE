@@ -15,7 +15,13 @@ describe('users', () => {
     describe('正常系', () => {
       it('/admin/usersへGETし、レスポンスのdataをそのまま返すこと', async () => {
         const mockResponse: GetUsersResponseItem[] = [
-          { id: 1, name: '山田太郎', email: 'yamada@example.com', role: 'employee', isActive: true },
+          {
+            id: 1,
+            name: '山田太郎',
+            email: 'yamada@example.com',
+            role: 'employee',
+            isActive: true,
+          },
         ]
         const getSpy = vi
           .spyOn(internalBackendV1Client, 'get')
