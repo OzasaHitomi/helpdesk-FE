@@ -13,7 +13,7 @@ interface AdminAccountPresentationalProps {
   }
   deactivate: {
     uiState: { isSubmitting: boolean }
-    handlers: { onClick: () => Promise<void> }
+    handlers: { onClick: (userId: number) => Promise<void> }
   }
 }
 

@@ -7,10 +7,12 @@ import { screen, fireEvent } from '@testing-library/react'
 // （ボタンを表示するかどうかの出し分けはAccountsTable.test.tsxが担保する）
 
 const mockOnClick = vi.fn()
+const mockUserId = 1
 
 const renderButton = (uiStateOverrides?: Partial<{ isSubmitting: boolean }>) => {
   customRender(
     <AccountDeactivateButton
+      userId={mockUserId}
       uiState={{ isSubmitting: false, ...uiStateOverrides }}
       handlers={{ onClick: mockOnClick }}
     />,
@@ -29,11 +31,11 @@ describe('AccountDeactivateButton', () => {
       expect(screen.getByRole('button', { name: '停止' })).toBeInTheDocument()
     })
 
-    it('ボタンを押すとhandlers.onClickが呼ばれること', () => {
+    it('ボタンを押すとhandlers.onClickが対象のuserIdで呼ばれること', () => {
       renderButton()
 
       fireEvent.click(screen.getByRole('button', { name: '停止' }))
-      expect(mockOnClick).toHaveBeenCalled()
+      expect(mockOnClick).toHaveBeenCalledWith(mockUserId)
     })
 
     it('isSubmittingがtrueの場合、ボタンが無効化されること', () => {
