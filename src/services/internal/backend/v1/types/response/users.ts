@@ -10,6 +10,15 @@ export type GetUsersResponseItem = {
   isActive: boolean
 }
 
+// POST /admin/users のレスポンス型（発行されたアカウントの内容を返す）
+export type CreateUserResponse = {
+  id: number
+  name: string
+  email: string
+  role: UserRole
+  isActive: boolean
+}
+
 // PUT /admin/users/{id}/deactivate のレスポンス型
 export type DeactivateUserResponse = {
   id: number
