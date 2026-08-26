@@ -9,3 +9,12 @@ export type GetUsersResponseItem = {
   role: UserRole
   isActive: boolean
 }
+
+// PUT /admin/users/{id}/deactivate のレスポンス型
+export type DeactivateUserResponse = {
+  id: number
+  name: string
+  email: string
+  role: UserRole
+  isActive: boolean
+}
