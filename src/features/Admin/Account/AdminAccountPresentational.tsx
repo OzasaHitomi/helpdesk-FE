@@ -18,7 +18,7 @@ interface AdminAccountPresentationalProps {
   }
   deactivate: {
     uiState: { isSubmitting: boolean }
-    handlers: { onClick: () => Promise<void> }
+    handlers: { onClick: (account: AccountItemView) => Promise<void> }
   }
   create: {
     data: {
