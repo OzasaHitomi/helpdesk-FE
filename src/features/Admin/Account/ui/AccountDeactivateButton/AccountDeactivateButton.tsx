@@ -13,7 +13,11 @@ interface AccountDeactivateButtonProps {
 
 // アカウント一覧の各行に表示する「停止」ボタン（見た目専用のコンポーネント）
 // ボタンを出すかどうかの判断は呼び出し元(AccountsTable)が担当する
-export const AccountDeactivateButton = ({ account, uiState, handlers }: AccountDeactivateButtonProps) => {
+export const AccountDeactivateButton = ({
+  account,
+  uiState,
+  handlers,
+}: AccountDeactivateButtonProps) => {
   return (
     <Button
       size={'xs'}
