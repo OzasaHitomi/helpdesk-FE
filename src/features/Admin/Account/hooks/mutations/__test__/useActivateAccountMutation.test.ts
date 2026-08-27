@@ -44,9 +44,7 @@ describe('useActivateAccountMutation', () => {
   // ── 正常系 ────────────────────────────────────────────────────────────────
   describe('正常系', () => {
     it('mutateAsyncを呼ぶとactivateUserが正しい引数で呼ばれ、成功すること', async () => {
-      const activateUserSpy = vi
-        .spyOn(userService, 'activateUser')
-        .mockResolvedValue(mockResponse)
+      const activateUserSpy = vi.spyOn(userService, 'activateUser').mockResolvedValue(mockResponse)
 
       const { result } = customRenderHook(() => useActivateAccountMutation())
 
