@@ -1,10 +1,11 @@
-import { getUsers, createUser, deactivateUser } from '../users'
+import { getUsers, createUser, deactivateUser, activateUser } from '../users'
 import { internalBackendV1Client } from '../client'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
   type GetUsersResponseItem,
   type CreateUserResponse,
   type DeactivateUserResponse,
+  type ActivateUserResponse,
 } from '../types/response/users'
 
 // internalBackendV1Client（axiosインスタンス）のget/post/putをspyOnし、各関数が正しいURL・body・メソッドで
@@ -86,6 +87,28 @@ describe('users', () => {
         const result = await deactivateUser(1)
 
         expect(putSpy).toHaveBeenCalledWith('/admin/users/1/deactivate')
+        expect(result).toEqual(mockResponse)
+      })
+    })
+  })
+
+  describe('activateUser', () => {
+    describe('正常系', () => {
+      it('/admin/users/{id}/activateへPUTし、レスポンスのdataをそのまま返すこと', async () => {
+        const mockResponse: ActivateUserResponse = {
+          id: 1,
+          name: '山田太郎',
+          email: 'yamada@example.com',
+          role: 'employee',
+          isActive: true,
+        }
+        const putSpy = vi
+          .spyOn(internalBackendV1Client, 'put')
+          .mockResolvedValue({ data: mockResponse })
+
+        const result = await activateUser(1)
+
+        expect(putSpy).toHaveBeenCalledWith('/admin/users/1/activate')
         expect(result).toEqual(mockResponse)
       })
     })

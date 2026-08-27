@@ -8,7 +8,7 @@ interface AccountsTableProps {
   accounts: AccountItemView[]
   activate: {
     uiState: { isSubmitting: boolean }
-    handlers: { onClick: () => Promise<void> }
+    handlers: { onClick: (account: AccountItemView) => Promise<void> }
   }
   deactivate: {
     uiState: { isSubmitting: boolean }
@@ -42,7 +42,11 @@ export const AccountsTable = ({ accounts, activate, deactivate }: AccountsTableP
                     handlers={deactivate.handlers}
                   />
                 ) : (
-                  <AccountActivateButton uiState={activate.uiState} handlers={activate.handlers} />
+                  <AccountActivateButton
+                    account={account}
+                    uiState={activate.uiState}
+                    handlers={activate.handlers}
+                  />
                 )}
               </Table.Cell>
             </Table.Row>

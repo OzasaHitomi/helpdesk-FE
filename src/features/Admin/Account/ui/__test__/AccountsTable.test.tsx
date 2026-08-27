@@ -12,8 +12,9 @@ import { type AccountItemView } from '../../types/AccountItemView'
 const mockAccountActivateButton = vi.fn()
 vi.mock('../AccountActivateButton/AccountActivateButton', () => ({
   AccountActivateButton: (props: {
+    account: AccountItemView
     uiState: { isSubmitting: boolean }
-    handlers: { onClick: () => Promise<void> }
+    handlers: { onClick: (account: AccountItemView) => Promise<void> }
   }) => {
     mockAccountActivateButton(props)
     return <div data-testid={'mocked-account-activate-button'} />
@@ -41,6 +42,12 @@ const mockAccounts: AccountItemView[] = [
 const mockActiveAccounts: AccountItemView[] = [
   { id: 1, name: '山田太郎', email: 'yamada@example.com', role: 'employee', isActive: true },
   { id: 3, name: '佐藤次郎', email: 'sato@example.com', role: 'employee', isActive: true },
+]
+
+// 行ごとに正しいaccountが渡るかを確認するため専用（2件ともisActive: false）
+const mockInactiveAccounts: AccountItemView[] = [
+  { id: 2, name: '鈴木花子', email: 'suzuki@example.com', role: 'support', isActive: false },
+  { id: 4, name: '田中一郎', email: 'tanaka@example.com', role: 'employee', isActive: false },
 ]
 
 const mockActivate = {
@@ -122,16 +129,22 @@ describe('AccountsTable', () => {
       expect(screen.queryByTestId('mocked-account-deactivate-button')).not.toBeInTheDocument()
     })
 
-    it('AccountActivateButtonにactivate.uiState・activate.handlersがそのまま渡ること', () => {
+    it('各行のAccountActivateButtonに、その行のaccountとactivate.uiState・activate.handlersが渡ること', () => {
       customRender(
         <AccountsTable
-          accounts={mockAccounts}
+          accounts={mockInactiveAccounts}
           activate={mockActivate}
           deactivate={mockDeactivate}
         />,
       )
 
-      expect(mockAccountActivateButton).toHaveBeenCalledWith({
+      expect(mockAccountActivateButton).toHaveBeenNthCalledWith(1, {
+        account: mockInactiveAccounts[0],
+        uiState: mockActivate.uiState,
+        handlers: mockActivate.handlers,
+      })
+      expect(mockAccountActivateButton).toHaveBeenNthCalledWith(2, {
+        account: mockInactiveAccounts[1],
         uiState: mockActivate.uiState,
         handlers: mockActivate.handlers,
       })

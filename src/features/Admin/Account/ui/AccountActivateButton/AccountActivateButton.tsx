@@ -1,17 +1,23 @@
 import { Button } from '@chakra-ui/react'
+import { type AccountItemView } from '../../types/AccountItemView'
 
 interface AccountActivateButtonProps {
+  account: AccountItemView
   uiState: {
     isSubmitting: boolean
   }
   handlers: {
-    onClick: () => Promise<void>
+    onClick: (account: AccountItemView) => Promise<void>
   }
 }
 
 // アカウント一覧の各行に表示する「再開」ボタン（見た目専用のコンポーネント）
 // ボタンを出すかどうかの判断は呼び出し元(AccountsTable)が担当する
-export const AccountActivateButton = ({ uiState, handlers }: AccountActivateButtonProps) => {
+export const AccountActivateButton = ({
+  account,
+  uiState,
+  handlers,
+}: AccountActivateButtonProps) => {
   return (
     <Button
       size={'xs'}
@@ -23,7 +29,7 @@ export const AccountActivateButton = ({ uiState, handlers }: AccountActivateButt
       disabled={uiState.isSubmitting}
       _disabled={{ bg: 'gray.100', cursor: 'default', opacity: 1 }}
       onClick={() => {
-        void handlers.onClick()
+        void handlers.onClick(account)
       }}
     >
       再開

@@ -4,6 +4,7 @@ import {
   type GetUsersResponseItem,
   type CreateUserResponse,
   type DeactivateUserResponse,
+  type ActivateUserResponse,
 } from '@/services/internal/backend/v1/types/response/users'
 
 const COMMON_URL = '/admin/users'
@@ -24,6 +25,14 @@ export const createUser = async (body: CreateUserRequest): Promise<CreateUserRes
 export const deactivateUser = async (id: number): Promise<DeactivateUserResponse> => {
   const response = await internalBackendV1Client.put<DeactivateUserResponse>(
     `${COMMON_URL}/${String(id)}/deactivate`,
+  )
+  return response.data
+}
+
+// 成功時は200（利用再開後のユーザー情報を返す）
+export const activateUser = async (id: number): Promise<ActivateUserResponse> => {
+  const response = await internalBackendV1Client.put<ActivateUserResponse>(
+    `${COMMON_URL}/${String(id)}/activate`,
   )
   return response.data
 }
