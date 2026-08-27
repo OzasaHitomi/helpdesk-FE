@@ -1,9 +1,9 @@
 import { internalBackendV1Client } from '@/services/internal/backend/v1/client'
 import { type CreateUserRequest } from '@/services/internal/backend/v1/types/request/users'
 import {
-  type DeactivateUserResponse,
   type GetUsersResponseItem,
   type CreateUserResponse,
+  type DeactivateUserResponse,
 } from '@/services/internal/backend/v1/types/response/users'
 
 const COMMON_URL = '/admin/users'

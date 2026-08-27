@@ -1,15 +1,16 @@
 import { useDeactivateAccountMutation } from '../mutations/useDeactivateAccountMutation'
 import { toaster } from '@/components/ui/toaster'
 import { extractErrorInfo } from '@/share/logic/extractErrorInfo'
+import { type AccountItemView } from '../../types/AccountItemView'
 
 // アカウント停止操作のFE側ロジックを担当するhook（再開操作は別hookの担当）
 export const useDeactivateAccountHandler = () => {
   const { mutateAsync, isPending } = useDeactivateAccountMutation()
 
-  const onClick = async (userId: number, userName: string) => {
+  const onClick = async (account: AccountItemView) => {
     try {
-      await mutateAsync(userId)
-      toaster.create({ type: 'success', title: `${userName}を利用停止にしました` })
+      await mutateAsync(account.id)
+      toaster.create({ type: 'success', title: `${account.name}を利用停止にしました` })
     } catch (e) {
       const info = extractErrorInfo(e)
       if (info == undefined) {

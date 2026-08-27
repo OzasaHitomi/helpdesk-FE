@@ -2,6 +2,7 @@ import { useDeactivateAccountHandler } from '../useDeactivateAccountHandler'
 import { customRenderHook } from '@/tests/helpers/customRenderHook'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { act } from '@testing-library/react'
+import { type AccountItemView } from '../../../types/AccountItemView'
 
 // mutateAsync/toaster.createのスパイを先に定義し、モジュールをまるごと差し替える
 // (mutateAsyncの中身=通信処理はuseDeactivateAccountMutation.test.tsが担保するのでここではモックする)
@@ -26,8 +27,13 @@ vi.mock('@/components/ui/toaster', () => ({
   toaster: { create: mockToasterCreate },
 }))
 
-const mockUserId = 1
-const mockUserName = '山田太郎'
+const mockAccount: AccountItemView = {
+  id: 1,
+  name: '山田太郎',
+  email: 'yamada@example.com',
+  role: 'employee',
+  isActive: true,
+}
 
 describe('useDeactivateAccountHandler', () => {
   afterEach(() => {
@@ -56,10 +62,10 @@ describe('useDeactivateAccountHandler', () => {
       const { result } = customRenderHook(() => useDeactivateAccountHandler())
 
       await act(async () => {
-        await result.current.handlers.onClick(mockUserId, mockUserName)
+        await result.current.handlers.onClick(mockAccount)
       })
 
-      expect(mockMutateAsync).toHaveBeenCalledWith(mockUserId)
+      expect(mockMutateAsync).toHaveBeenCalledWith(mockAccount.id)
       expect(mockToasterCreate).toHaveBeenCalledWith({
         type: 'success',
         title: '山田太郎を利用停止にしました',
@@ -77,7 +83,7 @@ describe('useDeactivateAccountHandler', () => {
       const { result } = customRenderHook(() => useDeactivateAccountHandler())
 
       await act(async () => {
-        await result.current.handlers.onClick(mockUserId, mockUserName)
+        await result.current.handlers.onClick(mockAccount)
       })
 
       expect(mockToasterCreate).toHaveBeenCalledWith({
@@ -91,7 +97,7 @@ describe('useDeactivateAccountHandler', () => {
       const { result } = customRenderHook(() => useDeactivateAccountHandler())
 
       await act(async () => {
-        await result.current.handlers.onClick(mockUserId, mockUserName)
+        await result.current.handlers.onClick(mockAccount)
       })
 
       expect(mockToasterCreate).toHaveBeenCalledWith({
