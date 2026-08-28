@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { BaseLayout } from '@/components/templates/BaseLayout'
 import { LoginRoute } from './Login/base'
 import { AdminRoute } from './Admin/base'
@@ -17,7 +17,8 @@ export const AppRouter = () => {
           <Route path='/' element={<RootContainer />} />
           <Route path='/tickets/:id' element={<TicketDetailContainer />} />
           <Route path='/admin/*' element={<AdminRoute />} />
-          <Route path='*' element={<NotFoundPage />} />
+          <Route path='/404' element={<NotFoundPage />} />
+          <Route path='*' element={<Navigate to='/404' replace />} />
         </Route>
       </Route>
     </Routes>

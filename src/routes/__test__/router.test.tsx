@@ -77,10 +77,17 @@ describe('AppRouter', () => {
       expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-admin-route')).toBeInTheDocument()
     })
+
+    it('/404に直接アクセスした場合、RequireAuth・BaseLayoutを経由してNotFoundPageが表示されること', () => {
+      renderAppRouter('/404')
+      expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
+      expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
+      expect(screen.getByTestId('mocked-not-found-page')).toBeInTheDocument()
+    })
   })
 
   describe('準正常系', () => {
-    it('定義されていないパスにアクセスした場合、RequireAuth・BaseLayoutを経由してNotFoundPageが表示されること', () => {
+    it('定義されていないパスにアクセスした場合、/404へ遷移しNotFoundPageが表示されること', () => {
       renderAppRouter('/unknown-path')
       expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
