@@ -29,6 +29,10 @@ vi.mock('@/features/TicketDetail/TicketDetailContainer', () => ({
   TicketDetailContainer: () => <div data-testid='mocked-ticket-detail-container' />,
 }))
 
+vi.mock('@/components/pages/NotFoundPage', () => ({
+  NotFoundPage: () => <div data-testid='mocked-not-found-page' />,
+}))
+
 vi.mock('@/routes/RequireAuth', () => ({
   RequireAuth: () => (
     <div data-testid='mocked-require-auth'>
@@ -76,11 +80,11 @@ describe('AppRouter', () => {
   })
 
   describe('準正常系', () => {
-    it('定義されていないパスにアクセスした場合、RequireAuth・BaseLayoutを経由して404 Not Foundが表示されること', () => {
+    it('定義されていないパスにアクセスした場合、RequireAuth・BaseLayoutを経由してNotFoundPageが表示されること', () => {
       renderAppRouter('/unknown-path')
       expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
-      expect(screen.getByText('404 Not Found')).toBeInTheDocument()
+      expect(screen.getByTestId('mocked-not-found-page')).toBeInTheDocument()
     })
   })
 })
