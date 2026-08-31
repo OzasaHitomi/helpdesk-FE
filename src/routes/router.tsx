@@ -5,7 +5,7 @@ import { AdminRoute } from './Admin/base'
 import { RootContainer } from '@/features/Root/RootContainer'
 import { TicketDetailContainer } from '@/features/TicketDetail/TicketDetailContainer'
 import { RequireAuth } from './RequireAuth'
-import { NotFoundPage } from '@/components/pages/NotFoundPage'
+import { NotFoundPage } from '@/features/Error/404/NotFoundPage'
 
 export const AppRouter = () => {
   return (
