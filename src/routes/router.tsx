@@ -6,6 +6,7 @@ import { RootContainer } from '@/features/Root/RootContainer'
 import { TicketDetailContainer } from '@/features/TicketDetail/TicketDetailContainer'
 import { RequireAuth } from './RequireAuth'
 import { NotFoundPageContainer } from '@/features/Error/404/NotFoundPageContainer'
+import { ForbiddenPageContainer } from '@/features/Error/403/ForbiddenPageContainer'
 
 export const AppRouter = () => {
   return (
@@ -16,8 +17,11 @@ export const AppRouter = () => {
         <Route element={<BaseLayout />}>
           <Route path='/' element={<RootContainer />} />
           <Route path='/tickets/:id' element={<TicketDetailContainer />} />
-          <Route path='/admin/*' element={<AdminRoute />} />
+          <Route element={<RequireAuth allow={['admin']} />}>
+            <Route path='/admin/*' element={<AdminRoute />} />
+          </Route>
           <Route path='/404' element={<NotFoundPageContainer />} />
+          <Route path='/403' element={<ForbiddenPageContainer />} />
           <Route path='*' element={<Navigate to='/404' replace />} />
         </Route>
       </Route>

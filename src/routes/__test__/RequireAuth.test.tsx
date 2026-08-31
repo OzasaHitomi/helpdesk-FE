@@ -3,12 +3,14 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { Provider as ChakraUIProvider } from '@/components/ui/provider'
+import type { UserRole } from '@/share/types/userRole'
 
-// useMeQueryをモックし、確認中/成功/失敗それぞれでRequireAuthが
-// 正しく表示を出し分ける（Outlet表示 or /loginへリダイレクト）かのみをテストする
+// useMeQueryをモックし、確認中/成功/失敗、およびallow指定時のロール一致/不一致それぞれで
+// RequireAuthが正しく表示を出し分ける（Outlet表示 or /loginへリダイレクト or /403へリダイレクト）かのみをテストする
 // （GET /auth/me自体の通信処理はuseMeQuery.test.tsが担保する）
 
 interface MockUseMeQueryReturn {
+  data?: { role: UserRole }
   isLoading: boolean
   isError: boolean
 }
@@ -19,7 +21,7 @@ vi.mock('@/share/hooks/queries/useMeQuery', () => ({
   useMeQuery: () => mockUseMeQuery(),
 }))
 
-const renderRequireAuth = (initialEntry: string) => {
+const renderRequireAuth = (initialEntry: string, allow?: UserRole[]) => {
   return render(
     // isLoading時にLoadingPage（Chakra UIのSpinner）を描画するが、
     // ChakraのコンポーネントはuseContextでテーマ設定を読むため、
@@ -27,10 +29,11 @@ const renderRequireAuth = (initialEntry: string) => {
     <ChakraUIProvider>
       <MemoryRouter initialEntries={[initialEntry]}>
         <Routes>
-          <Route element={<RequireAuth />}>
+          <Route element={<RequireAuth allow={allow} />}>
             <Route path='/' element={<div data-testid='protected-page' />} />
           </Route>
           <Route path='/login' element={<div data-testid='login-page' />} />
+          <Route path='/403' element={<div data-testid='forbidden-page' />} />
         </Routes>
       </MemoryRouter>
     </ChakraUIProvider>,
@@ -52,6 +55,12 @@ describe('RequireAuth', () => {
       renderRequireAuth('/')
       expect(screen.getByTestId('protected-page')).toBeInTheDocument()
     })
+
+    it('allowを指定し、roleがallowに含まれる場合、配下の画面（Outlet）が表示されること', () => {
+      mockUseMeQuery.mockReturnValue({ data: { role: 'admin' }, isLoading: false, isError: false })
+      renderRequireAuth('/', ['admin'])
+      expect(screen.getByTestId('protected-page')).toBeInTheDocument()
+    })
   })
 
   describe('準正常系', () => {
@@ -59,6 +68,17 @@ describe('RequireAuth', () => {
       mockUseMeQuery.mockReturnValue({ isLoading: false, isError: true })
       renderRequireAuth('/')
       expect(screen.getByTestId('login-page')).toBeInTheDocument()
+      expect(screen.queryByTestId('protected-page')).not.toBeInTheDocument()
+    })
+
+    it('allowを指定し、roleがallowに含まれない場合、/403へリダイレクトされること', () => {
+      mockUseMeQuery.mockReturnValue({
+        data: { role: 'employee' },
+        isLoading: false,
+        isError: false,
+      })
+      renderRequireAuth('/', ['admin'])
+      expect(screen.getByTestId('forbidden-page')).toBeInTheDocument()
       expect(screen.queryByTestId('protected-page')).not.toBeInTheDocument()
     })
   })
