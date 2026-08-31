@@ -29,8 +29,8 @@ vi.mock('@/features/TicketDetail/TicketDetailContainer', () => ({
   TicketDetailContainer: () => <div data-testid='mocked-ticket-detail-container' />,
 }))
 
-vi.mock('@/features/Error/404/NotFoundPage', () => ({
-  NotFoundPage: () => <div data-testid='mocked-not-found-page' />,
+vi.mock('@/features/Error/404/NotFoundPageContainer', () => ({
+  NotFoundPageContainer: () => <div data-testid='mocked-not-found-page' />,
 }))
 
 vi.mock('@/routes/RequireAuth', () => ({

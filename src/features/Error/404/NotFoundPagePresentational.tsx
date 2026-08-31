@@ -1,6 +1,7 @@
+// Presentational: 実際の画面表示を担当する層 / Containerから受け取ったdata/uiStateをそのまま子コンポーネントに渡すだけで、自分で通信したりstateを持ったりはしない
 import { Center, Heading, Text, VStack } from '@chakra-ui/react'
 
-export const NotFoundPage = () => {
+export const NotFoundPagePresentational = () => {
   return (
     <Center h={'100vh'} pb={{ base: 32, md: 48 }}>
       <VStack gap={4}>
