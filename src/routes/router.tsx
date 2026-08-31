@@ -17,12 +17,14 @@ export const AppRouter = () => {
         <Route element={<BaseLayout />}>
           <Route path='/' element={<RootContainer />} />
           <Route path='/tickets/:id' element={<TicketDetailContainer />} />
-          <Route element={<RequireAuth allow={['admin']} />}>
-            <Route path='/admin/*' element={<AdminRoute />} />
-          </Route>
           <Route path='/404' element={<NotFoundPageContainer />} />
           <Route path='/403' element={<ForbiddenPageContainer />} />
           <Route path='*' element={<Navigate to='/404' replace />} />
+        </Route>
+      </Route>
+      <Route element={<RequireAuth allow={['admin']} />}>
+        <Route element={<BaseLayout />}>
+          <Route path='/admin/*' element={<AdminRoute />} />
         </Route>
       </Route>
     </Routes>

@@ -41,7 +41,7 @@ vi.mock('@/routes/RequireAuth', () => ({
   // allowを指定した呼び出し（/admin/*用）とそうでない呼び出し（全体のログインガード）を
   // 別のtestidで区別できるようにする
   RequireAuth: ({ allow }: { allow?: string[] }) => (
-    <div data-testid={allow ? 'mocked-require-role' : 'mocked-require-auth'}>
+    <div data-testid={allow ? 'mocked-require-auth-allow' : 'mocked-require-auth'}>
       <Outlet />
     </div>
   ),
@@ -77,11 +77,10 @@ describe('AppRouter', () => {
       expect(screen.getByTestId('mocked-ticket-detail-container')).toBeInTheDocument()
     })
 
-    it('/admin配下にアクセスした場合、RequireAuth・BaseLayout・RequireRoleを経由してAdminRouteが表示されること', () => {
+    it('/admin配下にアクセスした場合、RequireAuth（allow指定）・BaseLayoutを経由してAdminRouteが表示されること', () => {
       renderAppRouter('/admin/account')
-      expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
+      expect(screen.getByTestId('mocked-require-auth-allow')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
-      expect(screen.getByTestId('mocked-require-role')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-admin-route')).toBeInTheDocument()
     })
 
