@@ -33,9 +33,15 @@ vi.mock('@/features/Error/404/NotFoundPageContainer', () => ({
   NotFoundPageContainer: () => <div data-testid='mocked-not-found-page' />,
 }))
 
+vi.mock('@/features/Error/403/ForbiddenPageContainer', () => ({
+  ForbiddenPageContainer: () => <div data-testid='mocked-forbidden-page' />,
+}))
+
 vi.mock('@/routes/RequireAuth', () => ({
-  RequireAuth: () => (
-    <div data-testid='mocked-require-auth'>
+  // allowを指定した呼び出し（/admin/*用）とそうでない呼び出し（全体のログインガード）を
+  // 別のtestidで区別できるようにする
+  RequireAuth: ({ allow }: { allow?: string[] }) => (
+    <div data-testid={allow ? 'mocked-require-auth-allow' : 'mocked-require-auth'}>
       <Outlet />
     </div>
   ),
@@ -71,9 +77,9 @@ describe('AppRouter', () => {
       expect(screen.getByTestId('mocked-ticket-detail-container')).toBeInTheDocument()
     })
 
-    it('/admin配下にアクセスした場合、RequireAuth・BaseLayoutを経由してAdminRouteが表示されること', () => {
+    it('/admin配下にアクセスした場合、RequireAuth（allow指定）・BaseLayoutを経由してAdminRouteが表示されること', () => {
       renderAppRouter('/admin/account')
-      expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
+      expect(screen.getByTestId('mocked-require-auth-allow')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-admin-route')).toBeInTheDocument()
     })
@@ -83,6 +89,13 @@ describe('AppRouter', () => {
       expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
       expect(screen.getByTestId('mocked-not-found-page')).toBeInTheDocument()
+    })
+
+    it('/403に直接アクセスした場合、RequireAuth・BaseLayoutを経由してForbiddenPageが表示されること', () => {
+      renderAppRouter('/403')
+      expect(screen.getByTestId('mocked-require-auth')).toBeInTheDocument()
+      expect(screen.getByTestId('mocked-base-layout')).toBeInTheDocument()
+      expect(screen.getByTestId('mocked-forbidden-page')).toBeInTheDocument()
     })
   })
 
