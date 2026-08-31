@@ -1,12 +1,11 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { AdminAccountContainer } from '@/features/Admin/Account/AdminAccountContainer'
-import { RootContainer } from '@/features/Root/RootContainer'
 
 export const AdminRoute = () => {
   return (
     <Routes>
-      <Route path='accounts/*' element={<AdminAccountContainer />} />
-      <Route path='*' element={<RootContainer />} />
+      <Route path='accounts' element={<AdminAccountContainer />} />
+      <Route path='*' element={<Navigate to='/404' replace />} />
     </Routes>
   )
 }
